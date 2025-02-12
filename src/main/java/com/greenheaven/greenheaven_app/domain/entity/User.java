@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.proxy.HibernateProxy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import java.util.UUID;
 @Entity
 @Getter
 @NoArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 public class User {
 
     @Id
@@ -32,7 +34,7 @@ public class User {
     private String email; // 사용자 이메일
 
     @CreatedDate
-    @Column(name = "create_date", nullable = false)
+    @Column(name = "create_date", updatable = false)
     private LocalDate createDate; // 사용자 생성일
 
     @LastModifiedDate
@@ -52,8 +54,8 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Soil> soils = new ArrayList<>(); // 토양분석들
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "subscription_id", nullable = false)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "subscription_id")
     private Subscription subscription; // 구독
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
@@ -72,10 +74,13 @@ public class User {
     private List<Location> locations = new ArrayList<>(); // 위치들
 
 
-    public User(String name, String password, String email, Subscription subscription) {
+    public User(String name, String password, String email) {
         this.name = name;
         this.password = password;
         this.email = email;
+    }
+
+    public void connectSubscription(Subscription subscription) {
         this.subscription = subscription;
     }
 

@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.proxy.HibernateProxy;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -13,6 +14,7 @@ import java.util.UUID;
 @Entity
 @Getter
 @NoArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 public class Alert {
 
     @Id
@@ -27,7 +29,7 @@ public class Alert {
     private AlertSeverity severity; // 경고 심각도
 
     @CreatedDate
-    @Column(name = "date", nullable = false)
+    @Column(name = "date", updatable = false)
     private LocalDateTime date; // 경고 날짜
 
     @ManyToOne(fetch = FetchType.LAZY)

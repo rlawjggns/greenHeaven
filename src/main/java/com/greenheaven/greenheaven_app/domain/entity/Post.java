@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.proxy.HibernateProxy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import java.util.UUID;
 @Entity
 @Getter
 @NoArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 public class Post {
 
     @Id
@@ -29,7 +31,7 @@ public class Post {
     private String content; // 게시글 내용
 
     @CreatedDate
-    @Column(name = "create_date", nullable = false)
+    @Column(name = "create_date", updatable = false)
     private LocalDateTime createDate; // 게시글 생성일
 
     @LastModifiedDate

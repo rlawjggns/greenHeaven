@@ -23,8 +23,8 @@ public class Subscription {
     @Column(name = "plan", nullable = false)
     private SubPlan plan = SubPlan.FREE; // 구독 플랜
 
-    @Column(name = "start_date", nullable = false)
     @CreatedDate
+    @Column(name = "start_date", updatable = false)
     private LocalDate start_date; // 구독 시작일
 
     @Column(name = "end_date", nullable = false)

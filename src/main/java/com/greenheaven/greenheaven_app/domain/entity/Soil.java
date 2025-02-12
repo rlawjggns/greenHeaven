@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.proxy.HibernateProxy;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
 import java.util.Objects;
@@ -13,6 +14,7 @@ import java.util.UUID;
 @Entity
 @Getter
 @NoArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 public class Soil {
 
     @Id
@@ -26,7 +28,7 @@ public class Soil {
     private String nutrients; // 토양분석 영양소
 
     @CreatedDate
-    @Column(name = "date", nullable = false)
+    @Column(name = "date", updatable = false)
     private LocalDate date; // 토양분석 날짜
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.proxy.HibernateProxy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -13,6 +14,7 @@ import java.util.UUID;
 @Entity
 @Getter
 @NoArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 public class PostComment {
 
     @Id
@@ -23,7 +25,7 @@ public class PostComment {
     private String content; // 댓글 내용
 
     @CreatedDate
-    @Column(name = "create_date", nullable = false)
+    @Column(name = "create_date", updatable = false)
     private String createDate; // 댓글 생성일 
 
     @LastModifiedDate

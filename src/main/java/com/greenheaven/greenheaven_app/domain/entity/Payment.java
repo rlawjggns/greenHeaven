@@ -22,8 +22,7 @@ public class Payment {
     @Column(name = "amount", nullable = false)
     private Long amount; // 결제 금액
 
-    @CreatedDate
-    @Column(name = "date", nullable = false)
+    @Column(name = "date")
     private LocalDateTime date; // 결제 날짜
 
     @Enumerated
