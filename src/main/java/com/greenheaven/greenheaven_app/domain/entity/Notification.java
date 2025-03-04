@@ -1,6 +1,8 @@
 package com.greenheaven.greenheaven_app.domain.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.proxy.HibernateProxy;
@@ -13,7 +15,7 @@ import java.util.UUID;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
 public class Notification {
 
@@ -36,6 +38,7 @@ public class Notification {
     @JoinColumn(name = "user_id", nullable = false)
     private User user; // 유저
 
+    @Builder
     public Notification(String content, NotificationType type, User user) {
         this.content = content;
         this.type = type;

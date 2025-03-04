@@ -1,6 +1,8 @@
 package com.greenheaven.greenheaven_app.domain.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.proxy.HibernateProxy;
@@ -13,7 +15,7 @@ import java.util.UUID;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
 public class PostComment {
 
@@ -40,7 +42,7 @@ public class PostComment {
     @JoinColumn(name = "post_id", nullable = false)
     private Post post; // 게시글
 
-
+    @Builder
     public PostComment(String content, User user, Post post) {
         this.content = content;
         this.user = user;

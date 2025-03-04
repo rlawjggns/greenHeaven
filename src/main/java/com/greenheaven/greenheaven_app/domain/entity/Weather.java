@@ -3,6 +3,8 @@ package com.greenheaven.greenheaven_app.domain.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.proxy.HibernateProxy;
@@ -13,7 +15,7 @@ import java.util.UUID;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Weather {
 
     @Id
@@ -35,7 +37,7 @@ public class Weather {
     @Column(name = "location", nullable = false)
     private String location; // 기상정보 위치
 
-
+    @Builder
     public Weather(Double temperature, Double humidity, String condition, LocalDate date, String location) {
         this.temperature = temperature;
         this.humidity = humidity;

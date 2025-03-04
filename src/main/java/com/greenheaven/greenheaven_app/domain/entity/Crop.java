@@ -1,6 +1,8 @@
 package com.greenheaven.greenheaven_app.domain.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.proxy.HibernateProxy;
@@ -13,7 +15,7 @@ import java.util.UUID;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Crop {
 
     @Id
@@ -43,10 +45,12 @@ public class Crop {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    public Crop(String name, CropType type, LocalDate plantDate, User user) {
+    @Builder
+    public Crop(String name, CropType type, LocalDate plantDate, LocalDate harvestDate, User user) {
         this.name = name;
         this.type = type;
         this.plantDate = plantDate;
+        this.harvestDate = harvestDate;
         this.user = user;
     }
 

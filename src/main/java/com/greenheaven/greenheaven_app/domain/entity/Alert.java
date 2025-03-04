@@ -1,6 +1,8 @@
 package com.greenheaven.greenheaven_app.domain.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.proxy.HibernateProxy;
@@ -13,7 +15,7 @@ import java.util.UUID;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
 public class Alert {
 
@@ -40,6 +42,7 @@ public class Alert {
     @JoinColumn(name = "crop_id", nullable = false)
     private Crop crop; // 작물 아이디
 
+    @Builder
     public Alert(String content, AlertSeverity severity, User user, Crop crop) {
         this.content = content;
         this.severity = severity;

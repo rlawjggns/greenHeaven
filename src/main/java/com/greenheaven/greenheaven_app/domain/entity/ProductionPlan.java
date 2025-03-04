@@ -1,17 +1,20 @@
 package com.greenheaven.greenheaven_app.domain.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProductionPlan {
 
     @Id
@@ -25,18 +28,19 @@ public class ProductionPlan {
     private String description; // 생산계획 설명
 
     @Column(name = "start_date", nullable = false)
-    private LocalDate startDate; // 생산계획 시작일
+    private LocalDateTime startDate; // 생산계획 시작일
 
     @Column(name = "end_date", nullable = false)
-    private LocalDate endDate; // 생산계획 종료일 
+    private LocalDateTime endDate; // 생산계획 종료일
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user; // 유저
 
-
-    public ProductionPlan(String name, LocalDate startDate, LocalDate endDate, User user) {
+    @Builder
+    public ProductionPlan(String name, String description, LocalDateTime startDate, LocalDateTime endDate, User user) {
         this.name = name;
+        this.description = description;
         this.startDate = startDate;
         this.endDate = endDate;
         this.user = user;

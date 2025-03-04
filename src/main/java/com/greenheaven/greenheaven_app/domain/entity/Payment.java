@@ -1,6 +1,8 @@
 package com.greenheaven.greenheaven_app.domain.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.proxy.HibernateProxy;
@@ -12,7 +14,7 @@ import java.util.UUID;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Payment {
 
     @Id
@@ -23,7 +25,7 @@ public class Payment {
     private Long amount; // 결제 금액
 
     @Column(name = "date")
-    private LocalDateTime date; // 결제 날짜
+    private LocalDateTime date; // 결제일
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
@@ -33,6 +35,7 @@ public class Payment {
     @JoinColumn(name = "user_id", nullable = false)
     private User user; // 유저
 
+    @Builder
     public Payment(Long amount, User user) {
         this.amount = amount;
         this.user = user;

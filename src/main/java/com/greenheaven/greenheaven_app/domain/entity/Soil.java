@@ -1,6 +1,8 @@
 package com.greenheaven.greenheaven_app.domain.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.proxy.HibernateProxy;
@@ -8,12 +10,13 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
 public class Soil {
 
@@ -29,7 +32,7 @@ public class Soil {
 
     @CreatedDate
     @Column(name = "date", updatable = false)
-    private LocalDate date; // 토양분석 날짜
+    private LocalDateTime date; // 토양분석일
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
@@ -39,8 +42,9 @@ public class Soil {
     @JoinColumn(name = "crop_id", nullable = false)
     private Crop crop; // 작물 아이디
 
-    public Soil(String ph, User user, Crop crop) {
+    public Soil(String ph, String nutrients, User user, Crop crop) {
         this.ph = ph;
+        this.nutrients = nutrients;
         this.user = user;
         this.crop = crop;
     }

@@ -1,6 +1,8 @@
 package com.greenheaven.greenheaven_app.domain.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.proxy.HibernateProxy;
@@ -16,7 +18,7 @@ import java.util.UUID;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
 public class Post {
 
@@ -45,9 +47,10 @@ public class Post {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<PostComment> comments = new ArrayList<>(); // 댓글들
 
-    public Post(String content, LocalDateTime createDate, User user) {
+    @Builder
+    public Post(String title, String content, User user) {
+        this.title = title;
         this.content = content;
-        this.createDate = createDate;
         this.user = user;
     }
 

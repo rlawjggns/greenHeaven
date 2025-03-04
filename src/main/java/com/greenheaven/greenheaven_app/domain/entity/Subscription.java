@@ -1,6 +1,8 @@
 package com.greenheaven.greenheaven_app.domain.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.proxy.HibernateProxy;
@@ -8,12 +10,13 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
 public class Subscription {
 
@@ -27,16 +30,17 @@ public class Subscription {
 
     @CreatedDate
     @Column(name = "start_date", updatable = false)
-    private LocalDate start_date; // 구독 시작일
+    private LocalDateTime startDate; // 구독 시작일
 
     @Column(name = "end_date", nullable = false)
-    private LocalDate endDate; // 구독 종료일
+    private LocalDateTime endDate; // 구독 종료일
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user; // 유저
 
-    public Subscription(LocalDate endDate, User user) {
+    @Builder
+    public Subscription(LocalDateTime endDate, User user) {
         this.endDate = endDate;
         this.user = user;
     }

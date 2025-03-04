@@ -1,6 +1,8 @@
 package com.greenheaven.greenheaven_app.domain.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.proxy.HibernateProxy;
@@ -10,7 +12,7 @@ import java.util.UUID;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Location {
 
     @Id
@@ -30,6 +32,7 @@ public class Location {
     @JoinColumn(name = "user_id", nullable = false)
     private User user; // 유저
 
+    @Builder
     public Location(String name, Double latitude, Double longitude, User user) {
         this.name = name;
         this.latitude = latitude;

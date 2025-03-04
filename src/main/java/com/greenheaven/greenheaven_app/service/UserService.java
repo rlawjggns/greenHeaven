@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -35,7 +36,7 @@ public class UserService {
         userRepository.save(user); // 유저 저장하기
 
         Subscription subscription = new Subscription( // 유저를 위한 구독 생성하기
-                LocalDate.of(9999,9,9),
+                LocalDateTime.of(9999,9,9,23,59),
                 user
         );
         subscriptionRepository.save(subscription); // 구독 저장하기

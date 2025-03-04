@@ -1,6 +1,8 @@
 package com.greenheaven.greenheaven_app.domain.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.proxy.HibernateProxy;
@@ -11,7 +13,7 @@ import java.util.UUID;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Task {
 
     @Id
@@ -39,9 +41,10 @@ public class Task {
     @JoinColumn(name = "user_id", nullable = false)
     private User user; // 유저
 
-
-    public Task(String name, LocalDateTime endDate, ProductionPlan productionPlan, User user) {
+    @Builder
+    public Task(String name, String description, LocalDateTime endDate, ProductionPlan productionPlan, User user) {
         this.name = name;
+        this.description = description;
         this.endDate = endDate;
         this.productionPlan = productionPlan;
         this.user = user;
