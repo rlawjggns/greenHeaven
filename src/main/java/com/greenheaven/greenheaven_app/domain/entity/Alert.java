@@ -24,7 +24,7 @@ public class Alert {
     @Column(name = "content", nullable = false)
     private String content; // 경고 내용
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     @Column(name = "severity", nullable = false)
     private AlertSeverity severity; // 경고 심각도
 

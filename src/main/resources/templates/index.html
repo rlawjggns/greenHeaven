@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="ko" class="scroll-smooth" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/head :: head(title='홈 화면')"></head>
+<head th:replace="~{fragments/head :: head(title='홈')}"></head>
 <body>
     <!-- 헤더 포함 -->
-    <div th:replace="fragments/header :: header"></div>
+    <div th:replace="~{fragments/header :: header}"></div>
 
     <main class="flex flex-col items-start justify-center h-screen text-center relative z-10 pl-14 text-white">
         <div class="flex flex-col items-start mb-10">
@@ -17,6 +17,6 @@
     </main>
 
     <!-- 푸터 포함 -->
-    <div th:replace="fragments/footer :: footer"></div>
+    <div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>

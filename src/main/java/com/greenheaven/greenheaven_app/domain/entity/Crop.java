@@ -23,7 +23,7 @@ public class Crop {
     @Column(name = "name", nullable = false)
     private String name; // 작물 이름
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
     private CropType type; // 작물 종류
 

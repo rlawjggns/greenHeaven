@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.proxy.HibernateProxy;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
 import java.util.Objects;
@@ -13,13 +14,14 @@ import java.util.UUID;
 @Entity
 @Getter
 @NoArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 public class Subscription {
 
     @Id
     @Column(name = "id")
     private UUID id = UUID.randomUUID(); // 구독 아이디
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     @Column(name = "plan", nullable = false)
     private SubPlan plan = SubPlan.FREE; // 구독 플랜
 
@@ -31,7 +33,7 @@ public class Subscription {
     private LocalDate endDate; // 구독 종료일
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     private User user; // 유저
 
     public Subscription(LocalDate endDate, User user) {

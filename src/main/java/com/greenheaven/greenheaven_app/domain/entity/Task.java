@@ -27,7 +27,7 @@ public class Task {
     @Column(name = "end_date", nullable = false)
     private LocalDateTime endDate; // 작업 마감일
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private TaskStatus status = TaskStatus.PENDING; // 작업 상태
 

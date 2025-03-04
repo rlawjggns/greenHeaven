@@ -25,7 +25,7 @@ public class Payment {
     @Column(name = "date")
     private LocalDateTime date; // 결제 날짜
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private PayStatus status = PayStatus.PENDING; // 결제 상태
 

@@ -24,7 +24,7 @@ public class Notification {
     @Column(name = "content", nullable = false)
     private String content; // 알림 내용
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
     private NotificationType type; // 알림 유형
     

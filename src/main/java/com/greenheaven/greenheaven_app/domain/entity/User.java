@@ -41,9 +41,9 @@ public class User {
     @Column(name = "update_date")
     private LocalDate updateDate; // 사용자 수정일
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     @Column(name = "role")
-    private UserRole role; // 사용자 권한
+    private UserRole role = UserRole.USER; // 사용자 권한
     
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Crop> crops = new ArrayList<>(); // 작물들
@@ -54,8 +54,7 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Soil> soils = new ArrayList<>(); // 토양분석들
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "subscription_id")
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Subscription subscription; // 구독
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
