@@ -28,7 +28,7 @@ public class Soil {
     private String ph; // 토양분석 산도
 
     @Column(name = "nutrients")
-    private String nutrients; // 토양분석 영양소
+    private String nutrients = ""; // 토양분석 영양소
 
     @CreatedDate
     @Column(name = "date", updatable = false)

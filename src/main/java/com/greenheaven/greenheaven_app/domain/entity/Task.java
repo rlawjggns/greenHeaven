@@ -24,7 +24,7 @@ public class Task {
     private String name; // 작업 이름
 
     @Column(name = "description")
-    private String description; // 작업 설명
+    private String description = ""; // 작업 설명
 
     @Column(name = "end_date", nullable = false)
     private LocalDateTime endDate; // 작업 마감일

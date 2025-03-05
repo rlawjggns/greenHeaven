@@ -25,7 +25,7 @@ public class ProductionPlan {
     private String name; // 생산계획 이름
 
     @Column(name = "description")
-    private String description; // 생산계획 설명
+    private String description = ""; // 생산계획 설명
 
     @Column(name = "start_date", nullable = false)
     private LocalDateTime startDate; // 생산계획 시작일
