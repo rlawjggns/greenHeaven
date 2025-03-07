@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ko" class="scroll-smooth" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(title='회원가입')}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+<!-- 전체 컨테이너 -->
+<div class="container mx-auto px-4">
+
+    <!-- 헤더 포함 -->
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <!-- 회원가입 화면 시작 -->
+    <main class="flex items-center justify-center min-h-screen my-60">
+        <section class="bg-white p-8 rounded shadow-lg max-w-md w-full">
+            <form method="post" th:action="@{/user/profile}" th:object="${userProfileDto}">
+                <h2 class="flex justify-center text-2xl font-bold mb-6 text-gray-900">정보 수정</h2>
+
+                <!-- 기존 비밀번호 입력 필드 -->
+                <div class="mb-4">
+                    <label for="old_password" class="block text-gray-700 text-sm font-bold mb-2" th:field="*{oldPassword}">
+                        기본 비밀번호 입력
+                        <span th:if="${oldPasswordError}" th:text="${oldPasswordError}" class="text-red-500 ml-4 text-sm"></span>
+                        <span th:if="${pwdEqualError}" th:text="${pwdEqualError}" class="text-red-500 ml-4 text-sm"></span>
+                    </label>
+                    <input id="old_password" type="password" th:field="*{oldPassword}" placeholder="최소 8글자 이상을 입력해주세요"
+                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+
+                <!-- 새로운 비밀번호 입력 필드 -->
+                <div class="mb-4">
+                    <label for="new_password" class="block text-gray-700 text-sm font-bold mb-2" th:field="*{newPassword}">
+                        비밀번호를 변경하는 경우 입력하세요
+                        <span th:if="${newPasswordError}" th:text="${newPasswordError}" class="text-red-500 ml-4 text-sm"></span>
+                    </label>
+                    <input id="new_password" type="password" th:field="*{newPassword}" placeholder="최소 8글자 이상을 입력해주세요"
+                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+
+                <!-- 새로운 비밀번호 확인 필드 -->
+                <div class="mb-4">
+                    <label for="confirm_new_password" class="block text-gray-700 text-sm font-bold mb-2" th:field="*{confirmNewPassword}">
+                        비밀번호 확인
+                        <span th:if="${newPwdBlankError}" th:text="${newPwdBlankError}" class="text-red-500 ml-4 text-sm"></span>
+                        <span th:if="${newPwdEqualError}" th:text="${newPwdEqualError}" class="text-red-500 ml-4 text-sm"></span>
+                    </label>
+                    <input id="confirm_new_password" type="password" th:field="*{confirmNewPassword}" placeholder="최소 8글자 이상을 입력해주세요"
+                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+
+                <!-- 이름 입력 필드 -->
+                <div class="mb-6">
+                    <label for="name" class="block text-gray-700 text-sm font-bold mb-2" th:field="*{name}" th:value="${userProfileDto.name}">
+                        이름
+                        <span th:if="${nameError}" th:text="${nameError}" class="text-red-500 ml-4 text-sm"></span>
+                    </label>
+                    <input id="name" type="text" th:field="*{name}" placeholder="이름"
+                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+
+                <!-- 확인 버튼 -->
+                <div class="flex justify-center">
+                    <button type="submit" class="bg-green-600 hover:bg-green-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                        확인
+                    </button>
+                </div>
+
+                <!-- 회원 탈퇴 링크 -->
+                <div class="flex justify-end">
+                    <a th:href="@{/user/quit}" class="text-red-500 font-bold my-4 hover:text-red-600">회원탈퇴</a>
+                </div>
+            </form>
+        </section>
+    </main>
+    <!-- 회원가입 화면 끝 -->
+
+    <!-- 푸터 포함 -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+</div>
+</body>
+</html>

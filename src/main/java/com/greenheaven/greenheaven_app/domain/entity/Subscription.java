@@ -35,14 +35,9 @@ public class Subscription {
     @Column(name = "end_date", nullable = false)
     private LocalDateTime endDate; // 구독 종료일
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user; // 유저
-
     @Builder
-    public Subscription(LocalDateTime endDate, User user) {
+    public Subscription(LocalDateTime endDate) {
         this.endDate = endDate;
-        this.user = user;
     }
 
     @Override

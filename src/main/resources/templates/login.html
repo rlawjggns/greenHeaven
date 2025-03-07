@@ -2,62 +2,73 @@
 <html lang="ko" class="scroll-smooth" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/head :: head(title='로그인')}"></head>
 <body>
-    <!-- 헤더 포함 -->
-    <div th:replace="~{fragments/header :: header}"></div>
+<!-- 헤더 포함 -->
+<div th:replace="~{fragments/header :: header}"></div>
 
-    <!-- 로그인 화면 시작 -->
-    <div class="flex items-center justify-center min-h-screen my-32">
-        <div class="bg-white p-8 rounded shadow-lg max-w-md w-full">
-            <h2 class="text-2xl font-bold mb-6 text-gray-900">로그인</h2>
-            <div th:if="${param.logout}" class="inline-block">
-                <p class="text-green-700 font-bold my-4 bg-green-100 border-green-700 border rounded p-3">로그아웃이 완료되었습니다.</p>
+<!-- 로그인 화면 시작 -->
+<div class="flex items-center justify-center min-h-screen my-32">
+    <div class="bg-white p-8 rounded shadow-lg max-w-md w-full">
+        <h2 class="text-2xl font-bold mb-6 text-gray-900">로그인</h2>
+
+        <!-- 메시지 알림 -->
+        <div class="mb-4">
+            <div th:if="${param.logout}" class="p-3 text-green-700 font-bold bg-green-100 border-green-700 border rounded">
+                로그아웃이 완료되었습니다.
             </div>
-            <div th:if="${param.signup}" class="inline-block">
-                <p class="text-green-700 font-bold my-4 bg-green-100 border-green-700 border rounded p-3">회원가입이 완료되었습니다.</p>
+            <div th:if="${param.signup}" class="p-3 text-green-700 font-bold bg-green-100 border-green-700 border rounded">
+                회원가입이 완료되었습니다.
             </div>
-            <form th:action="@{/user/loginProcess}" method="post">
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="email">
-                        아이디
-                    </label>
-                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="email" type="text" name="username" placeholder="이메일">
-                </div>
-                <div class="mb-6">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
-                        비밀번호
-                    </label>
-                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="password" type="password" name="password" placeholder="비밀번호">
-                </div>
-                <div class="flex items-center justify-between mb-4">
-                    <label class="inline-flex items-center">
-                        <input type="checkbox" class="form-checkbox text-gray-600">
-                        <span class="ml-2 text-gray-700">로그인 상태 유지</span>
-                    </label>
-                </div>
-                <div th:if="${param.error}">
-                    <p class="text-red-500 font-bold my-4">이메일 또는 비밀번호가 올바르지 않습니다.</p>
-                </div>
-                <div class="flex items-center justify-between">
-                    <button class="bg-green-600 hover:bg-green-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
-                        로그인
-                    </button>
-                </div>
-                <div class="text-center mt-4">
-                    <a class="inline-block align-baseline font-bold text-sm text-green-600 hover:text-green-800" th:href="@{/user/signup}">
-                        회원가입
-                    </a>
-                    <span class="mx-2 text-gray-600">|</span>
-                    <a class="inline-block align-baseline font-bold text-sm text-green-600 hover:text-green-800" href="#">
-                        아이디 · 비밀번호 찾기
-                    </a>
-                </div>
-            </form>
+            <div th:if="${param.findpwd}" class="p-3 text-green-700 font-bold bg-green-100 border-green-700 border rounded">
+                임시 비밀번호를 이메일로 전송했습니다.
+            </div>
         </div>
+
+        <!-- 로그인 폼 -->
+        <form th:action="@{/user/loginProcess}" method="post">
+            <!-- 아이디 입력 필드 -->
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="email">아이디</label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="email" type="text" name="username" placeholder="이메일" required>
+            </div>
+
+            <!-- 비밀번호 입력 필드 -->
+            <div class="mb-6">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="password">비밀번호</label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="password" type="password" name="password" placeholder="비밀번호" required>
+            </div>
+
+            <!-- 로그인 상태 유지 체크박스 -->
+            <div class="flex items-center justify-between mb-4">
+                <label class="inline-flex items-center">
+                    <input type="checkbox" class="form-checkbox text-gray-600" name="remember-me">
+                    <span class="ml-2 text-gray-700">로그인 상태 유지</span>
+                </label>
+            </div>
+
+            <!-- 로그인 오류 메시지 -->
+            <div th:if="${param.error}" class="text-red-500 font-bold my-4">
+                이메일 또는 비밀번호가 올바르지 않습니다.
+            </div>
+
+            <!-- 로그인 버튼 -->
+            <div class="flex items-center justify-between">
+                <button class="bg-green-600 hover:bg-green-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+                    로그인
+                </button>
+            </div>
+
+            <!-- 회원가입, 비밀번호 찾기 링크 -->
+            <div class="text-center mt-4">
+                <a class="inline-block align-baseline font-bold text-sm text-green-600 hover:text-green-800" th:href="@{/user/signup}">회원가입</a>
+                <span class="mx-2 text-gray-600">|</span>
+                <a class="inline-block align-baseline font-bold text-sm text-green-600 hover:text-green-800" th:href="@{/user/password/reset}">비밀번호 찾기</a>
+            </div>
+        </form>
     </div>
-    <!-- 로그인 화면 끝 -->
+</div>
+<!-- 로그인 화면 끝 -->
 
-
-    <!-- 푸터 포함 -->
-    <div th:replace="~{fragments/footer :: footer}"></div>
+<!-- 푸터 포함 -->
+<div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>

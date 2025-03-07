@@ -8,6 +8,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -25,7 +26,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable()) // CSRF 보호 비활성화(개발 중)
                 .authorizeHttpRequests(auth -> auth // HTTP 요청에 대한 접근 제어 설정
-                        .requestMatchers("/", "/user/login", "/user/signup", "/error","/css/**", "/js/**", "/images/**").permitAll() // 괄호 안의 URL 패턴(홈, 로그인, 회원가입, 에러 페이지, 정적 리소스 경로 등)은 인증 없이 접근 가능하게 허용
+                        .requestMatchers("/", "/user/login", "/user/signup", "/user/password/reset", "/user/password/reset/confirm","/error","/css/**", "/js/**", "/images/**").permitAll() // 괄호 안의 URL 패턴(홈, 로그인, 회원가입, 에러 페이지, 정적 리소스 경로 등)은 인증 없이 접근 가능하게 허용
                         .anyRequest().authenticated() // 위의 패턴에 해당하지 않는 모든 요청은 인증을 받아야 접근 할 수 있도록 설정
                 )
                 .formLogin(login -> login // 폼 기반 로그인 설정
@@ -41,6 +42,11 @@ public class SecurityConfig {
                         .invalidateHttpSession(true) // 로그아웃 시 세션 무효화
                         .deleteCookies("JSESSIONID") // 인증에 사용된 쿠키(JSESSIONID)를 삭제하여 남은 인증정보 제거
                         .permitAll() // 로그아웃 URL 접근에 대해서는 인증 없이 접근 허용
+                )
+                .rememberMe(rememberMe -> rememberMe
+                        .key("mySecretKey") // 쿠키 암호화 키
+                        .tokenValiditySeconds(60 * 60 * 24) // 1일 유지
+                        .userDetailsService(customUserDetailsService) // 반드시 UserDetailService 필요
                 );
         return http.build(); // 위의 설정을 기반으로 SecurityFilterChian 객체를 빌드하여 리턴
     }

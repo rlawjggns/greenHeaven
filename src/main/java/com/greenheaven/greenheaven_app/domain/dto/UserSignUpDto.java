@@ -15,7 +15,7 @@ public class UserSignUpDto {
     private String email;
 
     @NotBlank(message = "비밀번호를 입력해주세요.")
-    @Size(min = 8, max = 20, message = "8자 이상 20자 이하여야 합니다.")
+    @Size(min = 8, max = 20, message = "최소 8글자 이상, 최대 20자 이하")
     private String password;
 
     @NotBlank(message = "비밀번호 확인을 입력해주세요.")

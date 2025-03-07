@@ -1,5 +1,6 @@
 package com.greenheaven.greenheaven_app.domain.entity;
 
+import com.greenheaven.greenheaven_app.domain.dto.UserProfileDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -56,7 +57,8 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Soil> soils = new ArrayList<>(); // 토양분석들
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "subscription_id")
     private Subscription subscription; // 구독
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
@@ -75,10 +77,11 @@ public class User {
     private List<Location> locations = new ArrayList<>(); // 위치들
 
     @Builder
-    public User(String name, String password, String email) {
+    public User(String name, String password, String email, Subscription subscription) {
         this.name = name;
         this.password = password;
         this.email = email;
+        this.subscription = subscription;
     }
 
     public void connectSubscription(Subscription subscription) {
@@ -99,5 +102,13 @@ public class User {
     @Override
     public final int hashCode() {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
+    }
+
+    public void updateName(String name) {
+        this.name = name;
+    }
+
+    public void updatePassword(String password) {
+        this.password = password;
     }
 }

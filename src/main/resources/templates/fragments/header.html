@@ -1,31 +1,39 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-    <header th:fragment="header">
-            <div class="flex justify-between items-center pt-4 z-50 fixed top-0 left-0 w-full">
-                <div class="flex items-center ml-10">
-                    <a th:href="@{/}" href="index.html"><img src="/images/logo.png" alt="Logo" class="h-32 mr-5"></a>
-                </div>
-                <nav class="flex items-center justify-between w-full mr-10">
-                    <ul class="flex space-x-5 ml-auto">
-                        <li><a href="#" class="text-gray-300 hover:text-gray-400 transition duration-500">기능소개</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-gray-400 transition duration-500">작물관리</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-gray-400 transition duration-500">토양분석</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-gray-400 transition duration-500">기상정보</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-gray-400 transition duration-500">생산계획</a></li>
+<header th:fragment="header">
+    <div class="flex justify-between items-center pt-4 z-50 fixed top-0 left-0 w-full">
+        <!-- 로고 영역 -->
+        <div class="flex items-center ml-10">
+            <a th:href="@{/}" href="index.html">
+                <img src="/images/logo.png" alt="Logo" class="h-32 mr-5">
+            </a>
+        </div>
 
-                        <!-- 로그인 여부에 따른 조건부 렌더링 -->
-                        <li th:if="${not #authorization.expression('isAuthenticated()')}">
-                            <a th:href="@{/user/login}" href="login.html" class="text-gray-300 hover:text-gray-400 transition duration-500">로그인</a>
-                        </li>
-                        <li th:if="${#authorization.expression('isAuthenticated()')}">
-                            <a th:href="@{/user/profile}" href="profile.html" class="text-gray-300 hover:text-gray-400 transition duration-500">프로필</a>
-                        </li>
-                        <li th:if="${#authorization.expression('isAuthenticated()')}">
-                            <a th:href="@{/user/logout}" href="logout.html" class="text-gray-300 hover:text-gray-400 transition duration-500">로그아웃</a>
-                        </li>
-                        <li><a href="#" class="text-gray-300 hover:text-gray-400 transition duration-500">멤버쉽결제</a></li>
-                    </ul>
-                </nav>
-            </div>
-    </header>
+        <!-- 네비게이션 메뉴 -->
+        <nav class="flex items-center justify-between w-full mr-10">
+            <ul class="flex space-x-5 ml-auto">
+                <!-- 일반 메뉴 항목들 -->
+                <li><a href="#" class="text-gray-300 hover:text-gray-400 transition duration-500">기능소개</a></li>
+                <li><a href="#" class="text-gray-300 hover:text-gray-400 transition duration-500">작물관리</a></li>
+                <li><a href="#" class="text-gray-300 hover:text-gray-400 transition duration-500">토양분석</a></li>
+                <li><a href="#" class="text-gray-300 hover:text-gray-400 transition duration-500">기상정보</a></li>
+                <li><a href="#" class="text-gray-300 hover:text-gray-400 transition duration-500">생산계획</a></li>
+
+                <!-- 로그인 여부에 따른 메뉴 항목들 -->
+                <li th:if="${not #authorization.expression('isAuthenticated()')}">
+                    <a th:href="@{/user/login}" href="login.html" class="text-gray-300 hover:text-gray-400 transition duration-500">로그인</a>
+                </li>
+                <li th:if="${#authorization.expression('isAuthenticated()')}">
+                    <a th:href="@{/user/profile}" href="profile.html" class="text-gray-300 hover:text-gray-400 transition duration-500">프로필</a>
+                </li>
+                <li th:if="${#authorization.expression('isAuthenticated()')}">
+                    <a th:href="@{/user/logout}" href="logout.html" class="text-gray-300 hover:text-gray-400 transition duration-500">로그아웃</a>
+                </li>
+
+                <!-- 추가 메뉴 항목 -->
+                <li><a href="#" class="text-gray-300 hover:text-gray-400 transition duration-500">멤버쉽결제</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
 </html>
