@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko" class="scroll-smooth" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head :: head(title='회원가입')}">
+<head th:replace="~{fragments/head :: head(title='프로필')}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
@@ -23,7 +23,6 @@
                     <label for="old_password" class="block text-gray-700 text-sm font-bold mb-2" th:field="*{oldPassword}">
                         기본 비밀번호 입력
                         <span th:if="${oldPasswordError}" th:text="${oldPasswordError}" class="text-red-500 ml-4 text-sm"></span>
-                        <span th:if="${pwdEqualError}" th:text="${pwdEqualError}" class="text-red-500 ml-4 text-sm"></span>
                     </label>
                     <input id="old_password" type="password" th:field="*{oldPassword}" placeholder="최소 8글자 이상을 입력해주세요"
                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
@@ -43,8 +42,7 @@
                 <div class="mb-4">
                     <label for="confirm_new_password" class="block text-gray-700 text-sm font-bold mb-2" th:field="*{confirmNewPassword}">
                         비밀번호 확인
-                        <span th:if="${newPwdBlankError}" th:text="${newPwdBlankError}" class="text-red-500 ml-4 text-sm"></span>
-                        <span th:if="${newPwdEqualError}" th:text="${newPwdEqualError}" class="text-red-500 ml-4 text-sm"></span>
+                        <span th:if="${confirmNewPasswordError}" th:text="${confirmNewPasswordError}" class="text-red-500 ml-4 text-sm"></span>
                     </label>
                     <input id="confirm_new_password" type="password" th:field="*{confirmNewPassword}" placeholder="최소 8글자 이상을 입력해주세요"
                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">

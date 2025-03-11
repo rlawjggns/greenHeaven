@@ -16,7 +16,6 @@
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="email">
                     이메일
                     <span th:if="${emailError}" th:text="${emailError}" class="text-red-500 ml-4 text-sm"></span>
-                    <span th:if="${checkEmailError}" th:text="${checkEmailError}" class="text-red-500 ml-4 text-sm"></span>
                 </label>
                 <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="email" type="email" th:field="*{email}" placeholder="이메일">
             </div>
@@ -34,7 +33,7 @@
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="confirm_password">
                     비밀번호 확인
-                    <span th:if="${pwdEqualError}" th:text="${pwdEqualError}" class="text-red-500 ml-4 text-sm"></span>
+                    <span th:if="${confirmPasswordError}" th:text="${confirmPasswordError}" class="text-red-500 ml-4 text-sm"></span>
                 </label>
                 <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="confirm_password" type="password" th:field="*{confirmPassword}" placeholder="비밀번호 확인">
             </div>
