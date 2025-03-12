@@ -43,7 +43,7 @@ public class UserController {
     @GetMapping("/signup")
     public String getSignUp(Model model) {
         // 모델에 회원가입 폼을 담을 DTO를 추가한 뒤, 회원가입 페이지로 이동
-        model.addAttribute("userSignUpDto", new UserSignUpDto());
+        model.addAttribute("userSignUpDto", UserSignUpDto.builder().build());
         return "signup";
     }
 
