@@ -5,17 +5,11 @@ import com.greenheaven.greenheaven_app.domain.dto.UserProfileDto;
 import com.greenheaven.greenheaven_app.domain.dto.UserSignUpDto;
 import com.greenheaven.greenheaven_app.exception.*;
 import com.greenheaven.greenheaven_app.service.UserService;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -160,13 +154,8 @@ public class UserController {
      */
     @GetMapping("/profile")
     public String getProfile(Model model) {
-        // 현재 인증된 사용자의 인증 정보 가져오기
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String email = userDetails.getUsername();
-
         // 유저 프로필 조회 로직 수행 후, 수행 결과를 담은 DTO를 모델에 추가한다
-        UserProfileDto userProfileDto = userService.getUserProfile(email);
+        UserProfileDto userProfileDto = userService.getProfile();
         model.addAttribute("userProfileDto", userProfileDto);
 
         // 프로필 페이지로 이동
@@ -183,11 +172,6 @@ public class UserController {
     @PostMapping("/profile")
     public String postFindPwdResult(@ModelAttribute("userProfileDto") @Validated UserProfileDto request,
                                     BindingResult bindingResult, Model model) {
-        // 현재 인증된 사용자의 인증 정보 가져오기
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String email = userDetails.getUsername();
-
         // 사용자 입력 검증 중 오류 발생 시, 각 필드에 해당하는 에러 메시지를 모델에 추가 한 뒤 기존 페이지로 돌아간다
         if (bindingResult.hasErrors()) {
             bindingResult.getFieldErrors().forEach(error -> {
@@ -198,7 +182,7 @@ public class UserController {
 
         // 프로필 업데이트 로직 수행, 각 필드에 대한 추가 검증 중 예외 발생 시 메시지를 모델에 추가 한 뒤 기존 페이지로 돌아간다
         try {
-            userService.updateProfile(request, email);
+            userService.updateProfile(request);
         } catch (OldPasswordMismatchException ex) {
             model.addAttribute("oldPasswordError", ex.getMessage());
             return "profile";
@@ -233,22 +217,8 @@ public class UserController {
      */
     @PostMapping("/quit")
     public String postQuit(HttpServletRequest request, HttpServletResponse response) {
-        // 현재 인증된 사용자의 인증 정보 가져오기
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String email = userDetails.getUsername();
-
         // 유저 탈퇴 처리
-        userService.quit(email);
-
-        // 세션 무효화 및 로그아웃 처리
-        new SecurityContextLogoutHandler().logout(request, response, authentication);
-
-        // JSESSIONID 쿠키 삭제
-        Cookie cookie = new Cookie("JSESSIONID", null);
-        cookie.setMaxAge(0); // 즉시 만료
-        cookie.setPath("/"); // 애플리케이션 전체에 적용된 쿠키 삭제
-        response.addCookie(cookie);
+        userService.quit(request, response);
 
         // 메인 페이지로 리다이렉트
         return "redirect:/";

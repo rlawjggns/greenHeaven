@@ -9,11 +9,18 @@ import com.greenheaven.greenheaven_app.repository.SubscriptionRepository;
 import com.greenheaven.greenheaven_app.repository.UserRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -144,11 +151,13 @@ public class UserService {
 
     /**
      * 프로필 조회 서비스 로직
-     * @param email 프로필 정보를 조회할 유저의 이메일
      * @return 이메일을 통해 찾은 유저의 프로필 정보를 DTO에 담아 반환
      * @throws NoSuchElementException 이메일로 유저를 찾지 못할 경우 예외 발생
      */
-    public UserProfileDto getUserProfile(String email) {
+    public UserProfileDto getProfile() {
+        // 현재 인증된 사용자의 인증 정보 가져오기
+        String email = getAuthenticatedUserEmail();
+
         // 이메일로 유저 찾기
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new NoSuchElementException("해당 유저를 찾을 수 없습니다."));
@@ -162,10 +171,12 @@ public class UserService {
     /**
      * 프로필 수정 서비스 로직
      * @param request 유저의 프로필 정보를 담은 DTO
-     * @param email 프로필을 수정할 유저의 이메일
      * @throws NoSuchElementException 이메일로 유저를 찾지 못할 경우 예외 발생
      */
-    public void updateProfile(UserProfileDto request, String email) {
+    public void updateProfile(UserProfileDto request) {
+        // 현재 인증된 사용자의 인증 정보 가져오기
+        String email = getAuthenticatedUserEmail();
+
         // 프로필 수정필드 검증 메서드
         validateProfileUpdate(request, email);
 
@@ -191,6 +202,7 @@ public class UserService {
      * @throws  IllegalArgumentException 필드 검증 중 오류 발생시 예외 발생
      */
     private void validateProfileUpdate(UserProfileDto request, String email) {
+        // 이메일로 유저의 비밀번호 찾기
         String storedPassword = findPassword(email);
 
         // 비밀번호와 일치하지 않을 시 예외 처리
@@ -217,15 +229,56 @@ public class UserService {
 
     /**
      * 회원탈퇴 서비스 로직
-     * @param email 탈퇴할 유저의 이메일
      * @throws NoSuchElementException 이메일로 유저를 찾지 못할 경우 예외 발생
      */
-    public void quit(String email) {
+    public void quit(HttpServletRequest request, HttpServletResponse response) {
+        // 현재 인증된 사용자의 인증 정보 가져오기
+        String email = getAuthenticatedUserEmail();
+
         // 이메일로 유저 찾기
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new NoSuchElementException("해당 유저를 찾을 수 없습니다."));
 
         // 찾은 유저 삭제
         userRepository.delete(user);
+
+        // 세션 무효화 및 로그아웃 처리
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        new SecurityContextLogoutHandler().logout(request, response, authentication);
+
+        // JSESSIONID 쿠키 삭제
+        Cookie cookie = new Cookie("JSESSIONID", null);
+        cookie.setMaxAge(0); // 즉시 만료
+        cookie.setPath("/"); // 애플리케이션 전체에 적용된 쿠키 삭제
+        response.addCookie(cookie);
+    }
+
+    /**
+     * 회원탈퇴 서비스 로직(테스트용으로 사용할 오버로딩 메서드)
+     * @throws NoSuchElementException 이메일로 유저를 찾지 못할 경우 예외 발생
+     */
+    public void quit() {
+        // 현재 인증된 사용자의 인증 정보 가져오기
+        String email = getAuthenticatedUserEmail();
+
+        // 이메일로 유저 찾기
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new NoSuchElementException("해당 유저를 찾을 수 없습니다."));
+
+        // 찾은 유저 삭제
+        userRepository.delete(user);
+
+        // SecurityContext 초기화
+        SecurityContextHolder.clearContext();
+    }
+
+    /**
+     * 인증된 유저의 이메일을 가져오는 메서드
+     * @return 유저의 이메일
+     */
+    private static String getAuthenticatedUserEmail() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        return userDetails.getUsername();
     }
 }
