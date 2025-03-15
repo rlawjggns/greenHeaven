@@ -36,9 +36,6 @@ public class Crop {
     private LocalDate harvestDate; // 작물 수확일
 
     @OneToMany(mappedBy = "crop", cascade = CascadeType.ALL)
-    private List<Alert> alerts = new ArrayList<>(); // 경고들 
-
-    @OneToMany(mappedBy = "crop", cascade = CascadeType.ALL)
     private List<Soil> soils = new ArrayList<>(); // 토양분석들
 
     @ManyToOne

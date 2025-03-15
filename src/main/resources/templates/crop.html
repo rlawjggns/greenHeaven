@@ -15,31 +15,32 @@
         <!-- 왼쪽 사이드바: 3개 카드 높이 맞추기 -->
         <aside class="w-1/4 flex flex-col space-y-6">
             <!-- 1. 새로운 작물 등록 카드 -->
-            <a th:href="@{/crop/registration}" class="relative group p-6 rounded shadow-lg h-48 border-2 border-white overflow-hidden transform transition duration-500 ease-in-out hover:scale-105 hover:shadow-2xl">
-                <img src="/images/tomato.jpg" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-110" alt="작물 현황">
+            <a th:href="@{/crop/registration}" class="relative group p-6 rounded shadow-lg h-48 border-2 border-gray-500 overflow-hidden transform transition duration-500 ease-in-out hover:scale-105 hover:shadow-2xl">
+                <img src="/images/hands.jpg" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-110" alt="작물 등록">
                 <h2 class="absolute bottom-4 right-4 z-10 font-bold text-3xl text-white">새로운 작물 등록</h2>
             </a>
 
-            <!-- 2. 최근 생장 기록 카드 -->
-            <div class="relative group p-6 rounded shadow-lg h-48 border-2 border-white overflow-hidden transform transition duration-500 ease-in-out hover:scale-105 hover:shadow-2xl">
-                <img src="/images/farm.jpg" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-110" alt="생장 기록">
-                <h2 class="absolute bottom-4 right-4 z-10 font-bold text-3xl text-white">생장상태 현황</h2>
-            </div>
+            <!-- 2. 수확 이력 카드 -->
+            <a th:href="@{/crop/history}" class="relative group p-6 rounded shadow-lg h-48 border-2 border-gray-500 overflow-hidden transform transition duration-500 ease-in-out hover:scale-105 hover:shadow-2xl">
+                <img src="/images/field.jpg" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-110" alt="수확 이력">
+                <h2 class="absolute bottom-4 right-4 z-10 font-bold text-3xl text-white">수확 이력</h2>
+            </a>
 
-            <!-- 3. 신규 생장상태 기록 카드 -->
-            <div class="relative group p-6 rounded shadow-lg h-48 border-2 border-white overflow-hidden transform transition duration-500 ease-in-out hover:scale-105 hover:shadow-2xl">
-                <img src="/images/soil.jpg" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-110" alt="알림">
-                <h2 class="absolute bottom-4 right-4 z-10 font-bold text-3xl text-white">신규 생장상태 입력</h2>
-            </div>
+            <!-- 3. 기상 정보 카드 -->
+            <a th:href="@{/weather}" class="relative group p-6 rounded shadow-lg h-48 border-2 border-gray-500 overflow-hidden transform transition duration-500 ease-in-out hover:scale-105 hover:shadow-2xl">
+                <img src="/images/farm.jpg" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-110" alt="기상 정보">
+                <h2 class="absolute bottom-4 right-4 z-10 font-bold text-3xl text-white">기상 정보</h2>
+            </a>
         </aside>
-
 
         <!-- 오른쪽 대시보드 영역 -->
         <main class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- 전체 작물 현황 카드 -->
+            <!-- 작물 현황 카드 -->
             <section class="relative bg-gray-800 p-6 rounded-xl shadow-lg">
-                <img src="/images/write.jpg" class="absolute inset-0 w-full h-full object-cover opacity-10 rounded-xl" alt="작물 현황">
-                <h2 class="text-xl font-bold mb-3 relative z-10">전체 작물 현황</h2>
+                <img src="/images/house.jpg" class="absolute inset-0 w-full h-full object-cover opacity-10 rounded-xl" alt="작물 현황">
+                <h2 class="text-xl font-bold mb-3 relative z-10">작물 현황
+                    <a href="/crops" class="text-sm text-white absolute top-0 right-2 bg-gray-800 py-1 px-2 rounded hover:bg-gray-700 hover:text-white">상세 >></a>
+                </h2>
                 <table class="w-full text-left border-collapse relative z-10">
                     <thead>
                     <tr>
@@ -58,8 +59,10 @@
 
             <!-- 알림 카드 -->
             <section class="relative bg-gray-800 p-6 rounded-xl shadow-lg">
-                <img src="/images/weather.jpg" class="absolute inset-0 w-full h-full object-cover opacity-10 rounded-xl" alt="알림">
-                <h2 class="text-xl font-bold mb-3 relative z-10">최근 알림</h2>
+                <img src="/images/write.jpg" class="absolute inset-0 w-full h-full object-cover opacity-10 rounded-xl" alt="알림">
+                <h2 class="text-xl font-bold mb-3 relative z-10">최근 알림
+                    <a href="/alarms" class="text-sm text-white absolute top-0 right-2 bg-gray-800 py-1 px-2 rounded hover:bg-gray-700 hover:text-white">상세 >></a>
+                </h2>
                 <div class="relative z-10 space-y-3 max-h-60 overflow-y-auto">
                     <div th:if="${#lists.isEmpty(notifications)}" class="text-gray-400 text-center py-4">
                         새 알림이 없습니다.

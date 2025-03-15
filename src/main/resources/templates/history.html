@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko" class="scroll-smooth" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(title='수확 이력')}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body class="bg-gray-900 text-white">
+<!-- 전체 컨테이너 -->
+<div class="container mx-auto px-4">
+    <!-- 헤더 포함 -->
+    <div th:replace="~{fragments/header :: header}" class="mb-16"></div> <!-- 상단 여백 추가 -->
+
+    <!-- 메인 컨텐츠 -->
+    <h2 class="text-2xl font-semibold text-white mb-6 mt-40">수확 이력</h2>
+
+    <!-- 수확 이력 테이블 -->
+    <div class="bg-white shadow-lg rounded-lg p-6">
+        <!-- 검색 바 -->
+        <div class="mb-6 flex items-center space-x-4">
+            <input type="text" class="p-3 w-1/2 bg-gray-100 text-gray-700 rounded-lg" placeholder="검색어를 입력하세요...">
+            <button class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">검색</button>
+        </div>
+
+        <table class="min-w-full table-auto">
+            <thead>
+            <tr class="bg-green-600 text-white">
+                <th class="py-3 px-6 text-left">작물명</th>
+                <th class="py-3 px-6 text-left">수확일</th>
+                <th class="py-3 px-6 text-left">수확량 (kg)</th>
+                <th class="py-3 px-6 text-left">비고</th>
+            </tr>
+            </thead>
+            <tbody class="text-gray-700">
+            <tr>
+                <td class="py-3 px-6">고추</td>
+                <td class="py-3 px-6">2025-03-15</td>
+                <td class="py-3 px-6">25</td>
+                <td class="py-3 px-6">좋은 품질</td>
+            </tr>
+            <tr>
+                <td class="py-3 px-6">감자</td>
+                <td class="py-3 px-6">2025-03-10</td>
+                <td class="py-3 px-6">50</td>
+                <td class="py-3 px-6">기타 수확물</td>
+            </tr>
+            <tr>
+                <td class="py-3 px-6">포도</td>
+                <td class="py-3 px-6">2025-03-05</td>
+                <td class="py-3 px-6">30</td>
+                <td class="py-3 px-6">수확 후 바로 판매</td>
+            </tr>
+            <tr>
+                <td class="py-3 px-6">멜론</td>
+                <td class="py-3 px-6">2025-02-28</td>
+                <td class="py-3 px-6">20</td>
+                <td class="py-3 px-6">꽤 좋은 품질</td>
+            </tr>
+            <tr>
+                <td class="py-3 px-6">배추</td>
+                <td class="py-3 px-6">2025-02-20</td>
+                <td class="py-3 px-6">40</td>
+                <td class="py-3 px-6">기타 수확물</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- 페이징 처리 (페이지 번호 버튼 추가) -->
+        <div class="mt-6 flex justify-center">
+            <button class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 mr-2">이전</button>
+
+            <!-- 페이지 번호 버튼들 -->
+            <button class="px-4 py-2 mx-1 bg-green-600 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500">1</button>
+            <button class="px-4 py-2 mx-1 bg-gray-300 text-black rounded-lg hover:bg-green-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-green-500">2</button>
+            <button class="px-4 py-2 mx-1 bg-gray-300 text-black rounded-lg hover:bg-green-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-green-500">3</button>
+            <button class="px-4 py-2 mx-1 bg-gray-300 text-black rounded-lg hover:bg-green-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-green-500">4</button>
+            <button class="px-4 py-2 mx-1 bg-gray-300 text-black rounded-lg hover:bg-green-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-green-500">5</button>
+
+            <button class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 ml-2">다음</button>
+        </div>
+    </div>
+
+    <!-- 푸터 포함 -->
+    <div class="py-32"></div> <!-- 푸터와의 간격 조정 -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</div>
+</body>
+</html>

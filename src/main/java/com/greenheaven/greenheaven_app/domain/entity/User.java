@@ -10,6 +10,7 @@ import org.hibernate.proxy.HibernateProxy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.scheduling.config.Task;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -52,9 +53,6 @@ public class User {
     private List<Crop> crops = new ArrayList<>(); // 작물들
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Alert> alerts = new ArrayList<>(); // 경고들
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Soil> soils = new ArrayList<>(); // 토양분석들
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -63,12 +61,6 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Payment> payments = new ArrayList<>(); // 결제들
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<ProductionPlan> productionPlans = new ArrayList<>(); // 생산계획들
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Task> tasks = new ArrayList<>(); // 작업들
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Notification> notifications = new ArrayList<>(); // 알림들
