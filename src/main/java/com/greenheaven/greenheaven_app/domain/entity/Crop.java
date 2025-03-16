@@ -35,9 +35,6 @@ public class Crop {
     @Column(name = "harvest_date")
     private LocalDate harvestDate; // 작물 수확일
 
-    @OneToMany(mappedBy = "crop", cascade = CascadeType.ALL)
-    private List<Soil> soils = new ArrayList<>(); // 토양분석들
-
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;

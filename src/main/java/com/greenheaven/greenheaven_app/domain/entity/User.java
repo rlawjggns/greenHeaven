@@ -52,9 +52,6 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Crop> crops = new ArrayList<>(); // 작물들
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Soil> soils = new ArrayList<>(); // 토양분석들
-
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "subscription_id")
     private Subscription subscription; // 구독
