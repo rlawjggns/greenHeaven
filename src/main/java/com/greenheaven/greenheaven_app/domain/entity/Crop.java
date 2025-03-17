@@ -32,8 +32,11 @@ public class Crop {
     @Column(name = "plant_date", nullable = false)
     private LocalDate plantDate; // 작물 파종일
 
-    @Column(name = "harvest_date")
+    @Column(name = "harvest_date", nullable = false)
     private LocalDate harvestDate; // 작물 수확일
+
+    @Column(name = "quantity", nullable = false)
+    private Integer quantity; // 작물 수량
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

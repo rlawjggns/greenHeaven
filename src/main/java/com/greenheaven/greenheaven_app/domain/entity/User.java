@@ -45,6 +45,12 @@ public class User {
     @Column(name = "update_date")
     private LocalDate updateDate; // 사용자 수정일
 
+    @Column(name = "latitude")
+    private Double latitude; // 위도
+
+    @Column(name = "longitude")
+    private Double longitude; // 경도
+
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
     private UserRole role = UserRole.USER; // 사용자 권한

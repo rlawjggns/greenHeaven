@@ -14,47 +14,16 @@
     <h2 class="text-2xl font-semibold text-white mb-20 mt-40 text-center">농업 관련 뉴스</h2>
 
     <!-- 뉴스 카드 리스트 -->
-    <div class="flex flex-col items-center space-y-32">
+    <div class="flex flex-col items-center space-y-32" th:each="news : ${newsList}">
         <!-- 뉴스 카드 -->
-        <div class="w-3/4 md:w-1/2 lg:w-2/5 relative bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transform transition duration-500 ease-in-out hover:scale-105">
+        <div class="w-3/4 md:w-1/2 lg:w-2/5 relative bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transform transition duration-500 ease-in-out hover:scale-105 mb-20">
             <img src="/images/tomato.jpg" alt="뉴스 이미지" class="w-full h-72 object-cover">
             <div class="p-6">
-                <h3 class="text-2xl font-semibold text-gray-800">뉴스 제목</h3>
-                <p class="text-gray-600 mt-4">최근 농업 기술의 발전이 매우 빠르게 진행되고 있습니다. 스마트 농업, 드론, 자동화 기술 등 다양한 혁신 기술들이 농업 분야를 변화시키고 있습니다...</p>
-                <a href="#" class="text-green-600 mt-4 inline-block hover:underline">자세히 보기</a>
+                <h3 class="text-2xl font-semibold text-gray-800" th:text="${news.getTitle()}"></h3>
+                <p class="text-gray-600 mt-4" th:text="${news.getDescription()}"></p>
+                <a th:href="${news.getLink()}" target="_blank" class="text-green-600 mt-4 inline-block hover:underline">자세히 보기</a>
             </div>
         </div>
-
-        <!-- 뉴스 카드 -->
-        <div class="w-3/4 md:w-1/2 lg:w-2/5 relative bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transform transition duration-500 ease-in-out hover:scale-105">
-            <img src="/images/tomato.jpg" alt="뉴스 이미지" class="w-full h-72 object-cover">
-            <div class="p-6">
-                <h3 class="text-2xl font-semibold text-gray-800">뉴스 제목</h3>
-                <p class="text-gray-600 mt-4">최근 농업 기술의 발전이 매우 빠르게 진행되고 있습니다. 스마트 농업, 드론, 자동화 기술 등 다양한 혁신 기술들이 농업 분야를 변화시키고 있습니다...</p>
-                <a href="#" class="text-green-600 mt-4 inline-block hover:underline">자세히 보기</a>
-            </div>
-        </div>
-
-        <!-- 뉴스 카드 -->
-        <div class="w-3/4 md:w-1/2 lg:w-2/5 relative bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transform transition duration-500 ease-in-out hover:scale-105">
-            <img src="/images/tomato.jpg" alt="뉴스 이미지" class="w-full h-72 object-cover">
-            <div class="p-6">
-                <h3 class="text-2xl font-semibold text-gray-800">뉴스 제목</h3>
-                <p class="text-gray-600 mt-4">최근 농업 기술의 발전이 매우 빠르게 진행되고 있습니다. 스마트 농업, 드론, 자동화 기술 등 다양한 혁신 기술들이 농업 분야를 변화시키고 있습니다...</p>
-                <a href="#" class="text-green-600 mt-4 inline-block hover:underline">자세히 보기</a>
-            </div>
-        </div>
-
-        <!-- 뉴스 카드 -->
-        <div class="w-3/4 md:w-1/2 lg:w-2/5 relative bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transform transition duration-500 ease-in-out hover:scale-105">
-            <img src="/images/tomato.jpg" alt="뉴스 이미지" class="w-full h-72 object-cover">
-            <div class="p-6">
-                <h3 class="text-2xl font-semibold text-gray-800">뉴스 제목</h3>
-                <p class="text-gray-600 mt-4">최근 농업 기술의 발전이 매우 빠르게 진행되고 있습니다. 스마트 농업, 드론, 자동화 기술 등 다양한 혁신 기술들이 농업 분야를 변화시키고 있습니다...</p>
-                <a href="#" class="text-green-600 mt-4 inline-block hover:underline">자세히 보기</a>
-            </div>
-        </div>
-
     </div>
 
     <!-- 푸터 포함 -->
