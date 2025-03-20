@@ -14,10 +14,10 @@
     <h2 class="text-2xl font-semibold text-white mb-20 mt-40 text-center">농업 관련 뉴스</h2>
 
     <!-- 뉴스 카드 리스트 -->
-    <div class="flex flex-col items-center space-y-32" th:each="news : ${newsList}">
+    <div class="flex flex-col items-center space-y-32" th:each="news, iterStat : ${newsList}">
         <!-- 뉴스 카드 -->
         <div class="w-3/4 md:w-1/2 lg:w-2/5 relative bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transform transition duration-500 ease-in-out hover:scale-105 mb-20">
-            <img src="/images/tomato.jpg" alt="뉴스 이미지" class="w-full h-72 object-cover">
+            <img th:src="'/images/news_' +${(iterStat.index % 4) + 1} + '.jpg'" alt="뉴스 이미지" class="w-full h-72 object-cover">
             <div class="p-6">
                 <h3 class="text-2xl font-semibold text-gray-800" th:text="${news.getTitle()}"></h3>
                 <p class="text-gray-600 mt-4" th:text="${news.getDescription()}"></p>
