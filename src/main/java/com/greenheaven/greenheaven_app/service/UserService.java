@@ -14,6 +14,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.core.Authentication;
@@ -24,7 +29,16 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Random;
@@ -38,6 +52,9 @@ public class UserService {
     private final SubscriptionRepository subscriptionRepository;
     private final PasswordEncoder passwordEncoder;
     private final JavaMailSender mailSender;
+
+    @Value("${kakao.key}")
+    private String kakaoKey;
 
     /**
      * 이메일 중복 확인 서비스 로직
@@ -64,6 +81,9 @@ public class UserService {
             throw new OldPasswordMismatchException("비밀번호가 일치하지 않습니다.");
         }
 
+        // 주소를 통해 x, y 값 얻어오기
+        ArrayList XandY = getKakaoApiFromAddress(request.getAddress());
+
         // 유저의 구독 개체 생성
         Subscription subscription = new Subscription(
                 LocalDateTime.of(9999,9,9,23,59)
@@ -71,15 +91,75 @@ public class UserService {
         subscriptionRepository.save(subscription);
 
         // 유저 생성
-        User user = new User(
-                request.getName(),
-                passwordEncoder.encode(request.getPassword()),
-                request.getEmail(),
-                subscription
-        );
+        User user = User.builder()
+                .name(request.getName())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .email(request.getEmail())
+                .subscription(subscription)
+                .address(request.getAddress())
+                .latitude((float) XandY.get(0))
+                .longitude((float) XandY.get(1))
+                .build();
 
         // 유저 저장
         userRepository.save(user);
+    }
+
+    /**
+     * 카카오 주소 -> x, y 좌표 API 호출
+     *
+     * @return
+     * @throws
+     */
+    public ArrayList getKakaoApiFromAddress(String address) {
+        String jsonString = null;
+
+        try {
+            address = URLEncoder.encode(address, "UTF-8");
+            String addr = "https://dapi.kakao.com/v2/local/search/address.json?page=1&size=10&query=" + address;
+            URL url = new URL(addr);
+            URLConnection conn = url.openConnection();
+            conn.setRequestProperty("Authorization", "KakaoAK " + kakaoKey);
+            BufferedReader json = null;
+            json = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+            StringBuffer docJson = new StringBuffer();
+            String line;
+            while ((line = json.readLine()) != null) {
+                docJson.append(line);
+            }
+            jsonString = docJson.toString();
+            json.close();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return changeToJSON(jsonString);
+    }
+
+    /**
+     * JSON 변환 로직
+     * @return
+     * @throws
+     */
+    public ArrayList changeToJSON(String jsonString) {
+        ArrayList<Float> array = new ArrayList<>();
+        JSONParser parser = new JSONParser();
+        JSONObject document = null;
+        try {
+            document = (JSONObject)parser.parse(jsonString);
+        } catch (ParseException e) {
+            throw new RuntimeException("JSON 파싱 중 오류가 발생했습니다.");
+        }
+        JSONArray jsonArray = (JSONArray) document.get("documents");
+        JSONObject position = (JSONObject)jsonArray.get(0);
+        float lat = Float.parseFloat((String) position.get("y"));
+        float lon = Float.parseFloat((String) position.get("x"));
+        array.add(lat);
+        array.add(lon);
+        return array;
     }
 
     /**
@@ -271,12 +351,28 @@ public class UserService {
         // SecurityContext 초기화
         SecurityContextHolder.clearContext();
     }
+    
+    /**
+     * 인증된 유저의 주소를 가져오는 메서드
+     * @return 유저의 주소
+     */
+    public String getAddress() {
+        // 현재 인증된 사용자의 인증 정보 가져오기
+        String email = getAuthenticatedUserEmail();
+
+        // 이메일로 유저 찾기
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new NoSuchElementException("해당 유저를 찾을 수 없습니다."));
+
+
+        return user.getAddress();
+    }
 
     /**
      * 인증된 유저의 이메일을 가져오는 메서드
      * @return 유저의 이메일
      */
-    private static String getAuthenticatedUserEmail() {
+    public static String getAuthenticatedUserEmail() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         return userDetails.getUsername();

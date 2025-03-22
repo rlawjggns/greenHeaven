@@ -6,8 +6,11 @@ import com.greenheaven.greenheaven_app.domain.dto.WeatherDto;
 import com.greenheaven.greenheaven_app.domain.dto.WeatherResponse;
 import com.greenheaven.greenheaven_app.domain.entity.Precipitation;
 import com.greenheaven.greenheaven_app.domain.entity.Sky;
+import com.greenheaven.greenheaven_app.domain.entity.User;
 import com.greenheaven.greenheaven_app.domain.entity.Weather;
+import com.greenheaven.greenheaven_app.repository.UserRepository;
 import com.greenheaven.greenheaven_app.repository.WeatherRepository;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,10 +25,7 @@ import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,12 +36,19 @@ public class WeatherService {
     @Value("${weather.serviceKey}")
     private String serviceKey;
     private final WeatherRepository weatherRepository;
+    private final UserRepository userRepository;
 
     public static int TO_GRID = 0;
     public static int TO_GPS = 1;
 
 
     public void createWeather() throws IOException {
+        String email = UserService.getAuthenticatedUserEmail();
+        // 이메일로 유저 찾기
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new NoSuchElementException("해당 유저를 찾을 수 없습니다."));
+
+        LatXLngY latXLngY = convertGRID_GPS(0, user.getLatitude(), user.getLongitude());
         String date = LocalDate.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd")); // 현재 날짜  -1 지정
         StringBuilder urlBuilder = new StringBuilder("http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst"); /*URL*/
         urlBuilder.append("?" + URLEncoder.encode("serviceKey","UTF-8") + "=" + serviceKey); /*Service Key*/
@@ -50,8 +57,8 @@ public class WeatherService {
         urlBuilder.append("&" + URLEncoder.encode("dataType","UTF-8") + "=" + URLEncoder.encode("JSON", "UTF-8")); /*요청자료형식(XML/JSON) Default: XML*/
         urlBuilder.append("&" + URLEncoder.encode("base_date","UTF-8") + "=" + URLEncoder.encode(date, "UTF-8")); /*발표 날짜 지정(현재 날짜)*/
         urlBuilder.append("&" + URLEncoder.encode("base_time","UTF-8") + "=" + URLEncoder.encode("2300", "UTF-8")); /*23시 발표(정시단위) */
-        urlBuilder.append("&" + URLEncoder.encode("nx","UTF-8") + "=" + URLEncoder.encode("55", "UTF-8")); /*예보지점의 X 좌표값*/
-        urlBuilder.append("&" + URLEncoder.encode("ny","UTF-8") + "=" + URLEncoder.encode("127", "UTF-8")); /*예보지점의 Y 좌표값*/
+        urlBuilder.append("&" + URLEncoder.encode("nx","UTF-8") + "=" + URLEncoder.encode(String.valueOf((int)latXLngY.getX()), "UTF-8")); /*예보지점의 X 좌표값*/
+        urlBuilder.append("&" + URLEncoder.encode("ny","UTF-8") + "=" + URLEncoder.encode(String.valueOf((int)latXLngY.getY()), "UTF-8")); /*예보지점의 Y 좌표값*/
         URL url = new URL(urlBuilder.toString()); // 요청 URL 지정
         HttpURLConnection conn = (HttpURLConnection) url.openConnection(); // URL 커넥션 설정
 
@@ -213,7 +220,7 @@ public class WeatherService {
         return dailyForecasts;
     }
 
-    private LatXLngY convertGRID_GPS(int mode, double lat_X, double lng_Y) {
+    private LatXLngY convertGRID_GPS(int mode, double latitude, double longitude) {
         double RE = 6371.00877; // 지구 반경(km)
         double GRID = 5.0; // 격자 간격(km)
         double SLAT1 = 30.0; // 투영 위도1(degree)
@@ -223,7 +230,7 @@ public class WeatherService {
         double XO = 43; // 기준점 X좌표(GRID)
         double YO = 136; // 기준점 Y좌표(GRID)
 
-        // LCC DFS 좌표변환 ( code : "TO_GRID"(위경도->좌표, lat_X:위도,  lng_Y:경도), "TO_GPS"(좌표->위경도,  lat_X:x, lng_Y:y) )
+        // LCC DFS 좌표변환 ( code : "TO_GRID"(위경도->좌표, latitude:위도,  longitude:경도), "TO_GPS"(좌표->위경도,  latitude:x, longitude:y) )
 
         double DEGRAD = Math.PI / 180.0;
         double RADDEG = 180.0 / Math.PI;
@@ -243,23 +250,24 @@ public class WeatherService {
         LatXLngY rs = new LatXLngY();
 
         if (mode == TO_GRID) {
-            rs.lat = lat_X;
-            rs.lng = lng_Y;
-            double ra = Math.tan(Math.PI * 0.25 + (lat_X) * DEGRAD * 0.5);
+            rs.lat = latitude;
+            rs.lng = longitude;
+            double ra = Math.tan(Math.PI * 0.25 + (latitude) * DEGRAD * 0.5);
             ra = re * sf / Math.pow(ra, sn);
-            double theta = lng_Y * DEGRAD - olon;
+            double theta = longitude * DEGRAD - olon;
             if (theta > Math.PI) theta -= 2.0 * Math.PI;
             if (theta < -Math.PI) theta += 2.0 * Math.PI;
             theta *= sn;
             rs.x = Math.floor(ra * Math.sin(theta) + XO + 0.5);
             rs.y = Math.floor(ro - ra * Math.cos(theta) + YO + 0.5);
+
         }
 
         else {
-            rs.x = lat_X;
-            rs.y = lng_Y;
-            double xn = lat_X - XO;
-            double yn = ro - lng_Y + YO;
+            rs.x = latitude;
+            rs.y = longitude;
+            double xn = latitude - XO;
+            double yn = ro - longitude + YO;
             double ra = Math.sqrt(xn * xn + yn * yn);
             if (sn < 0.0) {
                 ra = -ra;
@@ -287,6 +295,7 @@ public class WeatherService {
         return rs;
     }
 
+    @Getter
     class LatXLngY {
         public double lat;
         public double lng;

@@ -37,6 +37,10 @@ public class User {
     @Column(name = "email", nullable = false)
     private String email; // 사용자 이메일
 
+
+    @Column(name = "address", nullable = false)
+    private String address; // 도로명 주소
+
     @CreatedDate
     @Column(name = "create_date", updatable = false)
     private LocalDate createDate; // 사용자 생성일
@@ -45,11 +49,12 @@ public class User {
     @Column(name = "update_date")
     private LocalDate updateDate; // 사용자 수정일
 
-    @Column(name = "latitude")
-    private Double latitude; // 위도
-
     @Column(name = "longitude")
-    private Double longitude; // 경도
+    private Float longitude; // 경도 x
+
+    @Column(name = "latitude")
+    private Float latitude; // 위도 y
+
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
@@ -68,15 +73,17 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Notification> notifications = new ArrayList<>(); // 알림들
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Location> locations = new ArrayList<>(); // 위치들
+
 
     @Builder
-    public User(String name, String password, String email, Subscription subscription) {
+    public User(String name, String password, String email, Subscription subscription, String address, Float latitude, Float longitude) {
         this.name = name;
         this.password = password;
         this.email = email;
         this.subscription = subscription;
+        this.address = address;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     public void connectSubscription(Subscription subscription) {

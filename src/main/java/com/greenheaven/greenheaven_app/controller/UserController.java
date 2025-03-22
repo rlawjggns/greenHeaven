@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.simple.parser.ParseException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -57,7 +58,7 @@ public class UserController {
      */
     @PostMapping("/signup")
     public String postSignUp(@ModelAttribute("userSignUpDto") @Validated UserSignUpDto request,
-                             BindingResult bindingResult, Model model) {
+                             BindingResult bindingResult, Model model) throws ParseException {
         // 사용자 입력 검증 중 오류 발생 시, 각 필드에 해당하는 에러 메시지를 모델에 추가 한 뒤 기존 페이지로 돌아간다
         if (bindingResult.hasErrors()) {
             bindingResult.getFieldErrors().forEach(error -> { 
