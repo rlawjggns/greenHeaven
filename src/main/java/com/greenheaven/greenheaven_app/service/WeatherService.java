@@ -195,8 +195,9 @@ public class WeatherService {
                 (int)latXLngY.getX(),(int)latXLngY.getY()
         );
 
-        // x,y 값으로 데이터가 존재하지 않거나, 존재하는 데이터의 가장 과거 날짜와 오늘 날짜가 다르다면 최신 데이터를 생성
+        // x,y 값으로 데이터가 존재하지 않거나, 존재하는 데이터의 가장 과거 날짜와 오늘 날짜가 다르다면 기존 데이터를 날리고 최신 데이터를 생성
         if (existingWeather.isEmpty() || !LocalDate.now().isEqual(existingWeather.get().getDate())) {
+            weatherRepository.deleteByLocationXAndLocationY((int)latXLngY.getX(),(int)latXLngY.getY());
             createWeather((int)latXLngY.getX(),(int)latXLngY.getY());
         }
 

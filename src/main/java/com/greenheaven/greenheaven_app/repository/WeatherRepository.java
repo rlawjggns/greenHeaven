@@ -13,4 +13,6 @@ public interface WeatherRepository extends JpaRepository<Weather, UUID> {
     Optional<Weather> findFirstByLocationXAndLocationYOrderByDateAsc(Integer locationX, Integer locationY);
 
     List<Weather> findByLocationXAndLocationY(Integer locationX, Integer locationY);
+
+    void deleteByLocationXAndLocationY(Integer locationX, Integer locationY);
 }
