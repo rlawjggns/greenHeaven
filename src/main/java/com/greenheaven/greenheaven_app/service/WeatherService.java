@@ -10,6 +10,7 @@ import com.greenheaven.greenheaven_app.domain.entity.User;
 import com.greenheaven.greenheaven_app.domain.entity.Weather;
 import com.greenheaven.greenheaven_app.repository.UserRepository;
 import com.greenheaven.greenheaven_app.repository.WeatherRepository;
+import jakarta.persistence.EntityManager;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,18 +38,13 @@ public class WeatherService {
     private String serviceKey;
     private final WeatherRepository weatherRepository;
     private final UserRepository userRepository;
+    private final EntityManager em;
 
     public static int TO_GRID = 0;
     public static int TO_GPS = 1;
 
 
-    public void createWeather() throws IOException {
-        String email = UserService.getAuthenticatedUserEmail();
-        // 이메일로 유저 찾기
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new NoSuchElementException("해당 유저를 찾을 수 없습니다."));
-
-        LatXLngY latXLngY = convertGRID_GPS(0, user.getLatitude(), user.getLongitude());
+    public void createWeather(Integer x, Integer y) throws IOException {
         String date = LocalDate.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd")); // 현재 날짜  -1 지정
         StringBuilder urlBuilder = new StringBuilder("http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst"); /*URL*/
         urlBuilder.append("?" + URLEncoder.encode("serviceKey","UTF-8") + "=" + serviceKey); /*Service Key*/
@@ -57,8 +53,8 @@ public class WeatherService {
         urlBuilder.append("&" + URLEncoder.encode("dataType","UTF-8") + "=" + URLEncoder.encode("JSON", "UTF-8")); /*요청자료형식(XML/JSON) Default: XML*/
         urlBuilder.append("&" + URLEncoder.encode("base_date","UTF-8") + "=" + URLEncoder.encode(date, "UTF-8")); /*발표 날짜 지정(현재 날짜)*/
         urlBuilder.append("&" + URLEncoder.encode("base_time","UTF-8") + "=" + URLEncoder.encode("2300", "UTF-8")); /*23시 발표(정시단위) */
-        urlBuilder.append("&" + URLEncoder.encode("nx","UTF-8") + "=" + URLEncoder.encode(String.valueOf((int)latXLngY.getX()), "UTF-8")); /*예보지점의 X 좌표값*/
-        urlBuilder.append("&" + URLEncoder.encode("ny","UTF-8") + "=" + URLEncoder.encode(String.valueOf((int)latXLngY.getY()), "UTF-8")); /*예보지점의 Y 좌표값*/
+        urlBuilder.append("&" + URLEncoder.encode("nx","UTF-8") + "=" + URLEncoder.encode(String.valueOf(x), "UTF-8")); /*예보지점의 X 좌표값*/
+        urlBuilder.append("&" + URLEncoder.encode("ny","UTF-8") + "=" + URLEncoder.encode(String.valueOf(y), "UTF-8")); /*예보지점의 Y 좌표값*/
         URL url = new URL(urlBuilder.toString()); // 요청 URL 지정
         HttpURLConnection conn = (HttpURLConnection) url.openConnection(); // URL 커넥션 설정
 
@@ -84,7 +80,7 @@ public class WeatherService {
     }
 
     private void createWeathers(List<WeatherDto> items) {
-        weatherRepository.deleteAll();
+
         // fcstDate와 fcstTime을 결합한 키를 사용하여 Weather 빌더를 저장하는 맵
         Map<String, Weather.WeatherBuilder> weatherMap = new HashMap<>();
 
@@ -174,12 +170,39 @@ public class WeatherService {
             weatherRepository.save(weather);
             log.info("생성된 Weather: {}", weather);
         }
+        
+        // getThreeDayForeCast() 메서드의 기존 트랜잭션이 전파된 것이므로, 플러시를 하지 않으면 이 메서드가 종료된 후 getThreeDayForeCast()의 메서드에서 조회해봤자 원하는 결과가 일어나지 안흠 <- 트러블 슈팅 완료
+        // 알고보니 같은 트랜잭션이라 영속성 컨텍스트에 저장되기 때문에, 조회해도 이상이 필요없다...
+        // 그래도 동시성 이슈 방지, 영속성 컨텍스트가 커질 경우 메모리 효율성을 위해 플러시 호출해도 됨
+        weatherRepository.flush();
+        // 클리어, 이후 로직은 깔끔하게 db에 완전히 반영된 후의 결과를 보고싶음
+        em.clear();
     }
 
 
-    public List<DailyForecast> getThreeDayForecast() {
-        // DB에서 전체 데이터를 조회 (예: 72개 행)
-        List<Weather> allWeathers = weatherRepository.findAll();
+    public List<DailyForecast> getThreeDayForecast() throws IOException {
+        String email = UserService.getAuthenticatedUserEmail();
+
+        // 이메일로 유저 찾기
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new NoSuchElementException("해당 유저를 찾을 수 없습니다."));
+
+        // 유저의 위경도값을 기상청 x, y값으로 변환
+        LatXLngY latXLngY = convertGRID_GPS(0, user.getLatitude(), user.getLongitude());
+
+        // 변환한 x 값과 y값을 통해 조회하고, 날짜가 오래된 순으로 정렬한 후 첫번째 값만 가져오기
+        Optional<Weather> existingWeather = weatherRepository.findFirstByLocationXAndLocationYOrderByDateAsc(
+                (int)latXLngY.getX(),(int)latXLngY.getY()
+        );
+
+        // x,y 값으로 데이터가 존재하지 않거나, 존재하는 데이터의 가장 과거 날짜와 오늘 날짜가 다르다면 최신 데이터를 생성
+        if (existingWeather.isEmpty() || !LocalDate.now().isEqual(existingWeather.get().getDate())) {
+            createWeather((int)latXLngY.getX(),(int)latXLngY.getY());
+        }
+
+        // 생성되거나, 생성되지 않든 이후의 로직 실행
+        // DB에서 X값과 Y값으로 데이터를 조회 (예: 72개 행)
+        List<Weather> allWeathers = weatherRepository.findByLocationXAndLocationY((int)latXLngY.getX(),(int)latXLngY.getY());
 
         // 날짜별 그룹화 (key: LocalDate, value: 해당 날짜의 Weather 리스트)
         Map<LocalDate, List<Weather>> groupedByDate = allWeathers.stream()
