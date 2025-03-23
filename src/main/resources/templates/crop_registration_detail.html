@@ -14,42 +14,34 @@
     <!-- 메인 컨텐츠 -->
     <div class="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-8 mt-60">
         <h2 class="text-2xl font-semibold text-green-600 mb-6">농작물 등록</h2>
-        <form action="#" method="POST">
+        <form th:action="@{/crop/registration}" method="POST" th:object="${cropRequestDto}">
             <!-- 농작물 이름 -->
             <div class="mb-6">
                 <label for="crop-name" class="block text-gray-700">농작물 이름</label>
-                <input type="text" id="crop-name" name="cropName" class="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="농작물 이름을 입력하세요" required>
+                <input th:field="*{name}" type="text" id="crop-name" name="cropName" class="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="농작물 이름을 입력하세요" required>
             </div>
 
             <!-- 농작물 종류 -->
             <div class="mb-6">
                 <label for="crop-type" class="block text-gray-700">농작물 종류</label>
-                <select id="crop-type" name="cropType" class="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" >
-                    <option value="고추" th:selected="${selectedCrop == 'pepper'}">고추</option>
-                    <option value="감자" th:selected="${selectedCrop == 'potato'}">감자</option>
-                    <option value="포도" th:selected="${selectedCrop == 'grape'}">포도</option>
-                    <option value="쌀" th:selected="${selectedCrop == 'rice'}">쌀</option>
-                    <option value="참외" th:selected="${selectedCrop == 'melon'}">참외</option>
-                    <option value="배추" th:selected="${selectedCrop == 'cabbage'}">배추</option>
+                <select th:field="*{type}" id="crop-type" name="cropType" class="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" >
+                    <option value="LETTUCE" >상추</option>
+                    <option value="RADISH">무</option>
+                    <option value="POTATO">감자</option>
+                    <option value="SWEETPOTATO">고구마</option>
                 </select>
             </div>
 
-            <!-- 심는 날짜 -->
+            <!-- 파종일 -->
             <div class="mb-6">
-                <label for="planting-date" class="block text-gray-700">심는 날짜</label>
-                <input type="date" id="planting-date" name="plantingDate" class="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                <label for="plant-date" class="block text-gray-700">파종일</label>
+                <input th:field="*{plantDate}" type="date" id="plant-date" name="plantDate" class="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required>
             </div>
 
-            <!-- 수확 예상 날짜 -->
+            <!-- 수량 -->
             <div class="mb-6">
-                <label for="harvest-date" class="block text-gray-700">수확 예상 날짜</label>
-                <input type="date" id="harvest-date" name="harvestDate" class="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required>
-            </div>
-
-            <!-- 수량 날짜 -->
-            <div class="mb-6">
-                <label for="crop-quantity" class="block text-gray-700">농작물 수량</label>
-                <input type="text" id="crop-quantity" name="quantity" class="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="농작물 수량을 입력하세요" required>
+                <label for="crop-quantity" class="block text-gray-700">농작물 수량(kg)</label>
+                <input th:field="*{quantity}" type="text" id="crop-quantity" name="quantity" class="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="농작물 수량을 입력하세요" required>
             </div>
 
             <!-- 제출 버튼 -->

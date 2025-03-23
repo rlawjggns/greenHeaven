@@ -39,40 +39,49 @@
             <section class="relative bg-gray-800 p-6 rounded-xl shadow-lg">
                 <img src="/images/house.jpg" class="absolute inset-0 w-full h-full object-cover opacity-10 rounded-xl" alt="작물 현황">
                 <h2 class="text-xl font-bold mb-3 relative z-10">작물 현황
-                    <a href="/crops" class="text-sm text-white absolute top-0 right-2 bg-gray-800 py-1 px-2 rounded hover:bg-gray-700 hover:text-white">상세 >></a>
+                    <a th:href="@{/crop/overview}" class="text-sm text-white absolute top-0 right-2 bg-gray-800 py-1 px-2 rounded hover:bg-gray-700 hover:text-white">상세 >></a>
                 </h2>
                 <table class="w-full text-left border-collapse relative z-10">
                     <thead>
                     <tr>
                         <th class="px-4 py-2 border-b border-gray-600">작물</th>
-                        <th class="px-4 py-2 border-b border-gray-600">상태</th>
+                        <th class="px-4 py-2 border-b border-gray-600">파종일</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr th:each="crop : ${crops}">
-                        <td class="px-4 py-2 border-b border-gray-600" th:text="${crop.name}">작물 이름</td>
-                        <td class="px-4 py-2 border-b border-gray-600" th:text="${crop.status}">상태</td>
+                        <td class="px-4 py-2 border-b border-gray-600" th:text="${crop.type}">작물 이름</td>
+                        <td class="px-4 py-2 border-b border-gray-600" th:text="${crop.plantDate}">파종일</td>
                     </tr>
                     </tbody>
                 </table>
+                <div th:if="${#lists.isEmpty(crops)}" class="text-gray-400 text-center py-4">
+                    작물이 없습니다.
+                </div>
             </section>
 
             <!-- 알림 카드 -->
             <section class="relative bg-gray-800 p-6 rounded-xl shadow-lg">
                 <img src="/images/write.jpg" class="absolute inset-0 w-full h-full object-cover opacity-10 rounded-xl" alt="알림">
                 <h2 class="text-xl font-bold mb-3 relative z-10">최근 알림
-                    <a href="/alarms" class="text-sm text-white absolute top-0 right-2 bg-gray-800 py-1 px-2 rounded hover:bg-gray-700 hover:text-white">상세 >></a>
+                    <a th:href="@{/notification/overview}" class="text-sm text-white absolute top-0 right-2 bg-gray-700 py-1 px-2 rounded hover:bg-gray-600 hover:text-white">상세 >></a>
                 </h2>
-                <div class="relative z-10 space-y-3 max-h-60 overflow-y-auto">
-                    <div th:if="${#lists.isEmpty(notifications)}" class="text-gray-400 text-center py-4">
-                        새 알림이 없습니다.
-                    </div>
-                    <ul th:each="notification : ${notifications}" class="space-y-2">
-                        <li class="p-3 bg-gray-700 rounded-lg border border-gray-600 flex items-center">
-                            <span class="flex-grow" th:text="${notification.message}">알림 내용</span>
-                            <span class="text-sm text-gray-400" th:text="${#temporals.format(notification.date, 'yyyy-MM-dd HH:mm')}">날짜</span>
-                        </li>
-                    </ul>
+                <table class="w-full text-left border-collapse relative z-10">
+                    <thead>
+                    <tr>
+                        <th class="px-4 py-2 border-b border-gray-600">내용</th>
+                        <th class="px-4 py-2 border-b border-gray-600">날짜</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="notification : ${notifications}">
+                        <td class="px-4 py-2 border-b border-gray-600" th:text="${notification.content}">내용</td>
+                        <td class="px-4 py-2 border-b border-gray-600" th:text="${notification.date}">날짜</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div th:if="${#lists.isEmpty(crops)}" class="text-gray-400 text-center py-4">
+                    최근 알림이 없습니다.
                 </div>
             </section>
         </main>

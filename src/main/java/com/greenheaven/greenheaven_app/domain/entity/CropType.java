@@ -1,10 +1,8 @@
 package com.greenheaven.greenheaven_app.domain.entity;
 
 public enum CropType {
-    PEPPER,         // 고추
-    MELON,          // 참외
+    LETTUCE,         // 상추
+    RADISH,          // 무
     POTATO,         // 감자
-    CABBAGE,        // 배추
-    GRAPE,          // 포도
-    RICE,           // 쌀
+    SWEETPOTATO,        // 고구마
 }

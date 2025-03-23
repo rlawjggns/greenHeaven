@@ -36,19 +36,20 @@ public class Crop {
     private LocalDate harvestDate; // 작물 수확일
 
     @Column(name = "quantity", nullable = false)
-    private Integer quantity; // 작물 수량
+    private Double quantity; // 작물 수량
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @Builder
-    public Crop(String name, CropType type, LocalDate plantDate, LocalDate harvestDate, User user) {
+    public Crop(String name, CropType type, LocalDate plantDate, LocalDate harvestDate, User user, Double quantity) {
         this.name = name;
         this.type = type;
         this.plantDate = plantDate;
         this.harvestDate = harvestDate;
         this.user = user;
+        this.quantity = quantity;
     }
 
     @Override

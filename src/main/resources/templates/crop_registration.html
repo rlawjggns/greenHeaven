@@ -14,65 +14,54 @@
         <main class="flex flex-col items-center justify-center text-center p-10 mt-60 text-white">
             <h2 class="text-5xl font-extrabold text-gray-100 drop-shadow-lg">신규 등록할 작물 선택</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mt-12">
-                <!-- 카드 1 -->
-                <a th:href="@{/crop/registration/pepper}" class="relative w-64 h-96 rounded-2xl overflow-hidden shadow-2xl hover:shadow-green-400/50 transition-transform transform hover:scale-105">
-                    <img src="/images/pepper.jpg" alt="고추" class="w-full h-full object-cover">
+                <!-- 카드 1: 상추 -->
+                <a th:href="@{/crop/registration/lettuce}" class="relative w-64 h-96 rounded-2xl overflow-hidden shadow-2xl hover:shadow-green-400/50 transition-transform transform hover:scale-105">
+                    <img src="/images/lettuce.jpg" alt="상추" class="w-full h-full object-cover">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
                     <div class="absolute bottom-4 left-4 text-left">
-                        <h3 class="text-2xl font-semibold text-gray-100 drop-shadow-md">고추</h3>
-                        <p class="text-white text-sm drop-shadow-md">고추 설명</p>
+                        <h3 class="text-2xl font-semibold text-gray-100 drop-shadow-md">상추</h3>
+                        <p class="text-white text-sm drop-shadow-md">
+                            상추는 신선하고 아삭한 잎이 특징인 채소로, 서늘한 기후와 꾸준한 수분 공급이 우수한 품질을 보장해줍니다. 이에 따른 빠른 성장 주기와 관리 용이성이 장점입니다.
+                        </p>
                     </div>
                 </a>
 
-                <!-- 카드 2 -->
-                <a th:href="@{/crop/registration/melon}" class="relative w-64 h-96 rounded-2xl overflow-hidden shadow-2xl hover:shadow-green-400/50 transition-transform transform hover:scale-105">
-                    <img src="/images/koreanmelon.jpg" alt="참외" class="w-full h-full object-cover">
+                <!-- 카드 2: 무 -->
+                <a th:href="@{/crop/registration/radish}" class="relative w-64 h-96 rounded-2xl overflow-hidden shadow-2xl hover:shadow-green-400/50 transition-transform transform hover:scale-105">
+                    <img src="/images/radish.jpg" alt="무" class="w-full h-full object-cover">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
                     <div class="absolute bottom-4 left-4 text-left">
-                        <h3 class="text-2xl font-semibold text-gray-100 drop-shadow-md">참외</h3>
-                        <p class="text-white text-sm drop-shadow-md">참외 설명</p>
+                        <h3 class="text-2xl font-semibold text-gray-100 drop-shadow-md">무</h3>
+                        <p class="text-white text-sm drop-shadow-md">
+                            무는 아삭한 식감과 은은한 단맛이 어우러진 채소로, 서늘한 날씨와 적절한 물 관리를 통해 우수한 뿌리를 생산합니다. 김치 및 다양한 반찬의 주재료로 활용됩니다.
+                        </p>
                     </div>
                 </a>
 
-                <!-- 카드 3 -->
+                <!-- 카드 3: 감자 -->
                 <a th:href="@{/crop/registration/potato}" class="relative w-64 h-96 rounded-2xl overflow-hidden shadow-2xl hover:shadow-green-400/50 transition-transform transform hover:scale-105">
                     <img src="/images/potato.jpg" alt="감자" class="w-full h-full object-cover">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
                     <div class="absolute bottom-4 left-4 text-left">
                         <h3 class="text-2xl font-semibold text-gray-100 drop-shadow-md">감자</h3>
-                        <p class="text-white text-sm drop-shadow-md">감자 설명</p>
+                        <p class="text-white text-sm drop-shadow-md">
+                            감자는 영양가가 높고 다양한 요리에 활용되는 구근 작물입니다. 서늘하고 통풍이 잘 되는 토양에서 우수한 수확량을 기대할 수 있으며, 지속적인 병충해 관리가 필수입니다.
+                        </p>
                     </div>
                 </a>
 
-                <!-- 카드 4 -->
-                <a th:href="@{/crop/registration/cabbage}" class="relative w-64 h-96 rounded-2xl overflow-hidden shadow-2xl hover:shadow-green-400/50 transition-transform transform hover:scale-105">
-                    <img src="/images/cabbage.jpg" alt="배추" class="w-full h-full object-cover">
+                <!-- 카드 4: 고구마 -->
+                <a th:href="@{/crop/registration/sweetpotato}" class="relative w-64 h-96 rounded-2xl overflow-hidden shadow-2xl hover:shadow-green-400/50 transition-transform transform hover:scale-105">
+                    <img src="/images/sweetpotato.jpg" alt="고구마" class="w-full h-full object-cover">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
                     <div class="absolute bottom-4 left-4 text-left">
-                        <h3 class="text-2xl font-semibold text-gray-100 drop-shadow-md">배추</h3>
-                        <p class="text-white text-sm drop-shadow-md">배추 설명</p>
+                        <h3 class="text-2xl font-semibold text-gray-100 drop-shadow-md">고구마</h3>
+                        <p class="text-white text-sm drop-shadow-md">
+                            고구마는 달콤하고 고소한 맛이 매력인 뿌리 작물로, 따뜻한 기후와 배수가 좋은 토양에서 최상의 품질을 발휘합니다. 충분한 일조와 적절한 수분 공급이 건강한 뿌리 발달의 핵심입니다.
+                        </p>
                     </div>
                 </a>
 
-                <!-- 카드 5 -->
-                <a th:href="@{/crop/registration/grape}" class="relative w-64 h-96 rounded-2xl overflow-hidden shadow-2xl hover:shadow-green-400/50 transition-transform transform hover:scale-105">
-                    <img src="/images/grape.jpg" alt="포도" class="w-full h-full object-cover">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
-                    <div class="absolute bottom-4 left-4 text-left">
-                        <h3 class="text-2xl font-semibold text-gray-100 drop-shadow-md">포도</h3>
-                        <p class="text-gray-100 text-sm drop-shadow-md">포도 설명</p>
-                    </div>
-                </a>
-
-                <!-- 카드 6 -->
-                <a th:href="@{/crop/registration/rice}" class="relative w-64 h-96 rounded-2xl overflow-hidden shadow-2xl hover:shadow-green-400/50 transition-transform transform hover:scale-105">
-                    <img src="/images/rice.jpg" alt="쌀" class="w-full h-full object-cover">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
-                    <div class="absolute bottom-4 left-4 text-left">
-                        <h3 class="text-2xl font-semibold text-gray-100 drop-shadow-md">쌀</h3>
-                        <p class="text-gray-100 text-sm drop-shadow-md">쌀 설명</p>
-                    </div>
-                </a>
             </div>
         </main>
 
