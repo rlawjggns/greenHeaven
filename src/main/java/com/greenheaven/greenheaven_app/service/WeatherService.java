@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -44,186 +45,51 @@ public class WeatherService {
     public static int TO_GPS = 1;
 
 
-    public void createWeather(Integer x, Integer y) throws IOException {
-        String date = LocalDate.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd")); // 현재 날짜  -1 지정
-        StringBuilder urlBuilder = new StringBuilder("http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst"); /*URL*/
-        urlBuilder.append("?" + URLEncoder.encode("serviceKey","UTF-8") + "=" + serviceKey); /*Service Key*/
-        urlBuilder.append("&" + URLEncoder.encode("pageNo","UTF-8") + "=" + URLEncoder.encode("1", "UTF-8")); /*페이지번호*/
-        urlBuilder.append("&" + URLEncoder.encode("numOfRows","UTF-8") + "=" + URLEncoder.encode("900", "UTF-8")); /*한 페이지 당 결과 수*/
-        urlBuilder.append("&" + URLEncoder.encode("dataType","UTF-8") + "=" + URLEncoder.encode("JSON", "UTF-8")); /*요청자료형식(XML/JSON) Default: XML*/
-        urlBuilder.append("&" + URLEncoder.encode("base_date","UTF-8") + "=" + URLEncoder.encode(date, "UTF-8")); /*발표 날짜 지정(현재 날짜)*/
-        urlBuilder.append("&" + URLEncoder.encode("base_time","UTF-8") + "=" + URLEncoder.encode("2300", "UTF-8")); /*23시 발표(정시단위) */
-        urlBuilder.append("&" + URLEncoder.encode("nx","UTF-8") + "=" + URLEncoder.encode(String.valueOf(x), "UTF-8")); /*예보지점의 X 좌표값*/
-        urlBuilder.append("&" + URLEncoder.encode("ny","UTF-8") + "=" + URLEncoder.encode(String.valueOf(y), "UTF-8")); /*예보지점의 Y 좌표값*/
-        URL url = new URL(urlBuilder.toString()); // 요청 URL 지정
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection(); // URL 커넥션 설정
-
-        conn.setRequestMethod("GET"); // URL 매서드 지정
-        if(conn.getResponseCode() == 200) { // response가 200대, 즉 성공일때
-            parseWeather(conn.getInputStream());
-        } else { // 실패할 경우
-            throw new RuntimeException("API 응답을 읽는 데 실패했습니다.");
-        }
-    }
-
-    private void parseWeather(InputStream body) {
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        try {
-            // InputStream을 NewsResponse 객체로 변환
-            WeatherResponse response = objectMapper.readValue(body, WeatherResponse.class);
-            // dto 리스트로 엔티티 생성 
-            createWeathers(response.getItems());
-        } catch (Exception e) {
-            throw new RuntimeException("JSON 파싱 중 오류 발생");
-        }
-    }
-
-    private void createWeathers(List<WeatherDto> items) {
-
-        // fcstDate와 fcstTime을 결합한 키를 사용하여 Weather 빌더를 저장하는 맵
-        Map<String, Weather.WeatherBuilder> weatherMap = new HashMap<>();
-
-        for (WeatherDto item : items) {
-            LocalDate forecastDate = LocalDate.parse(item.getFcstDate(), DateTimeFormatter.ofPattern("yyyyMMdd"));
-            // 오늘 이전이거나 오늘+3일 이후면 무시 (3일치 데이터만 처리)
-            if (forecastDate.isBefore(LocalDate.now()) || forecastDate.isAfter(LocalDate.now().plusDays(2))) {
-                continue;
-            }
-
-            // 그룹핑 키: 날짜와 시간 (예: "202503222300")
-            String key = item.getFcstDate() + item.getFcstTime();
-
-            // 해당 시간대의 빌더가 존재하면 가져오고, 없으면 새로 생성 (기본값 설정)
-            Weather.WeatherBuilder builder = weatherMap.getOrDefault(key, Weather.builder()
-                    .date(forecastDate)
-                    .time(LocalTime.parse(item.getFcstTime(), DateTimeFormatter.ofPattern("HHmm")))
-                    .locationX(item.getNx())
-                    .locationY(item.getNy())
-                    // 필수 필드 기본값 설정 (비즈니스 로직에 맞게 조정)
-                    .probability(0)
-                    .humidity(0)
-                    .temperature(0)
-                    .minTemp(0.0)
-                    .maxTemp(0.0)
-                    .windDirection(0)
-                    .winding(0.0)
-                    .sky(Sky.LUCIDITY)
-                    .precipitation(Precipitation.NONE)
-            );
-
-            // 카테고리별로 해당 필드에 값을 채워 넣음
-            switch (item.getCategory()) {
-                case "POP": // 강수 확률
-                    builder.probability(Integer.parseInt(item.getFcstValue()));
-                    break;
-                case "PTY": // 강수 형태
-                    int ptyVal = Integer.parseInt(item.getFcstValue());
-                    switch (ptyVal) {
-                        case 1: builder.precipitation(Precipitation.RAIN); break;
-                        case 2: builder.precipitation(Precipitation.RAINSNOW); break;
-                        case 3: builder.precipitation(Precipitation.SNOW); break;
-                        case 5: builder.precipitation(Precipitation.RAINDROP); break;
-                        case 6: builder.precipitation(Precipitation.RAINDROPBLAST); break;
-                        case 7: builder.precipitation(Precipitation.BLAST); break;
-                        default: builder.precipitation(Precipitation.NONE); break;
-                    }
-                    break;
-                case "REH": // 습도
-                    builder.humidity(Integer.parseInt(item.getFcstValue()));
-                    break;
-                case "SKY": // 하늘 상태
-                    int skyVal = Integer.parseInt(item.getFcstValue());
-                    if (skyVal == 1) {
-                        builder.sky(Sky.LUCIDITY);
-                    } else if (skyVal == 3) {
-                        builder.sky(Sky.CLOUDY);
-                    } else if (skyVal == 4) {
-                        builder.sky(Sky.BLUR);
-                    }
-                    break;
-                case "TMP": // 1시간 기온
-                    builder.temperature(Integer.parseInt(item.getFcstValue()));
-                    break;
-                case "TMN": // 일 최저기온
-                    builder.minTemp(Double.parseDouble(item.getFcstValue()));
-                    break;
-                case "TMX": // 일 최고기온
-                    builder.maxTemp(Double.parseDouble(item.getFcstValue()));
-                    break;
-                case "VEC": // 풍향
-                    builder.windDirection(Integer.parseInt(item.getFcstValue()));
-                    break;
-                case "WSD": // 풍속
-                    builder.winding(Double.parseDouble(item.getFcstValue()));
-                    break;
-                default: // 처리하지 않는 카테고리는 무시
-                    break;
-            }
-            // 맵에 집어넣기
-            weatherMap.put(key, builder);
-        }
-
-        // 그룹핑된 각 빌더에서 Weather 엔티티 생성 후 DB에 저장
-        for (Weather.WeatherBuilder builder : weatherMap.values()) {
-            Weather weather = builder.build();
-            weatherRepository.save(weather);
-            log.info("생성된 Weather: {}", weather);
-        }
-        
-        // getThreeDayForeCast() 메서드의 기존 트랜잭션이 전파된 것이므로, 플러시를 하지 않으면 이 메서드가 종료된 후 getThreeDayForeCast()의 메서드에서 조회해봤자 원하는 결과가 일어나지 안흠 <- 트러블 슈팅 완료
-        // 알고보니 같은 트랜잭션이라 영속성 컨텍스트에 저장되기 때문에, 조회해도 이상이 필요없다...
-        // 그래도 동시성 이슈 방지, 영속성 컨텍스트가 커질 경우 메모리 효율성을 위해 플러시 호출해도 됨
-        weatherRepository.flush();
-        // 클리어, 이후 로직은 깔끔하게 db에 완전히 반영된 후의 결과를 보고싶음
-        em.clear();
-    }
-
-
     /**
+     * 3일치 기상 데이터를 조회 및 생성하는 메서드
+     * 인증된 사용자의 위경도 데이터를 통해 기상 데이터를 생성하거나 기존 데이터를 활용하여 반환합니다.
      *
-     * @return
-     * @throws IOException
+     * @return DailyForecast 객체 리스트 (3일치 기상 데이터)
+     * @throws IOException 외부 API 호출 또는 데이터 처리 중 오류 발생 시 예외를 던집니다.
      */
     public List<DailyForecast> getThreeDaysWeather() throws IOException {
+        // 인증된 사용자의 이메일 가져오기
         String email = UserService.getAuthenticatedUserEmail();
 
-        // 이메일로 유저 찾기
+        // 이메일로 유저 조회
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new NoSuchElementException("해당 유저를 찾을 수 없습니다."));
 
-        // 유저의 위경도값을 기상청 x, y값으로 변환
+        // 유저의 위경도 값을 기상청 x, y 좌표로 변환
         LatXLngY latXLngY = convertGRID_GPS(0, user.getLatitude(), user.getLongitude());
 
-        // 변환한 x 값과 y값을 통해 조회하고, 날짜가 오래된 순으로 정렬한 후 첫번째 값만 가져오기
+        // 기존 기상 데이터 조회 (가장 오래된 날짜 기준 정렬)
         Optional<Weather> existingWeather = weatherRepository.findFirstByLocationXAndLocationYOrderByDateAsc(
-                (int)latXLngY.getX(),(int)latXLngY.getY()
+                (int) latXLngY.getX(), (int) latXLngY.getY()
         );
 
-        // x,y 값으로 데이터가 존재하지 않거나, 존재하는 데이터의 가장 과거 날짜와 오늘 날짜가 다르다면 기존 데이터를 날리고 최신 데이터를 생성
+        // 데이터가 없거나 기존 데이터가 최신 날짜가 아닌 경우 새 기상 데이터를 생성
         if (existingWeather.isEmpty() || !LocalDate.now().isEqual(existingWeather.get().getDate())) {
-            weatherRepository.deleteByLocationXAndLocationY((int)latXLngY.getX(),(int)latXLngY.getY());
-            createWeather((int)latXLngY.getX(),(int)latXLngY.getY());
+            weatherRepository.deleteByLocationXAndLocationY((int) latXLngY.getX(), (int) latXLngY.getY());
+            createWeather((int) latXLngY.getX(), (int) latXLngY.getY());
         }
 
-        // 생성되거나, 생성되지 않든 이후의 로직 실행
-        // DB에서 X값과 Y값으로 데이터를 조회 (예: 72개 행)
-        List<Weather> allWeathers = weatherRepository.findByLocationXAndLocationY((int)latXLngY.getX(),(int)latXLngY.getY());
+        // 생성된 데이터를 포함하여 해당 좌표의 모든 기상 데이터 조회
+        List<Weather> allWeathers = weatherRepository.findByLocationXAndLocationY((int) latXLngY.getX(), (int) latXLngY.getY());
 
-        // 날짜별 그룹화 (key: LocalDate, value: 해당 날짜의 Weather 리스트)
+        // 날짜별로 데이터 그룹화 (key: LocalDate, value: 해당 날짜의 Weather 리스트)
         Map<LocalDate, List<Weather>> groupedByDate = allWeathers.stream()
                 .collect(Collectors.groupingBy(Weather::getDate));
 
-        // 각 날짜 그룹에 대해 대표 측정값과 최저/최고 기온을 산출한 뒤 DailyForecast 객체로 변환
-        List<DailyForecast> dailyForecasts = groupedByDate.entrySet().stream()
+        // 날짜별로 대표 측정값과 최저/최고 기온을 계산하여 DailyForecast 객체 생성
+        return groupedByDate.entrySet().stream()
                 .map(entry -> {
                     LocalDate date = entry.getKey();
-                    // 각 날짜의 measurements를 시간별로 정렬
                     List<Weather> measurements = entry.getValue().stream()
                             .sorted(Comparator.comparing(Weather::getTime))
                             .collect(Collectors.toList());
 
-                    // 대표 측정값: 정오(12:00)를 우선으로, 없으면 첫 번째 항목 사용
+                    // 대표 측정값: 정오(12:00)를 우선으로 선택, 없으면 첫 번째 항목 사용
                     Weather representative = measurements.stream()
                             .filter(w -> w.getTime().equals(LocalTime.of(12, 0)))
                             .findFirst()
@@ -244,50 +110,54 @@ public class WeatherService {
                 .sorted(Comparator.comparing(DailyForecast::getDate))
                 .limit(3)
                 .collect(Collectors.toList());
-
-
-        return dailyForecasts;
     }
 
     /**
-     * 위경도 -> 기상청 X, Y 값 변환
-     * @param mode
-     * @param latitude
-     * @param longitude
-     * @return
+     * 위경도를 기상청 격자 X, Y 값으로 변환하거나, 반대로 변환하는 메서드
+     * Lambert Conformal Conic (LCC) 방식의 투영 변환을 사용합니다.
+     *
+     * @param mode 변환 모드 (0: 위경도 -> 격자 좌표, 1: 격자 좌표 -> 위경도)
+     * @param latitude 변환하려는 위도 (또는 격자 좌표 X 값, mode에 따라 다름)
+     * @param longitude 변환하려는 경도 (또는 격자 좌표 Y 값, mode에 따라 다름)
+     * @return 변환된 좌표 또는 위경도 값을 포함한 LatXLngY 객체
      */
     private LatXLngY convertGRID_GPS(int mode, double latitude, double longitude) {
+        // 지구 및 격자 기본 설정 값 정의
         double RE = 6371.00877; // 지구 반경(km)
         double GRID = 5.0; // 격자 간격(km)
         double SLAT1 = 30.0; // 투영 위도1(degree)
         double SLAT2 = 60.0; // 투영 위도2(degree)
         double OLON = 126.0; // 기준점 경도(degree)
         double OLAT = 38.0; // 기준점 위도(degree)
-        double XO = 43; // 기준점 X좌표(GRID)
-        double YO = 136; // 기준점 Y좌표(GRID)
+        double XO = 43; // 기준점 X좌표 (GRID)
+        double YO = 136; // 기준점 Y좌표 (GRID)
 
-        // LCC DFS 좌표변환 ( code : "TO_GRID"(위경도->좌표, latitude:위도,  longitude:경도), "TO_GPS"(좌표->위경도,  latitude:x, longitude:y) )
-
+        // 각종 수학 상수 정의
         double DEGRAD = Math.PI / 180.0;
         double RADDEG = 180.0 / Math.PI;
 
+        // 기본 계산 값 설정
         double re = RE / GRID;
         double slat1 = SLAT1 * DEGRAD;
         double slat2 = SLAT2 * DEGRAD;
         double olon = OLON * DEGRAD;
         double olat = OLAT * DEGRAD;
 
+        // Lambert Conformal Conic (LCC) 방정식 계산
         double sn = Math.tan(Math.PI * 0.25 + slat2 * 0.5) / Math.tan(Math.PI * 0.25 + slat1 * 0.5);
         sn = Math.log(Math.cos(slat1) / Math.cos(slat2)) / Math.log(sn);
         double sf = Math.tan(Math.PI * 0.25 + slat1 * 0.5);
         sf = Math.pow(sf, sn) * Math.cos(slat1) / sn;
         double ro = Math.tan(Math.PI * 0.25 + olat * 0.5);
         ro = re * sf / Math.pow(ro, sn);
+
+        // 반환 객체 초기화
         LatXLngY rs = new LatXLngY();
 
-        if (mode == TO_GRID) {
-            rs.lat = latitude;
-            rs.lng = longitude;
+        // 변환 모드에 따라 처리
+        if (mode == TO_GRID) { // 위경도 -> 격자 좌표 변환
+            rs.lat = latitude; // 입력 위도
+            rs.lng = longitude; // 입력 경도
             double ra = Math.tan(Math.PI * 0.25 + (latitude) * DEGRAD * 0.5);
             ra = re * sf / Math.pow(ra, sn);
             double theta = longitude * DEGRAD - olon;
@@ -297,11 +167,9 @@ public class WeatherService {
             rs.x = Math.floor(ra * Math.sin(theta) + XO + 0.5);
             rs.y = Math.floor(ro - ra * Math.cos(theta) + YO + 0.5);
 
-        }
-
-        else {
-            rs.x = latitude;
-            rs.y = longitude;
+        } else { // 격자 좌표 -> 위경도 변환
+            rs.x = latitude; // 입력 격자 X값
+            rs.y = longitude; // 입력 격자 Y값
             double xn = latitude - XO;
             double yn = ro - longitude + YO;
             double ra = Math.sqrt(xn * xn + yn * yn);
@@ -310,29 +178,165 @@ public class WeatherService {
             }
             double alat = Math.pow((re * sf / ra), (1.0 / sn));
             alat = 2.0 * Math.atan(alat) - Math.PI * 0.5;
-            double theta = 0.0;
-            if (Math.abs(xn) <= 0.0) {
-                theta = 0.0;
-            }
-            else {
-                if (Math.abs(yn) <= 0.0) {
-                    theta = Math.PI * 0.5;
-                    if (xn < 0.0) {
-                        theta = -theta;
-                    }
-                }
-                else theta = Math.atan2(xn, yn);
-            }
+            double theta = Math.abs(xn) <= 0.0 ? 0.0 : Math.atan2(xn, yn);
             double alon = theta / sn + olon;
             rs.lat = alat * RADDEG;
             rs.lng = alon * RADDEG;
         }
 
-        return rs;
+        return rs; // 변환 결과 반환
+    }
+
+    /**
+     * 기상 정보를 생성하는 메서드
+     * 제공된 X, Y 좌표와 외부 API를 호출하여 기상 데이터를 가져옵니다.
+     *
+     * @param x 예보 지점의 X 좌표 값
+     * @param y 예보 지점의 Y 좌표 값
+     * @throws IOException 외부 API 호출 또는 응답 처리 중 오류 발생 시 예외를 던집니다.
+     */
+    public void createWeather(Integer x, Integer y) throws IOException {
+        // 어제 날짜를 "yyyyMMdd" 형식으로 포맷
+        String date = LocalDate.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+
+        // URL 빌더 초기화 및 외부 API 호출 주소 생성
+        StringBuilder urlBuilder = new StringBuilder("http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst");
+        urlBuilder.append("?").append(URLEncoder.encode("serviceKey", StandardCharsets.UTF_8)).append("=").append(serviceKey); // 서비스 키 추가
+        urlBuilder.append("&").append(URLEncoder.encode("pageNo", StandardCharsets.UTF_8)).append("=").append(URLEncoder.encode("1", StandardCharsets.UTF_8)); // 페이지 번호
+        urlBuilder.append("&").append(URLEncoder.encode("numOfRows", StandardCharsets.UTF_8)).append("=").append(URLEncoder.encode("900", StandardCharsets.UTF_8)); // 결과 수
+        urlBuilder.append("&").append(URLEncoder.encode("dataType", StandardCharsets.UTF_8)).append("=").append(URLEncoder.encode("JSON", StandardCharsets.UTF_8)); // 요청 데이터 형식(JSON)
+        urlBuilder.append("&").append(URLEncoder.encode("base_date", StandardCharsets.UTF_8)).append("=").append(URLEncoder.encode(date, StandardCharsets.UTF_8)); // 기준 날짜
+        urlBuilder.append("&").append(URLEncoder.encode("base_time", StandardCharsets.UTF_8)).append("=").append(URLEncoder.encode("2300", StandardCharsets.UTF_8)); // 기준 시간 (23시)
+        urlBuilder.append("&").append(URLEncoder.encode("nx", StandardCharsets.UTF_8)).append("=").append(URLEncoder.encode(String.valueOf(x), StandardCharsets.UTF_8)); // X 좌표
+        urlBuilder.append("&").append(URLEncoder.encode("ny", StandardCharsets.UTF_8)).append("=").append(URLEncoder.encode(String.valueOf(y), StandardCharsets.UTF_8)); // Y 좌표
+
+        // URL 객체 생성
+        URL url = new URL(urlBuilder.toString());
+
+        // HTTP 연결 초기화 및 설정
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET"); // HTTP GET 요청 설정
+
+        // 응답 코드 확인 및 처리
+        if (conn.getResponseCode() == 200) { // 성공 응답 코드(200)
+            processWeatherData(conn.getInputStream()); // 기상 데이터 파싱 메서드 호출
+        } else {
+            // 실패할 경우 예외 던지기
+            throw new RuntimeException("API 응답을 읽는 데 실패했습니다. 응답 코드: " + conn.getResponseCode());
+        }
+    }
+
+    /**
+     * 기상 데이터를 파싱하고 저장하는 메서드
+     * 외부 API에서 가져온 데이터를 처리하여 Weather 엔티티로 변환 후 데이터베이스에 저장합니다.
+     *
+     * @param body 외부 API의 InputStream 데이터
+     * @throws RuntimeException JSON 파싱 또는 데이터베이스 저장 중 오류 발생 시 예외를 던집니다.
+     */
+    private void processWeatherData(InputStream body) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Weather.WeatherBuilder> weatherMap = new HashMap<>();
+
+        try {
+            // InputStream을 WeatherResponse 객체로 변환
+            WeatherResponse response = objectMapper.readValue(body, WeatherResponse.class);
+
+            // WeatherDto 리스트를 순회하며 Weather 엔티티 빌더 생성 및 값 설정
+            for (WeatherDto item : response.getItems()) {
+                LocalDate forecastDate = LocalDate.parse(item.getFcstDate(), DateTimeFormatter.ofPattern("yyyyMMdd"));
+
+                // 오늘 이전이거나 오늘+3일 이후의 데이터는 무시
+                if (forecastDate.isBefore(LocalDate.now()) || forecastDate.isAfter(LocalDate.now().plusDays(2))) {
+                    continue;
+                }
+
+                // 그룹핑 키: 날짜와 시간 결합 (예: "202503222300")
+                String key = item.getFcstDate() + item.getFcstTime();
+
+                // 빌더가 존재하면 가져오고, 없으면 새로 생성 (기본값 설정)
+                Weather.WeatherBuilder builder = weatherMap.getOrDefault(key, Weather.builder()
+                        .date(forecastDate)
+                        .time(LocalTime.parse(item.getFcstTime(), DateTimeFormatter.ofPattern("HHmm")))
+                        .locationX(item.getNx())
+                        .locationY(item.getNy())
+                        .probability(0)
+                        .humidity(0)
+                        .temperature(0)
+                        .minTemp(0.0)
+                        .maxTemp(0.0)
+                        .windDirection(0)
+                        .winding(0.0)
+                        .sky(Sky.LUCIDITY)
+                        .precipitation(Precipitation.NONE)
+                );
+
+                // 카테고리별 필드 값 설정
+                switch (item.getCategory()) {
+                    case "POP":
+                        builder.probability(Integer.parseInt(item.getFcstValue()));
+                        break;
+                    case "PTY":
+                        int ptyVal = Integer.parseInt(item.getFcstValue());
+                        builder.precipitation(
+                                switch (ptyVal) {
+                                    case 1 -> Precipitation.RAIN;
+                                    case 2 -> Precipitation.RAINSNOW;
+                                    case 3 -> Precipitation.SNOW;
+                                    case 5 -> Precipitation.RAINDROP;
+                                    case 6 -> Precipitation.RAINDROPBLAST;
+                                    case 7 -> Precipitation.BLAST;
+                                    default -> Precipitation.NONE;
+                                }
+                        );
+                        break;
+                    case "REH":
+                        builder.humidity(Integer.parseInt(item.getFcstValue()));
+                        break;
+                    case "SKY":
+                        int skyVal = Integer.parseInt(item.getFcstValue());
+                        builder.sky(skyVal == 1 ? Sky.LUCIDITY : (skyVal == 3 ? Sky.CLOUDY : Sky.BLUR));
+                        break;
+                    case "TMP":
+                        builder.temperature(Integer.parseInt(item.getFcstValue()));
+                        break;
+                    case "TMN":
+                        builder.minTemp(Double.parseDouble(item.getFcstValue()));
+                        break;
+                    case "TMX":
+                        builder.maxTemp(Double.parseDouble(item.getFcstValue()));
+                        break;
+                    case "VEC":
+                        builder.windDirection(Integer.parseInt(item.getFcstValue()));
+                        break;
+                    case "WSD":
+                        builder.winding(Double.parseDouble(item.getFcstValue()));
+                        break;
+                    default:
+                        break;
+                }
+
+                // 맵에 빌더 저장
+                weatherMap.put(key, builder);
+            }
+
+            // Weather 엔티티 생성 및 데이터베이스 저장
+            for (Weather.WeatherBuilder builder : weatherMap.values()) {
+                Weather weather = builder.build();
+                weatherRepository.save(weather);
+                log.info("저장된 Weather 엔티티: {}", weather);
+            }
+
+            // 트랜잭션 상태를 반영하고 영속성 컨텍스트 정리
+            weatherRepository.flush();
+            em.clear();
+
+        } catch (Exception e) {
+            throw new RuntimeException("기상 데이터 처리 중 오류 발생: " + e.getMessage());
+        }
     }
 
     @Getter
-    class LatXLngY {
+    static class LatXLngY {
         public double lat;
         public double lng;
 

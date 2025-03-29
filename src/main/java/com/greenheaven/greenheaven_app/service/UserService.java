@@ -33,10 +33,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
+import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -127,36 +124,43 @@ public class UserService {
             String apiUrl = "https://dapi.kakao.com/v2/local/search/address.json?page=1&size=10&query=" + address;
             URL url = new URL(apiUrl);
 
-            // API 호출을 위한 연결 설정
-            URLConnection conn = url.openConnection();
+            // HTTP 연결 초기화 및 설정
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET"); // HTTP GET 요청 설정
+            conn.setRequestProperty("Authorization", "KakaoAK " + kakaoKey); // 인증 헤더 설정
+            conn.setConnectTimeout(5000); // 연결 타임아웃 설정 (5초)
+            conn.setReadTimeout(5000); // 읽기 타임아웃 설정 (5초)
 
-            // API 인증 헤더 설정
-            conn.setRequestProperty("Authorization", "KakaoAK " + kakaoKey);
+            // 응답 코드 확인 및 처리
+            if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) { // 응답 코드 200 (성공)
+                // API 응답 데이터를 읽어들이기 위한 BufferedReader 초기화
+                BufferedReader jsonReader = new BufferedReader(
+                        new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8)
+                );
 
-            // API 응답 데이터를 읽어들이기 위한 BufferedReader 초기화
-            BufferedReader jsonReader = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8));
-            StringBuilder jsonString = new StringBuilder();
-            String line;
+                StringBuilder jsonString = new StringBuilder();
+                String line;
+                while ((line = jsonReader.readLine()) != null) {
+                    jsonString.append(line);
+                }
+                jsonReader.close();
 
-            while ((line = jsonReader.readLine()) != null) {
-                jsonString.append(line);
-            }
+                // JSON 문자열을 파싱하여 위도 y, 경도 x 좌표 추출
+                JSONParser parser = new JSONParser();
+                JSONObject document = (JSONObject) parser.parse(jsonString.toString());
+                JSONArray documents = (JSONArray) document.get("documents");
 
-            jsonReader.close();
+                if (documents != null && !documents.isEmpty()) {
+                    JSONObject position = (JSONObject) documents.get(0);
+                    float lat = Float.parseFloat((String) position.get("y")); // 위도 y값 추출
+                    float lon = Float.parseFloat((String) position.get("x")); // 경도 x값 추출
 
-            // JSON 문자열을 파싱하여 위도 y, 경도 x 좌표 추출
-            JSONParser parser = new JSONParser();
-            JSONObject document = (JSONObject) parser.parse(jsonString.toString());
-            JSONArray documents = (JSONArray) document.get("documents");
-
-            if (documents != null && !documents.isEmpty()) {
-                JSONObject position = (JSONObject) documents.get(0);
-                float lat = Float.parseFloat((String) position.get("y")); // 위도 y값 추출
-                float lon = Float.parseFloat((String) position.get("x")); // 경도 x값 추출
-
-                // 좌표를 HashMap에 저장
-                coordinates.put("latitude", lat);
-                coordinates.put("longitude", lon);
+                    // 좌표를 HashMap에 저장
+                    coordinates.put("latitude", lat);
+                    coordinates.put("longitude", lon);
+                }
+            } else {
+                System.err.println("API 응답 실패. 응답 코드: " + conn.getResponseCode());
             }
         } catch (UnsupportedEncodingException e) {
             System.err.println("주소 인코딩 실패: " + e.getMessage());
