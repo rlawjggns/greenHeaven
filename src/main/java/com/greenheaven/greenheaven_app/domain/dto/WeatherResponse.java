@@ -8,14 +8,12 @@ import lombok.Setter;
 import java.util.List;
 
 @Getter
-@Setter
 @JsonIgnoreProperties(ignoreUnknown = true)  // 불필요한 필드 무시
 public class WeatherResponse {
     @JsonProperty("response")
     private Response response;
 
     @Getter
-    @Setter
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Response {
         @JsonProperty("body")
@@ -23,7 +21,6 @@ public class WeatherResponse {
     }
 
     @Getter
-    @Setter
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Body {
         @JsonProperty("items")
@@ -31,14 +28,26 @@ public class WeatherResponse {
     }
 
     @Getter
-    @Setter
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Items {
         @JsonProperty("item")
-        private List<WeatherDto> item;
+        private List<Item> item;
     }
 
-    public List<WeatherDto> getItems() {
+    @Getter
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class Item {
+        private String baseDate;
+        private String baseTime;
+        private String category;
+        private String fcstDate;
+        private String fcstTime;
+        private String fcstValue;
+        private Integer nx;
+        private Integer ny;
+    }
+
+    public List<Item> getItems() {
         return response.body.items.item; // 데이터 리스트 반환
     }
 }

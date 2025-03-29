@@ -16,25 +16,25 @@
         <h2 class="text-2xl font-semibold text-white mb-20 mt-40 text-center" th:text="${address}"></h2>
         <!-- 3일치 요약 날씨 카드 (weatherList 사용) -->
         <div class="relative z-10 w-full max-w-5xl grid grid-cols-1 md:grid-cols-3 gap-10 p-8">
-            <div th:each="dto : ${weatherList}" class="bg-gray-800 p-6 rounded-lg shadow-lg">
+            <div th:each="weather : ${threeDaysWeather}" class="bg-gray-800 p-6 rounded-lg shadow-lg">
                 <!-- 날짜 (요일, 월/일 형태로 표시) -->
                 <h2 class="text-3xl font-bold mb-2 text-center"
-                    th:text="${#temporals.format(dto.date, 'E, MMM dd')}">월, Mar 20</h2>
+                    th:text="${#temporals.format(weather.date, 'E, MMM dd')}">월, Mar 20</h2>
 
                 <!-- 대표 기온과 하늘 상태 -->
                 <div class="flex flex-col items-center">
                     <!-- 대표 기온 -->
                     <div class="text-6xl font-extrabold text-green-300"
-                         th:text="${dto.representative.temperature} + '°C'">18°C</div>
+                         th:text="${weather.representative.temperature} + '°C'">18°C</div>
                     <!-- 하늘 상태 -->
                     <div class="text-xl text-gray-200 mt-2"
-                         th:text="${dto.representative.sky.getDisplayName()}">맑음</div>
+                         th:text="${weather.representative.sky.getDisplayName()}">맑음</div>
                 </div>
 
                 <!-- 최저/최고 기온 -->
                 <div class="flex justify-center mt-4">
-                    <span class="text-sm text-gray-300" th:text="'최저 ' + ${dto.minTemp} + '°C'">최저 12°C</span>
-                    <span class="text-sm text-gray-300 ml-2" th:text="'최고 ' + ${dto.maxTemp} + '°C'">최고 21°C</span>
+                    <span class="text-sm text-gray-300" th:text="'최저 ' + ${weather.minTemp} + '°C'">최저 12°C</span>
+                    <span class="text-sm text-gray-300 ml-2" th:text="'최고 ' + ${weather.maxTemp} + '°C'">최고 21°C</span>
                 </div>
 
                 <!-- 추가: 시간별 기상 정보 컴포넌트 (기온, 강수, 습도, 풍속 등) -->
@@ -42,19 +42,19 @@
                     <h3 class="text-lg font-semibold mb-2">시간별 기상 정보</h3>
                     <div class="grid grid-cols-2 gap-4">
                         <!-- 각 시간별 측정값 표시 -->
-                        <div th:each="weather : ${dto.measurements}" class="bg-gray-700 p-2 rounded flex flex-col items-center">
+                        <div th:each="weatherByHour : ${weather.measurements}" class="bg-gray-700 p-2 rounded flex flex-col items-center">
                             <!-- 시간 (HH:mm 형식) -->
-                            <span class="text-sm" th:text="${#temporals.format(weather.time, 'HH:mm')}">12:00</span>
+                            <span class="text-sm" th:text="${#temporals.format(weatherByHour.time, 'HH:mm')}">12:00</span>
                             <!-- 기온 -->
-                            <span class="text-lg font-bold" th:text="${weather.temperature} + '°C'">18°C</span>
+                            <span class="text-lg font-bold" th:text="${weatherByHour.temperature} + '°C'">18°C</span>
                             <!-- 강수확률 -->
-                            <span class="text-xs text-gray-300" th:text="'강수확률: ' + ${weather.probability} + '%'">강수확률: 20%</span>
+                            <span class="text-xs text-gray-300" th:text="'강수확률: ' + ${weatherByHour.probability} + '%'">강수확률: 20%</span>
                             <!-- 강수형태 -->
-                            <span class="text-xs text-gray-300" th:text="'강수: ' + ${weather.precipitation.getDisplayName()}">강수: NONE</span>
+                            <span class="text-xs text-gray-300" th:text="'강수: ' + ${weatherByHour.precipitation.getDisplayName()}">강수: NONE</span>
                             <!-- 습도 -->
-                            <span class="text-xs text-gray-300" th:text="'습도: ' + ${weather.humidity} + '%'">습도: 55%</span>
+                            <span class="text-xs text-gray-300" th:text="'습도: ' + ${weatherByHour.humidity} + '%'">습도: 55%</span>
                             <!-- 풍속 -->
-                            <span class="text-xs text-gray-300" th:text="'풍속: ' + ${weather.winding} + ' m/s'">풍속: 3.5 m/s</span>
+                            <span class="text-xs text-gray-300" th:text="'풍속: ' + ${weatherByHour.winding} + ' m/s'">풍속: 3.5 m/s</span>
                         </div>
                     </div>
                 </div>

@@ -23,7 +23,7 @@ public class WeatherController {
      */
     @GetMapping("/weather")
     public String showWeather(Model model) throws IOException {
-        model.addAttribute("weatherList", weatherService.getThreeDaysWeather());
+        model.addAttribute("threeDaysWeather", weatherService.getThreeDaysWeather());
         model.addAttribute("address",userService.getAddress());
         return "weather";
     }
