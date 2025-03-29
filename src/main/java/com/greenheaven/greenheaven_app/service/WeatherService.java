@@ -180,6 +180,11 @@ public class WeatherService {
     }
 
 
+    /**
+     *
+     * @return
+     * @throws IOException
+     */
     public List<DailyForecast> getThreeDayForecast() throws IOException {
         String email = UserService.getAuthenticatedUserEmail();
 
@@ -244,6 +249,13 @@ public class WeatherService {
         return dailyForecasts;
     }
 
+    /**
+     * 위경도 -> 기상청 X, Y 값 변환
+     * @param mode
+     * @param latitude
+     * @param longitude
+     * @return
+     */
     private LatXLngY convertGRID_GPS(int mode, double latitude, double longitude) {
         double RE = 6371.00877; // 지구 반경(km)
         double GRID = 5.0; // 격자 간격(km)
