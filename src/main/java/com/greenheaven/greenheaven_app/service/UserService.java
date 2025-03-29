@@ -37,11 +37,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 @Service
 @Transactional
@@ -58,9 +56,12 @@ public class UserService {
 
     /**
      * 이메일 중복 확인 서비스 로직
+     * 특정 이메일의 중복 여부 확인
+     *
      * @param email 중복 여부를 확인할 이메일
-     * @return 이메일이 이미 등록된 유저가 있으면 유저를 포함한 Optional, 없으면 비어있는 Optional 반환
+     * @return 이미 등록된 이메일이 있으면 해당 유저를 포함한 Optional, 없으면 비어있는 Optional 반환
      */
+
     public Optional<User> checkEmail(String email) {
         // 이메일로 가입된 유저가 있는지 조회한 결과 반환
         return userRepository.findByEmail(email);
@@ -68,8 +69,11 @@ public class UserService {
 
     /**
      * 회원가입 서비스 로직
+     * 새로운 유저를 생성하고 저장
+     *
      * @param request 회원가입에 필요한 정보를 담은 DTO
      */
+
     public void SignUp(UserSignUpDto request) {
         // 이미 가입된 이메일인 경우 예외 처리
         if (checkEmail(request.getEmail()).isPresent()) {
@@ -82,7 +86,8 @@ public class UserService {
         }
 
         // 주소를 통해 x, y 값 얻어오기
-        ArrayList XandY = getKakaoApiFromAddress(request.getAddress());
+        Map<String, Float> coordinates = getCoordinates(request.getAddress());
+
 
         // 유저의 구독 개체 생성
         Subscription subscription = new Subscription(
@@ -97,8 +102,8 @@ public class UserService {
                 .email(request.getEmail())
                 .subscription(subscription)
                 .address(request.getAddress())
-                .latitude((float) XandY.get(0))
-                .longitude((float) XandY.get(1))
+                .latitude(coordinates.get("latitude")) // 위도
+                .longitude(coordinates.get("longitude")) // 경도
                 .build();
 
         // 유저 저장
@@ -106,60 +111,64 @@ public class UserService {
     }
 
     /**
-     * 카카오 주소 -> x, y 좌표 API 호출
+     * 주소 -> x, y 좌표 변환
+     * 제공된 주소를 이용해 x, y 좌표를 반환하는 Kakao API 호출 메서드
      *
-     * @return
-     * @throws
+     * @param address 변환할 주소
+     * @return 주소에 해당하는 x(경도), y(위도) 좌표를 포함한 Map
      */
-    public ArrayList getKakaoApiFromAddress(String address) {
-        String jsonString = null;
-
+    public Map<String, Float> getCoordinates(String address) {
+        Map<String, Float> coordinates = new HashMap<>();
         try {
-            address = URLEncoder.encode(address, "UTF-8");
-            String addr = "https://dapi.kakao.com/v2/local/search/address.json?page=1&size=10&query=" + address;
-            URL url = new URL(addr);
+            // 주소를 UTF-8로 인코딩하여 카카오 API에 적합한 형식으로 변경
+            address = URLEncoder.encode(address, StandardCharsets.UTF_8);
+
+            // 카카오 주소 검색 API의 엔드포인트 생성
+            String apiUrl = "https://dapi.kakao.com/v2/local/search/address.json?page=1&size=10&query=" + address;
+            URL url = new URL(apiUrl);
+
+            // API 호출을 위한 연결 설정
             URLConnection conn = url.openConnection();
-            conn.setRequestProperty("Authorization", "KakaoAK " + kakaoKey);
-            BufferedReader json = null;
-            json = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
-            StringBuffer docJson = new StringBuffer();
-            String line;
-            while ((line = json.readLine()) != null) {
-                docJson.append(line);
-            }
-            jsonString = docJson.toString();
-            json.close();
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return changeToJSON(jsonString);
-    }
 
-    /**
-     * JSON 변환 로직
-     * @return
-     * @throws
-     */
-    public ArrayList changeToJSON(String jsonString) {
-        ArrayList<Float> array = new ArrayList<>();
-        JSONParser parser = new JSONParser();
-        JSONObject document = null;
-        try {
-            document = (JSONObject)parser.parse(jsonString);
+            // API 인증 헤더 설정
+            conn.setRequestProperty("Authorization", "KakaoAK " + kakaoKey);
+
+            // API 응답 데이터를 읽어들이기 위한 BufferedReader 초기화
+            BufferedReader jsonReader = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8));
+            StringBuilder jsonString = new StringBuilder();
+            String line;
+
+            while ((line = jsonReader.readLine()) != null) {
+                jsonString.append(line);
+            }
+
+            jsonReader.close();
+
+            // JSON 문자열을 파싱하여 위도 y, 경도 x 좌표 추출
+            JSONParser parser = new JSONParser();
+            JSONObject document = (JSONObject) parser.parse(jsonString.toString());
+            JSONArray documents = (JSONArray) document.get("documents");
+
+            if (documents != null && !documents.isEmpty()) {
+                JSONObject position = (JSONObject) documents.get(0);
+                float lat = Float.parseFloat((String) position.get("y")); // 위도 y값 추출
+                float lon = Float.parseFloat((String) position.get("x")); // 경도 x값 추출
+
+                // 좌표를 HashMap에 저장
+                coordinates.put("latitude", lat);
+                coordinates.put("longitude", lon);
+            }
+        } catch (UnsupportedEncodingException e) {
+            System.err.println("주소 인코딩 실패: " + e.getMessage());
+        } catch (MalformedURLException e) {
+            System.err.println("잘못된 URL 형식: " + e.getMessage());
+        } catch (IOException e) {
+            System.err.println("API 호출 오류: " + e.getMessage());
         } catch (ParseException e) {
-            throw new RuntimeException("JSON 파싱 중 오류가 발생했습니다.");
+            System.err.println("JSON 파싱 오류: " + e.getMessage());
         }
-        JSONArray jsonArray = (JSONArray) document.get("documents");
-        JSONObject position = (JSONObject)jsonArray.get(0);
-        float lat = Float.parseFloat((String) position.get("y"));
-        float lon = Float.parseFloat((String) position.get("x"));
-        array.add(lat);
-        array.add(lon);
-        return array;
+
+        return coordinates;
     }
 
     /**
@@ -334,7 +343,8 @@ public class UserService {
     }
 
     /**
-     * 회원탈퇴 서비스 로직(테스트용으로 사용할 오버로딩 메서드)
+     * 회원탈퇴 서비스 로직
+     * (테스트용으로 사용할 오버로딩 메서드)
      * @throws NoSuchElementException 이메일로 유저를 찾지 못할 경우 예외 발생
      */
     public void quit() {
@@ -353,7 +363,7 @@ public class UserService {
     }
     
     /**
-     * 인증된 유저의 주소를 가져오는 메서드
+     * 인증된 유저의 주소 조회
      * @return 유저의 주소
      */
     public String getAddress() {
@@ -369,7 +379,7 @@ public class UserService {
     }
 
     /**
-     * 인증된 유저의 이메일을 가져오는 메서드
+     * 인증된 유저의 이메일 조회
      * @return 유저의 이메일
      */
     public static String getAuthenticatedUserEmail() {

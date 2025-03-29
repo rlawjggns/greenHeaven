@@ -185,7 +185,7 @@ public class WeatherService {
      * @return
      * @throws IOException
      */
-    public List<DailyForecast> getThreeDayForecast() throws IOException {
+    public List<DailyForecast> getThreeDaysWeather() throws IOException {
         String email = UserService.getAuthenticatedUserEmail();
 
         // 이메일로 유저 찾기

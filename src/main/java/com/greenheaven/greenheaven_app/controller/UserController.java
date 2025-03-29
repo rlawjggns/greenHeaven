@@ -103,7 +103,7 @@ public class UserController {
      * @return 비밀번호 찾기결과 페이지로 리다이렉트
      */
     @PostMapping("/password/reset")
-    public String post(@ModelAttribute("userFindPwdDto") @Validated UserFindPwdDto request,
+    public String postFindPwd(@ModelAttribute("userFindPwdDto") @Validated UserFindPwdDto request,
                        BindingResult bindingResult, Model model, RedirectAttributes redirectAttributes) {
         // 사용자 입력 검증 중 오류 발생 시, 각 필드에 해당하는 에러 메시지를 모델에 추가 한 뒤 기존 페이지로 돌아간다
         if (bindingResult.hasErrors()) {
@@ -117,7 +117,7 @@ public class UserController {
         if (userService.checkEmail(request.getEmail()).isEmpty()) {
             model.addAttribute("checkEmailError", "해당 이메일을 찾을 수 없습니다."); // 모델에 에러 담기
             return "findpwd";
-        } else { // 이메일로 유저를 찾으면, 리다이렉트할 페이지에 유저 이메일을 추가한 뒤 리다이렉트
+        } else { // 이메일로 유저를 찾으면, 리다이렉트할 페이지에 표시할 유저 이메일을 redirectAttributes에 추가한 뒤 리다이렉트
             redirectAttributes.addFlashAttribute("userEmail", request.getEmail());
             return "redirect:/user/password/reset/confirm";
         }

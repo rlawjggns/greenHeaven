@@ -14,9 +14,9 @@
     <main class="relative flex flex-col items-center justify-center min-h-screen mt-40">
         <!-- 메인 컨텐츠 -->
         <h2 class="text-2xl font-semibold text-white mb-20 mt-40 text-center" th:text="${address}"></h2>
-        <!-- 3일치 요약 날씨 카드 (forecastList 사용) -->
+        <!-- 3일치 요약 날씨 카드 (weatherList 사용) -->
         <div class="relative z-10 w-full max-w-5xl grid grid-cols-1 md:grid-cols-3 gap-10 p-8">
-            <div th:each="dto : ${forecastList}" class="bg-gray-800 p-6 rounded-lg shadow-lg">
+            <div th:each="dto : ${weatherList}" class="bg-gray-800 p-6 rounded-lg shadow-lg">
                 <!-- 날짜 (요일, 월/일 형태로 표시) -->
                 <h2 class="text-3xl font-bold mb-2 text-center"
                     th:text="${#temporals.format(dto.date, 'E, MMM dd')}">월, Mar 20</h2>
