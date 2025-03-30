@@ -31,6 +31,7 @@
                         <th class="px-4 py-2 text-left text-sm font-medium uppercase tracking-wider">작물 종류</th>
                         <th class="px-4 py-2 text-left text-sm font-medium uppercase tracking-wider">파종일</th>
                         <th class="px-4 py-2 text-left text-sm font-medium uppercase tracking-wider">수확일</th>
+                        <th class="px-4 py-2 text-left text-sm font-medium uppercase tracking-wider">남은수확일</th>
                         <th class="px-4 py-2 text-right text-sm font-medium uppercase tracking-wider">수량 (kg)</th>
                         <th class="px-4 py-2 text-center text-sm font-medium uppercase tracking-wider">수확하기</th>
                         <th class="px-4 py-2 text-center text-sm font-medium uppercase tracking-wider">삭제하기</th>
@@ -39,9 +40,10 @@
                     <tbody class="bg-gray-800 divide-y divide-gray-700">
                     <tr th:each="crop : ${crops}" class="hover:bg-gray-700">
                         <td class="px-4 py-2 whitespace-nowrap" th:text="${crop.name}"></td>
-                        <td class="px-4 py-2 whitespace-nowrap" th:text="${crop.type}"></td>
+                        <td class="px-4 py-2 whitespace-nowrap" th:text="${crop.typeName}"></td>
                         <td class="px-4 py-2 whitespace-nowrap" th:text="${crop.plantDate}"></td>
                         <td class="px-4 py-2 whitespace-nowrap" th:text="${crop.harvestDate}"></td>
+                        <td class="px-4 py-2 whitespace-nowrap" th:text="${crop.remainDays}"></td>
                         <td class="px-4 py-2 whitespace-nowrap text-right" th:text="${crop.quantity}"></td>
                         <td class="px-4 py-2 whitespace-nowrap text-center">
                             <a th:href="@{/crop/harvest/{id}(id=${crop.id})}"

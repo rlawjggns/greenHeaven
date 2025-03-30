@@ -1,5 +1,6 @@
 package com.greenheaven.greenheaven_app.controller;
 
+import com.greenheaven.greenheaven_app.domain.dto.CropListResponsetDto;
 import com.greenheaven.greenheaven_app.domain.dto.CropRequestDto;
 import com.greenheaven.greenheaven_app.domain.entity.Crop;
 import com.greenheaven.greenheaven_app.domain.entity.CropType;
@@ -54,8 +55,8 @@ public class CropController {
 
     @GetMapping("/overview")
     public String getCropOverview(Model model) {
-        List<Crop> crops = cropService.getCropListTen(); // 현재 사용자 기준 작물 리스트 가져오기
+        List<CropListResponsetDto> crops = cropService.getCropListTen(); // 현재 사용자 기준 작물 리스트 가져오기
         model.addAttribute("crops", crops);
-        return "crop_overview"; // 위의 Thymeleaf 파일
+        return "crop_overview"; // Thymeleaf 파일
     }
 }

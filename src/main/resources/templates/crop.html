@@ -46,17 +46,19 @@
                     <tr>
                         <th class="px-4 py-2 border-b border-gray-600">작물</th>
                         <th class="px-4 py-2 border-b border-gray-600">파종일</th>
+                        <th class="px-4 py-2 border-b border-gray-600">남은수확일</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr th:each="crop : ${crops}">
-                        <td class="px-4 py-2 border-b border-gray-600" th:text="${crop.type}">작물 이름</td>
+                        <td class="px-4 py-2 border-b border-gray-600" th:text="${crop.typeName}">작물 이름</td>
                         <td class="px-4 py-2 border-b border-gray-600" th:text="${crop.plantDate}">파종일</td>
+                        <td class="px-4 py-2 border-b border-gray-600" th:text="${crop.remainDays}">남은수확일</td>
                     </tr>
                     </tbody>
                 </table>
                 <div th:if="${#lists.isEmpty(crops)}" class="text-gray-400 text-center py-4">
-                    작물이 없습니다.
+                    등록된 작물이 없어요 🍆
                 </div>
             </section>
 
@@ -80,8 +82,8 @@
                     </tr>
                     </tbody>
                 </table>
-                <div th:if="${#lists.isEmpty(crops)}" class="text-gray-400 text-center py-4">
-                    최근 알림이 없습니다.
+                <div th:if="${#lists.isEmpty(notifications)}" class="text-gray-400 text-center py-4">
+                    최근 알림이 없어요 😳
                 </div>
             </section>
         </main>

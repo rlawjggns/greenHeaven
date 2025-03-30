@@ -1,5 +1,6 @@
 package com.greenheaven.greenheaven_app.service;
 
+import com.greenheaven.greenheaven_app.domain.dto.CropListResponsetDto;
 import com.greenheaven.greenheaven_app.domain.dto.CropRequestDto;
 import com.greenheaven.greenheaven_app.domain.entity.Crop;
 import com.greenheaven.greenheaven_app.domain.entity.Member;
@@ -10,8 +11,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -50,7 +54,7 @@ public class CropService {
      * @return 작물 객체 10개
      * @throws NoSuchElementException 이메일로 유저를 찾지 못할 경우 예외 발생
      */
-    public List<Crop> getCropListTen() {
+    public List<CropListResponsetDto> getCropListTen() {
         // 현재 인증된 사용자의 인증 정보 가져오기
         String email = MemberService.getAuthenticatedMemberEmail();
 
@@ -58,7 +62,20 @@ public class CropService {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new NoSuchElementException("해당 유저를 찾을 수 없습니다."));
 
-        // 작물들 반환
-        return cropRepository.findTop10ByMember(member);
+        // 작물들 10개 조회
+        List<Crop> crops = cropRepository.findTop10ByMember(member);
+        
+        // 작물 객체 -> response 객체로 스트림 이용해 변환후 반환
+        return crops.stream()
+                .map((crop) -> CropListResponsetDto.builder()
+                        .id(crop.getId())
+                        .name(crop.getName())
+                        .typeName(crop.getType().getKorName())
+                        .quantity(crop.getQuantity())
+                        .plantDate(crop.getPlantDate())
+                        .harvestDate(crop.getHarvestDate())
+                        .remainDays(ChronoUnit.DAYS.between(LocalDate.now(), crop.getHarvestDate()))
+                        .build()
+                ).collect(Collectors.toList());
     }
 }
