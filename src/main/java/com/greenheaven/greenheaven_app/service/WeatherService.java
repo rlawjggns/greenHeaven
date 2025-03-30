@@ -67,15 +67,14 @@ public class WeatherService {
                 (int) latXLngY.getX(), (int) latXLngY.getY()
         );
 
-        // 정렬된 기존 데이터의 첫번째 날짜가 최신 날짜가 아닌 경우에는, 기존 데이터를 삭제
-        if (!LocalDate.now().isEqual(existingWeather.get().getDate())) {
+        // 정렬된 기존 데이터가 있고, 첫번째 날짜가 최신 날짜가 아닌 경우에는 기존 데이터를 삭제
+        if (existingWeather.isPresent() && !LocalDate.now().isEqual(existingWeather.get().getDate())) {
             weatherRepository.deleteByLocationXAndLocationY((int) latXLngY.getX(), (int) latXLngY.getY());
         }
 
         // 삭제가 되어서 없거나, 원래부터 데이터가 없었다면
         // 날씨 API 호출 -> 파싱 후 DB저장을 통해 3일간의 새 기상 데이터를 생성
         if (existingWeather.isEmpty()) {
-            weatherRepository.deleteByLocationXAndLocationY((int) latXLngY.getX(), (int) latXLngY.getY());
             callWeatherAPI((int) latXLngY.getX(), (int) latXLngY.getY());
         }
 
