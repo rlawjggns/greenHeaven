@@ -2,7 +2,6 @@ package com.greenheaven.greenheaven_app.controller;
 
 import com.greenheaven.greenheaven_app.domain.dto.CropListResponsetDto;
 import com.greenheaven.greenheaven_app.domain.dto.CropRequestDto;
-import com.greenheaven.greenheaven_app.domain.entity.Crop;
 import com.greenheaven.greenheaven_app.domain.entity.CropType;
 import com.greenheaven.greenheaven_app.service.CropService;
 import com.greenheaven.greenheaven_app.service.NotificationService;
@@ -48,9 +47,12 @@ public class CropController {
         return "redirect:/crop/main";
     }
 
-    @GetMapping("/history")
-    public String getHistory() {
-        return "history";
+    @GetMapping("/growth")
+    public String getHistory(Model model) {
+        CropType selectedCrop = CropType.valueOf("POTATO"); // Enum 값으로 변환
+        model.addAttribute("selectedCrop", selectedCrop);
+        model.addAttribute("cropRequestDto", CropRequestDto.builder().type(selectedCrop).build());
+        return "crop_growth";
     }
 
     @GetMapping("/overview")
