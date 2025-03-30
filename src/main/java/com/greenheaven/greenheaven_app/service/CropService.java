@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -77,5 +78,13 @@ public class CropService {
                         .remainDays(ChronoUnit.DAYS.between(LocalDate.now(), crop.getHarvestDate()))
                         .build()
                 ).collect(Collectors.toList());
+    }
+
+
+    /**
+     * 등록된 작물 수확/삭제
+     */
+    public void deleteCrop(String cropId) {
+        cropRepository.deleteById(UUID.fromString(cropId));
     }
 }

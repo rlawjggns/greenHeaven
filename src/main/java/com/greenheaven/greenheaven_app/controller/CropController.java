@@ -14,26 +14,34 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Controller
-@RequestMapping("/crop")
 @RequiredArgsConstructor
 @Slf4j
 public class CropController {
     private final CropService cropService;
     private final NotificationService notificationService;
 
-    @GetMapping("/main")
+    /**
+     * 작물관리 메인 페이지
+     */
+    @GetMapping("/crop")
     public String getMain(Model model) {
         model.addAttribute("crops", cropService.getCropListTen());
         model.addAttribute("notifications", notificationService.getNotificationListTen());
         return "crop";
     }
 
-    @GetMapping("/registration")
+    /**
+     * 작물 등록 페이지 1 - 종류 선택
+     */
+    @GetMapping("/crop/registration")
     public String getRegistration() {
         return "crop_registration";
     }
 
-    @GetMapping("/registration/{cropname}")
+    /**
+     * 작물 등록 페이지 2 - 상세 정보 선택
+     */
+    @GetMapping("/crop/registration/{cropname}")
     public String getRegistrationDetail(@PathVariable("cropname") String cropName, Model model) {
         CropType selectedCrop = CropType.valueOf(cropName.toUpperCase()); // Enum 값으로 변환
         model.addAttribute("selectedCrop", selectedCrop);
@@ -41,24 +49,42 @@ public class CropController {
         return "crop_registration_detail";
     }
 
-    @PostMapping("/registration")
+    /**
+     * 작물 등록
+     */
+    @PostMapping("/crop")
     public String postRegistrationDetail(@ModelAttribute CropRequestDto request) {
         cropService.createCrop(request);
-        return "redirect:/crop/main";
+        return "redirect:/crop";
     }
 
-    @GetMapping("/growth")
+    /**
+     * 작물 수확/삭제
+     */
+    @GetMapping("/crop/delete/{id}")
+    public String deleteCrop(@PathVariable("id") String cropId) {
+        cropService.deleteCrop(cropId);
+        return "redirect:/crop";
+    }
+
+    /**
+     * 작물 목록 페이지
+     */
+    @GetMapping("/crops")
+    public String getCropOverview(Model model) {
+        List<CropListResponsetDto> crops = cropService.getCropListTen(); // 현재 사용자 기준 작물 리스트 가져오기
+        model.addAttribute("crops", crops);
+        return "crops"; // Thymeleaf 파일
+    }
+
+    /**
+     * 생장상태 관리 페이지
+     */
+    @GetMapping("/crop/growth")
     public String getHistory(Model model) {
         CropType selectedCrop = CropType.valueOf("POTATO"); // Enum 값으로 변환
         model.addAttribute("selectedCrop", selectedCrop);
         model.addAttribute("cropRequestDto", CropRequestDto.builder().type(selectedCrop).build());
         return "crop_growth";
-    }
-
-    @GetMapping("/overview")
-    public String getCropOverview(Model model) {
-        List<CropListResponsetDto> crops = cropService.getCropListTen(); // 현재 사용자 기준 작물 리스트 가져오기
-        model.addAttribute("crops", crops);
-        return "crop_overview"; // Thymeleaf 파일
     }
 }

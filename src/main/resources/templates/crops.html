@@ -46,7 +46,7 @@
                         <td class="px-4 py-2 whitespace-nowrap" th:text="${crop.remainDays}"></td>
                         <td class="px-4 py-2 whitespace-nowrap text-right" th:text="${crop.quantity}"></td>
                         <td class="px-4 py-2 whitespace-nowrap text-center">
-                            <a th:href="@{/crop/harvest/{id}(id=${crop.id})}"
+                            <a th:href="@{/crop/delete/{id}(id=${crop.id})}"
                                class="inline-block bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition"
                                onclick="return confirm('정말 수확하시겠습니까?');">
                                 수확하기

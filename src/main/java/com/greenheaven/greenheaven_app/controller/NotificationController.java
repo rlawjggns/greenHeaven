@@ -14,15 +14,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Controller
-@RequestMapping("/notification")
 @RequiredArgsConstructor
 @Slf4j
 public class NotificationController {
     private final NotificationService notificationService;
 
-    @GetMapping("/overview")
+    @GetMapping("/notifications")
     public String getNotificationOverview(Model model) {
         model.addAttribute("notifications", notificationService.getNotificationListTen());
-        return "notification_overview";
+        return "notifications";
     }
 }
