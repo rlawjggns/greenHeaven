@@ -15,7 +15,7 @@
     <!-- 회원가입 화면 시작 -->
     <main class="flex items-center justify-center min-h-screen my-60">
         <section class="bg-white p-8 rounded shadow-lg max-w-md w-full">
-            <form method="post" th:action="@{/user/profile}" th:object="${userProfileDto}">
+            <form method="post" th:action="@{/member/profile}" th:object="${memberProfileDto}">
                 <h2 class="flex justify-center text-2xl font-bold mb-6 text-gray-900">정보 수정</h2>
 
                 <!-- 기존 비밀번호 입력 필드 -->
@@ -50,7 +50,7 @@
 
                 <!-- 이름 입력 필드 -->
                 <div class="mb-6">
-                    <label for="name" class="block text-gray-700 text-sm font-bold mb-2" th:field="*{name}" th:value="${userProfileDto.name}">
+                    <label for="name" class="block text-gray-700 text-sm font-bold mb-2" th:field="*{name}" th:value="${memberProfileDto.name}">
                         이름
                         <span th:if="${nameError}" th:text="${nameError}" class="text-red-500 ml-4 text-sm"></span>
                     </label>
@@ -67,7 +67,7 @@
 
                 <!-- 회원 탈퇴 링크 -->
                 <div class="flex justify-end">
-                    <a th:href="@{/user/quit}" class="text-red-500 font-bold my-4 hover:text-red-600">회원탈퇴</a>
+                    <a th:href="@{/member/quit}" class="text-red-500 font-bold my-4 hover:text-red-600">회원탈퇴</a>
                 </div>
             </form>
         </section>

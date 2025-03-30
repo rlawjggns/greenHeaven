@@ -16,7 +16,7 @@ public class NewsController {
 
     @GetMapping("/news")
     public String getNews(Model model) {
-        model.addAttribute("newsList", newsService.getNews());
+        model.addAttribute("newsList", newsService.callNewsAPI());
         return "news";
     }
 }

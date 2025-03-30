@@ -8,7 +8,7 @@
 <!-- 비밀번호 찾기 화면 시작 -->
 <div class="flex items-center justify-center min-h-screen my-60">
     <div class="bg-white p-8 rounded shadow-lg max-w-md w-full">
-        <form method="post" th:action="@{/user/password/reset}" th:object="${userFindPwdDto}">
+        <form method="post" th:action="@{/member/password/reset}" th:object="${memberFindPwdDto}">
             <h2 class="text-2xl font-bold text-gray-900 text-center mb-6">비밀번호 찾기</h2>
 
             <!-- 이메일 입력 -->

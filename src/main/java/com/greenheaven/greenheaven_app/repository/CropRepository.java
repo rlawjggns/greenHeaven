@@ -1,7 +1,7 @@
 package com.greenheaven.greenheaven_app.repository;
 
 import com.greenheaven.greenheaven_app.domain.entity.Crop;
-import com.greenheaven.greenheaven_app.domain.entity.User;
+import com.greenheaven.greenheaven_app.domain.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -10,5 +10,5 @@ import java.util.UUID;
 
 @Repository
 public interface CropRepository extends JpaRepository<Crop, UUID> {
-    List<Crop> findTop10ByUser(User user);
+    List<Crop> findTop10ByMember(Member member);
 }

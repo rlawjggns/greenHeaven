@@ -8,7 +8,7 @@
 <!-- 회원탈퇴 화면 시작 -->
 <div class="flex items-center justify-center min-h-screen my-60">
     <div class="bg-white p-8 rounded shadow-lg max-w-md w-full">
-        <form method="post" th:action="@{/user/quit}">
+        <form method="post" th:action="@{/member/quit}">
             <h2 class="text-2xl font-bold text-gray-900 text-center mb-6">회원탈퇴</h2>
 
             <!-- 탈퇴 안내 메시지 -->
@@ -21,7 +21,7 @@
             <!-- 버튼들 -->
             <div class="flex justify-center mt-6">
                 <!-- 취소 버튼 -->
-                <a class="bg-white hover:bg-gray-100 text-gray-700 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline border border-gray-400 mx-4" type="button" th:href="@{/user/profile}">
+                <a class="bg-white hover:bg-gray-100 text-gray-700 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline border border-gray-400 mx-4" type="button" th:href="@{/member/profile}">
                     취소
                 </a>
                 <!-- 탈퇴하기 버튼 -->

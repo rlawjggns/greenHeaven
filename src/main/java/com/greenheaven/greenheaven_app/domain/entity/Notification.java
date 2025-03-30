@@ -35,14 +35,14 @@ public class Notification {
     private LocalDateTime date; // 알림 날짜
     
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user; // 유저
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member; // 유저
 
     @Builder
-    public Notification(String content, NotificationType type, User user) {
+    public Notification(String content, NotificationType type, Member member) {
         this.content = content;
         this.type = type;
-        this.user = user;
+        this.member = member;
     }
 
     @Override

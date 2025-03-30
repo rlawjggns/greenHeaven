@@ -1,6 +1,6 @@
 package com.greenheaven.greenheaven_app.controller;
 
-import com.greenheaven.greenheaven_app.service.UserService;
+import com.greenheaven.greenheaven_app.service.MemberService;
 import com.greenheaven.greenheaven_app.service.WeatherService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -13,7 +13,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class WeatherController {
     private final WeatherService weatherService;
-    private final UserService userService;
+    private final MemberService memberService;
 
     /**
      * 사용자 주소 기반 날씨 조회
@@ -24,7 +24,7 @@ public class WeatherController {
     @GetMapping("/weather")
     public String showWeather(Model model) throws IOException {
         model.addAttribute("threeDaysWeather", weatherService.getThreeDaysWeather());
-        model.addAttribute("address",userService.getAddress());
+        model.addAttribute("address", memberService.getAddress());
         return "weather";
     }
 }

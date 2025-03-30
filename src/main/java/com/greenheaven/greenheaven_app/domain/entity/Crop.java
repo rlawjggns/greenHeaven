@@ -8,8 +8,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -39,16 +37,16 @@ public class Crop {
     private Double quantity; // 작물 수량
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
 
     @Builder
-    public Crop(String name, CropType type, LocalDate plantDate, LocalDate harvestDate, User user, Double quantity) {
+    public Crop(String name, CropType type, LocalDate plantDate, LocalDate harvestDate, Member member, Double quantity) {
         this.name = name;
         this.type = type;
         this.plantDate = plantDate;
         this.harvestDate = harvestDate;
-        this.user = user;
+        this.member = member;
         this.quantity = quantity;
     }
 

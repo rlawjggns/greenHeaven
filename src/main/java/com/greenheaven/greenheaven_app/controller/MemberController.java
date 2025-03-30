@@ -1,10 +1,10 @@
 package com.greenheaven.greenheaven_app.controller;
 
-import com.greenheaven.greenheaven_app.domain.dto.UserFindPwdDto;
-import com.greenheaven.greenheaven_app.domain.dto.UserProfileDto;
-import com.greenheaven.greenheaven_app.domain.dto.UserSignUpDto;
+import com.greenheaven.greenheaven_app.domain.dto.MemberFindPwdDto;
+import com.greenheaven.greenheaven_app.domain.dto.MemberProfileDto;
+import com.greenheaven.greenheaven_app.domain.dto.MemberSignUpDto;
 import com.greenheaven.greenheaven_app.exception.*;
-import com.greenheaven.greenheaven_app.service.UserService;
+import com.greenheaven.greenheaven_app.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -19,11 +19,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-@RequestMapping("/user")
+@RequestMapping("/member")
 @RequiredArgsConstructor
 @Slf4j
-public class UserController {
-    private final UserService userService;
+public class MemberController {
+    private final MemberService memberService;
     private final PasswordEncoder passwordEncoder;
 
     /**
@@ -44,7 +44,7 @@ public class UserController {
     @GetMapping("/signup")
     public String getSignUp(Model model) {
         // 모델에 회원가입 폼을 담을 DTO를 추가한 뒤, 회원가입 페이지로 이동
-        model.addAttribute("userSignUpDto", UserSignUpDto.builder().build());
+        model.addAttribute("memberSignUpDto", MemberSignUpDto.builder().build());
         return "signup";
     }
 
@@ -57,7 +57,7 @@ public class UserController {
      * @return 로그인 페이지로 리다이렉트
      */
     @PostMapping("/signup")
-    public String postSignUp(@ModelAttribute("userSignUpDto") @Validated UserSignUpDto request,
+    public String postSignUp(@ModelAttribute("memberSignUpDto") @Validated MemberSignUpDto request,
                              BindingResult bindingResult, Model model) throws ParseException {
         // 사용자 입력 검증 중 오류 발생 시, 각 필드에 해당하는 에러 메시지를 모델에 추가 한 뒤 기존 페이지로 돌아간다
         if (bindingResult.hasErrors()) {
@@ -69,7 +69,7 @@ public class UserController {
 
         // 회원가입 로직 수행, 각 필드에 대한 추가 검증 중 예외 발생 시 메시지를 모델에 추가 한 뒤 기존 페이지로 돌아간다
         try {
-            userService.SignUp(request);
+            memberService.SignUp(request);
         } catch (EmailExistException ex) {
             model.addAttribute("emailError", ex.getMessage());
             return "signup";
@@ -79,7 +79,7 @@ public class UserController {
         }
 
         // 로직 성공을 알리는 쿼리 파라미터와 함께 로그인 페이지로 리다이렉트
-        return "redirect:/user/login?signup=true";
+        return "redirect:/member/login?signup=true";
     }
 
     /**
@@ -90,7 +90,7 @@ public class UserController {
     @GetMapping("/password/reset")
     public String getFindPwd(Model model) {
         // 모델에 비밀번호 찾기 폼을 담을 DTO를 추가한 뒤, 비밀번호 찾기 페이지로 이동
-        model.addAttribute("userFindPwdDto", new UserFindPwdDto());
+        model.addAttribute("memberFindPwdDto", new MemberFindPwdDto());
         return "findpwd";
     }
 
@@ -103,7 +103,7 @@ public class UserController {
      * @return 비밀번호 찾기결과 페이지로 리다이렉트
      */
     @PostMapping("/password/reset")
-    public String postFindPwd(@ModelAttribute("userFindPwdDto") @Validated UserFindPwdDto request,
+    public String postFindPwd(@ModelAttribute("memberFindPwdDto") @Validated MemberFindPwdDto request,
                        BindingResult bindingResult, Model model, RedirectAttributes redirectAttributes) {
         // 사용자 입력 검증 중 오류 발생 시, 각 필드에 해당하는 에러 메시지를 모델에 추가 한 뒤 기존 페이지로 돌아간다
         if (bindingResult.hasErrors()) {
@@ -114,12 +114,12 @@ public class UserController {
         }
 
         // 이메일로 유저를 찾지 못하면, 에러 메시지를 모델에 추가 한 뒤 기존 페이지로 돌아간다
-        if (userService.checkEmail(request.getEmail()).isEmpty()) {
+        if (memberService.checkEmail(request.getEmail()).isEmpty()) {
             model.addAttribute("checkEmailError", "해당 이메일을 찾을 수 없습니다."); // 모델에 에러 담기
             return "findpwd";
         } else { // 이메일로 유저를 찾으면, 리다이렉트할 페이지에 표시할 유저 이메일을 redirectAttributes에 추가한 뒤 리다이렉트
-            redirectAttributes.addFlashAttribute("userEmail", request.getEmail());
-            return "redirect:/user/password/reset/confirm";
+            redirectAttributes.addFlashAttribute("memberEmail", request.getEmail());
+            return "redirect:/member/password/reset/confirm";
         }
     }
 
@@ -131,20 +131,20 @@ public class UserController {
     @GetMapping("/password/reset/confirm")
     public String getFindPwdResult(Model model) {
         // 모델에 비밀번호 재설정 폼을 담을 DTO를 추가한 뒤, 비밀번호 재설정 페이지로 이동
-        model.addAttribute("userFindPwdDto", new UserFindPwdDto());
+        model.addAttribute("memberFindPwdDto", new MemberFindPwdDto());
         return "findpwdresult";
     }
 
     /**
      * 유저 비밀번호 재설정 POST
-     * @param userEmail 유저의 이메일
+     * @param memberEmail 유저의 이메일
      * @return 로그인 페이지로 리다이렉트
      */
     @PostMapping("/password/reset/confirm")
-    public String postFindPwdResult(@RequestParam("userEmail") String userEmail) {
+    public String postFindPwdResult(@RequestParam("memberEmail") String memberEmail) {
         // 비밀번호 재설정을 위한 메일 전송 로직 수행 후, 성공을 알리는 쿼리 파라미터와 함께 리다이렉트
-        userService.sendPasswordByEmail(userEmail);
-        return "redirect:/user/login?findpwd=true";
+        memberService.sendPasswordByEmail(memberEmail);
+        return "redirect:/member/login?findpwd=true";
     }
 
 
@@ -156,8 +156,8 @@ public class UserController {
     @GetMapping("/profile")
     public String getProfile(Model model) {
         // 유저 프로필 조회 로직 수행 후, 수행 결과를 담은 DTO를 모델에 추가한다
-        UserProfileDto userProfileDto = userService.getProfile();
-        model.addAttribute("userProfileDto", userProfileDto);
+        MemberProfileDto memberProfileDto = memberService.getProfile();
+        model.addAttribute("memberProfileDto", memberProfileDto);
 
         // 프로필 페이지로 이동
         return "profile";
@@ -171,7 +171,7 @@ public class UserController {
      * @return 메인 페이지로 리다이렉트
      */
     @PostMapping("/profile")
-    public String postFindPwdResult(@ModelAttribute("userProfileDto") @Validated UserProfileDto request,
+    public String postFindPwdResult(@ModelAttribute("memberProfileDto") @Validated MemberProfileDto request,
                                     BindingResult bindingResult, Model model) {
         // 사용자 입력 검증 중 오류 발생 시, 각 필드에 해당하는 에러 메시지를 모델에 추가 한 뒤 기존 페이지로 돌아간다
         if (bindingResult.hasErrors()) {
@@ -183,7 +183,7 @@ public class UserController {
 
         // 프로필 업데이트 로직 수행, 각 필드에 대한 추가 검증 중 예외 발생 시 메시지를 모델에 추가 한 뒤 기존 페이지로 돌아간다
         try {
-            userService.updateProfile(request);
+            memberService.updateProfile(request);
         } catch (OldPasswordMismatchException ex) {
             model.addAttribute("oldPasswordError", ex.getMessage());
             return "profile";
@@ -219,7 +219,7 @@ public class UserController {
     @PostMapping("/quit")
     public String postQuit(HttpServletRequest request, HttpServletResponse response) {
         // 유저 탈퇴 처리
-        userService.quit(request, response);
+        memberService.quit(request, response);
 
         // 메인 페이지로 리다이렉트
         return "redirect:/";

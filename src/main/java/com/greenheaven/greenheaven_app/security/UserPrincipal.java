@@ -1,14 +1,12 @@
 package com.greenheaven.greenheaven_app.security;
 
-import com.greenheaven.greenheaven_app.domain.entity.User;
+import com.greenheaven.greenheaven_app.domain.entity.Member;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -18,11 +16,11 @@ public class UserPrincipal implements UserDetails { // UserDetails 인터페이�
     private final String email;
     private final String password;
 
-    public UserPrincipal(User user) { // User 엔티티 객체를 받아, UserPrincipal 객체의 각 필드를 초기화
-        this.id = user.getId();
-        this.name = user.getName();
-        this.email = user.getEmail();
-        this.password = user.getPassword();
+    public UserPrincipal(Member member) { // User 엔티티 객체를 받아, UserPrincipal 객체의 각 필드를 초기화
+        this.id = member.getId();
+        this.name = member.getName();
+        this.email = member.getEmail();
+        this.password = member.getPassword();
     }
 
     @Override // UserDetailsService에서 요구하는 메서드로, 사용자의 권한을 반환

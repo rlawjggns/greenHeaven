@@ -8,7 +8,7 @@
 <!-- 비밀번호 재설정 화면 시작 -->
 <div class="flex items-center justify-center min-h-screen my-60">
     <div class="bg-white p-8 rounded shadow-lg max-w-md w-full">
-        <form method="post" th:action="@{/user/password/reset/confirm}">
+        <form method="post" th:action="@{/member/password/reset/confirm}">
             <h2 class="text-2xl font-bold text-gray-900 text-center mb-6">비밀번호 재설정</h2>
 
             <!-- 정보 안내 -->
@@ -17,11 +17,11 @@
             </div>
             <div class="mb-4">
                 <p class="block text-gray-400 text-sm font-bold mb-2">회원정보에 등록된 아래의 이메일 주소로 임시 비밀번호를 전송하시겠습니까?</p>
-                <p class="block text-gray-700 text-sm font-bold mb-2" th:text="${userEmail}"></p>
+                <p class="block text-gray-700 text-sm font-bold mb-2" th:text="${memberEmail}"></p>
             </div>
 
             <!-- 숨겨진 이메일 값 전송 -->
-            <input type="hidden" name="userEmail" th:value="${userEmail}"/>
+            <input type="hidden" name="memberEmail" th:value="${memberEmail}"/>
 
             <!-- 계속 버튼 -->
             <div class="flex justify-center mt-6">

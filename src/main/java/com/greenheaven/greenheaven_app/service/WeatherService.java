@@ -5,9 +5,9 @@ import com.greenheaven.greenheaven_app.domain.dto.DailyWeather;
 import com.greenheaven.greenheaven_app.domain.dto.WeatherResponse;
 import com.greenheaven.greenheaven_app.domain.entity.Precipitation;
 import com.greenheaven.greenheaven_app.domain.entity.Sky;
-import com.greenheaven.greenheaven_app.domain.entity.User;
+import com.greenheaven.greenheaven_app.domain.entity.Member;
 import com.greenheaven.greenheaven_app.domain.entity.Weather;
-import com.greenheaven.greenheaven_app.repository.UserRepository;
+import com.greenheaven.greenheaven_app.repository.MemberRepository;
 import com.greenheaven.greenheaven_app.repository.WeatherRepository;
 import jakarta.persistence.EntityManager;
 import lombok.Getter;
@@ -37,7 +37,7 @@ public class WeatherService {
     @Value("${weather.serviceKey}")
     private String serviceKey;
     private final WeatherRepository weatherRepository;
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
     private final EntityManager em;
 
     public static int TO_GRID = 0;
@@ -53,14 +53,14 @@ public class WeatherService {
      */
     public List<DailyWeather> getThreeDaysWeather() throws IOException {
         // 인증된 사용자의 이메일 가져오기
-        String email = UserService.getAuthenticatedUserEmail();
+        String email = MemberService.getAuthenticatedMemberEmail();
 
         // 이메일로 유저 조회
-        User user = userRepository.findByEmail(email)
+        Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new NoSuchElementException("해당 유저를 찾을 수 없습니다."));
 
         // 유저의 위도 경도 -> 기상청 x, y 좌표로 변환
-        LatXLngY latXLngY = convertGRID_GPS(0, user.getLatitude(), user.getLongitude());
+        LatXLngY latXLngY = convertGRID_GPS(0, member.getLatitude(), member.getLongitude());
 
         // 기존 기상 데이터 조회 (가장 오래된 날짜 기준 정렬)
         Optional<Weather> existingWeather = weatherRepository.findFirstByLocationXAndLocationYOrderByDateAsc(

@@ -24,7 +24,7 @@
         </div>
 
         <!-- 로그인 폼 -->
-        <form th:action="@{/user/loginProcess}" method="post">
+        <form th:action="@{/member/loginProcess}" method="post">
             <!-- 아이디 입력 필드 -->
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="email">아이디</label>
@@ -59,9 +59,9 @@
 
             <!-- 회원가입, 비밀번호 찾기 링크 -->
             <div class="text-center mt-4">
-                <a class="inline-block align-baseline font-bold text-sm text-green-600 hover:text-green-800" th:href="@{/user/signup}">회원가입</a>
+                <a class="inline-block align-baseline font-bold text-sm text-green-600 hover:text-green-800" th:href="@{/member/signup}">회원가입</a>
                 <span class="mx-2 text-gray-600">|</span>
-                <a class="inline-block align-baseline font-bold text-sm text-green-600 hover:text-green-800" th:href="@{/user/password/reset}">비밀번호 찾기</a>
+                <a class="inline-block align-baseline font-bold text-sm text-green-600 hover:text-green-800" th:href="@{/member/password/reset}">비밀번호 찾기</a>
             </div>
         </form>
     </div>

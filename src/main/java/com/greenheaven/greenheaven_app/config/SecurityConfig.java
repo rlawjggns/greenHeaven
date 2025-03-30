@@ -26,19 +26,19 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable()) // CSRF 보호 비활성화(개발 중)
                 .authorizeHttpRequests(auth -> auth // HTTP 요청에 대한 접근 제어 설정
-                        .requestMatchers("/", "/user/login", "/user/signup", "/user/password/reset", "/user/password/reset/confirm","/error","/css/**", "/js/**", "/images/**").permitAll() // 괄호 안의 URL 패턴(홈, 로그인, 회원가입, 에러 페이지, 정적 리소스 경로 등)은 인증 없이 접근 가능하게 허용
+                        .requestMatchers("/", "/member/login", "/member/signup", "/member/password/reset", "/member/password/reset/confirm","/error","/css/**", "/js/**", "/images/**").permitAll() // 괄호 안의 URL 패턴(홈, 로그인, 회원가입, 에러 페이지, 정적 리소스 경로 등)은 인증 없이 접근 가능하게 허용
                         .anyRequest().authenticated() // 위의 패턴에 해당하지 않는 모든 요청은 인증을 받아야 접근 할 수 있도록 설정
                 )
                 .formLogin(login -> login // 폼 기반 로그인 설정
-                        .loginPage("/user/login") // 사용자 정의 로그인 페이지 URL 지정 -> Thymeleaf에서 사용하는 URL과 맞춤
-                        .loginProcessingUrl("/user/loginProcess") // 로그인 폼의 action URL 지정, 시큐리티가 이 URL을 통해 로그인 인증을 처리 -> 실제 로그인 처리를 담당하는 URL
-                        .failureUrl("/user/login?error=true")  // 로그인 실패 시, 오류 메시지 처리를 위해 지정된 URL로 리다이렉트
+                        .loginPage("/member/login") // 사용자 정의 로그인 페이지 URL 지정 -> Thymeleaf에서 사용하는 URL과 맞춤
+                        .loginProcessingUrl("/member/loginProcess") // 로그인 폼의 action URL 지정, 시큐리티가 이 URL을 통해 로그인 인증을 처리 -> 실제 로그인 처리를 담당하는 URL
+                        .failureUrl("/member/login?error=true")  // 로그인 실패 시, 오류 메시지 처리를 위해 지정된 URL로 리다이렉트
                         .defaultSuccessUrl("/", true) // 로그인 성공 시, 기본으로 이동할 URL. 두번째 인자는 항상 이 URL로 리다이렉트 하도록 강제함.
                         .permitAll() // 로그인 페이지 접근에 대해서는 인증 없이 접근 허용
                 )
                 .logout(logout -> logout // 로그아웃 관련 설정
-                        .logoutUrl("/user/logout") // Thymeleaf와 일치하는 로그아웃 URL
-                        .logoutSuccessUrl("/user/login?logout=true") // 로그아웃 성공 시, 리다이렉트할 URL 지정 -> 쿼리 파라미터를 사용하여 Thymeleaf에서 param.logout을 통해 로그아웃 완료 메시지 표시
+                        .logoutUrl("/member/logout") // Thymeleaf와 일치하는 로그아웃 URL
+                        .logoutSuccessUrl("/member/login?logout=true") // 로그아웃 성공 시, 리다이렉트할 URL 지정 -> 쿼리 파라미터를 사용하여 Thymeleaf에서 param.logout을 통해 로그아웃 완료 메시지 표시
                         .invalidateHttpSession(true) // 로그아웃 시 세션 무효화
                         .deleteCookies("JSESSIONID") // 인증에 사용된 쿠키(JSESSIONID)를 삭제하여 남은 인증정보 제거
                         .permitAll() // 로그아웃 URL 접근에 대해서는 인증 없이 접근 허용

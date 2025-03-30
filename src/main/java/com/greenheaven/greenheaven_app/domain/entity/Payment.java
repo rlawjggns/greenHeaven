@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.proxy.HibernateProxy;
-import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -32,13 +31,13 @@ public class Payment {
     private PayStatus status = PayStatus.PENDING; // 결제 상태
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user; // 유저
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member; // 유저
 
     @Builder
-    public Payment(Long amount, User user) {
+    public Payment(Long amount, Member member) {
         this.amount = amount;
-        this.user = user;
+        this.member = member;
     }
 
     @Override

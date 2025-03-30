@@ -20,13 +20,13 @@
 
                 <!-- 로그인 여부에 따른 메뉴 항목들 -->
                 <li th:if="${not #authorization.expression('isAuthenticated()')}">
-                    <a th:href="@{/user/login}" href="login.html" class="text-gray-300 hover:text-gray-400 transition duration-500">로그인</a>
+                    <a th:href="@{/member/login}" href="login.html" class="text-gray-300 hover:text-gray-400 transition duration-500">로그인</a>
                 </li>
                 <li th:if="${#authorization.expression('isAuthenticated()')}">
-                    <a th:href="@{/user/profile}" href="profile.html" class="text-gray-300 hover:text-gray-400 transition duration-500">프로필</a>
+                    <a th:href="@{/member/profile}" href="profile.html" class="text-gray-300 hover:text-gray-400 transition duration-500">프로필</a>
                 </li>
                 <li th:if="${#authorization.expression('isAuthenticated()')}">
-                    <a th:href="@{/user/logout}" href="logout.html" class="text-gray-300 hover:text-gray-400 transition duration-500">로그아웃</a>
+                    <a th:href="@{/member/logout}" href="logout.html" class="text-gray-300 hover:text-gray-400 transition duration-500">로그아웃</a>
                 </li>
 
                 <!-- 추가 메뉴 항목 -->

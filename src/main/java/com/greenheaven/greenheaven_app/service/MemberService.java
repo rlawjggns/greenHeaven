@@ -1,12 +1,12 @@
 package com.greenheaven.greenheaven_app.service;
 
-import com.greenheaven.greenheaven_app.domain.dto.UserProfileDto;
-import com.greenheaven.greenheaven_app.domain.dto.UserSignUpDto;
+import com.greenheaven.greenheaven_app.domain.dto.MemberProfileDto;
+import com.greenheaven.greenheaven_app.domain.dto.MemberSignUpDto;
+import com.greenheaven.greenheaven_app.domain.entity.Member;
 import com.greenheaven.greenheaven_app.domain.entity.Subscription;
-import com.greenheaven.greenheaven_app.domain.entity.User;
 import com.greenheaven.greenheaven_app.exception.*;
 import com.greenheaven.greenheaven_app.repository.SubscriptionRepository;
-import com.greenheaven.greenheaven_app.repository.UserRepository;
+import com.greenheaven.greenheaven_app.repository.MemberRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.Cookie;
@@ -42,8 +42,8 @@ import java.util.*;
 @Transactional
 @RequiredArgsConstructor
 @Slf4j
-public class UserService {
-    private final UserRepository userRepository;
+public class MemberService {
+    private final MemberRepository memberRepository;
     private final SubscriptionRepository subscriptionRepository;
     private final PasswordEncoder passwordEncoder;
     private final JavaMailSender mailSender;
@@ -59,9 +59,9 @@ public class UserService {
      * @return 이미 등록된 이메일이 있으면 해당 유저를 포함한 Optional, 없으면 비어있는 Optional 반환
      */
 
-    public Optional<User> checkEmail(String email) {
+    public Optional<Member> checkEmail(String email) {
         // 이메일로 가입된 유저가 있는지 조회한 결과 반환
-        return userRepository.findByEmail(email);
+        return memberRepository.findByEmail(email);
     }
 
     /**
@@ -71,7 +71,7 @@ public class UserService {
      * @param request 회원가입에 필요한 정보를 담은 DTO
      */
 
-    public void SignUp(UserSignUpDto request) {
+    public void SignUp(MemberSignUpDto request) {
         // 이미 가입된 이메일인 경우 예외 처리
         if (checkEmail(request.getEmail()).isPresent()) {
             throw new EmailExistException("이미 가입된 이메일입니다.");
@@ -93,7 +93,7 @@ public class UserService {
         subscriptionRepository.save(subscription);
 
         // 유저 생성
-        User user = User.builder()
+        Member member = Member.builder()
                 .name(request.getName())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .email(request.getEmail())
@@ -104,7 +104,7 @@ public class UserService {
                 .build();
 
         // 유저 저장
-        userRepository.save(user);
+        memberRepository.save(member);
     }
 
     /**
@@ -183,11 +183,11 @@ public class UserService {
      */
     public String findPassword(String email) {
         // 이메일로 유저 찾기
-        User user = userRepository.findByEmail(email)
+        Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new NoSuchElementException("해당 유저를 찾을 수 없습니다."));
 
         // 찾은 유저의 비밀번호 반환
-        return user.getPassword();
+        return member.getPassword();
     }
 
     /**
@@ -197,7 +197,7 @@ public class UserService {
      */
     public void sendPasswordByEmail(String email) {
         // 이메일로 유저 찾기
-        User user = userRepository.findByEmail(email)
+        Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new NoSuchElementException("해당 유저를 찾을 수 없습니다."));
 
         // 0~ 9 사이의 8자리 랜덤 비밀번호 생성
@@ -208,7 +208,7 @@ public class UserService {
         }
 
         // 유저의 비밀번호 변경
-        user.updatePassword(passwordEncoder.encode(tempPassword));
+        member.updatePassword(passwordEncoder.encode(tempPassword));
 
         // 메일의 제목, 내용 설정
         String subject = "GreenHeaven 계정 비밀번호 안내"; 
@@ -247,17 +247,17 @@ public class UserService {
      * @return 이메일을 통해 찾은 유저의 프로필 정보를 DTO에 담아 반환
      * @throws NoSuchElementException 이메일로 유저를 찾지 못할 경우 예외 발생
      */
-    public UserProfileDto getProfile() {
+    public MemberProfileDto getProfile() {
         // 현재 인증된 사용자의 인증 정보 가져오기
-        String email = getAuthenticatedUserEmail();
+        String email = getAuthenticatedMemberEmail();
 
         // 이메일로 유저 찾기
-        User user = userRepository.findByEmail(email)
+        Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new NoSuchElementException("해당 유저를 찾을 수 없습니다."));
 
         // DTO 반환
-        return UserProfileDto.builder()
-                .name(user.getName())
+        return MemberProfileDto.builder()
+                .name(member.getName())
                 .build();
     }
 
@@ -266,25 +266,25 @@ public class UserService {
      * @param request 유저의 프로필 정보를 담은 DTO
      * @throws NoSuchElementException 이메일로 유저를 찾지 못할 경우 예외 발생
      */
-    public void updateProfile(UserProfileDto request) {
+    public void updateProfile(MemberProfileDto request) {
         // 현재 인증된 사용자의 인증 정보 가져오기
-        String email = getAuthenticatedUserEmail();
+        String email = getAuthenticatedMemberEmail();
 
         // 프로필 수정필드 검증 메서드
         validateProfileUpdate(request, email);
 
         // 이메일로 유저 조회
-        User user = userRepository.findByEmail(email)
+        Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new NoSuchElementException("해당 유저를 찾을 수 없습니다."));
 
         // 기존 이름과 같지 않으면 이름 수정
-        if (!request.getName().equals(user.getName())) {
-            user.updateName(request.getName());
+        if (!request.getName().equals(member.getName())) {
+            member.updateName(request.getName());
         }
 
         // 새로운 비밀번호 값이 비지 않았다면 비밀번호 수정
         if (!request.getNewPassword().isBlank()) {
-            user.updatePassword(passwordEncoder.encode(request.getNewPassword()));
+            member.updatePassword(passwordEncoder.encode(request.getNewPassword()));
         }
     }
 
@@ -294,7 +294,7 @@ public class UserService {
      * @param email 프로필을 수정할 유저의 이메일
      * @throws  IllegalArgumentException 필드 검증 중 오류 발생시 예외 발생
      */
-    private void validateProfileUpdate(UserProfileDto request, String email) {
+    private void validateProfileUpdate(MemberProfileDto request, String email) {
         // 이메일로 유저의 비밀번호 찾기
         String storedPassword = findPassword(email);
 
@@ -326,14 +326,14 @@ public class UserService {
      */
     public void quit(HttpServletRequest request, HttpServletResponse response) {
         // 현재 인증된 사용자의 인증 정보 가져오기
-        String email = getAuthenticatedUserEmail();
+        String email = getAuthenticatedMemberEmail();
 
         // 이메일로 유저 찾기
-        User user = userRepository.findByEmail(email)
+        Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new NoSuchElementException("해당 유저를 찾을 수 없습니다."));
 
         // 찾은 유저 삭제
-        userRepository.delete(user);
+        memberRepository.delete(member);
 
         // 세션 무효화 및 로그아웃 처리
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -353,14 +353,14 @@ public class UserService {
      */
     public void quit() {
         // 현재 인증된 사용자의 인증 정보 가져오기
-        String email = getAuthenticatedUserEmail();
+        String email = getAuthenticatedMemberEmail();
 
         // 이메일로 유저 찾기
-        User user = userRepository.findByEmail(email)
+        Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new NoSuchElementException("해당 유저를 찾을 수 없습니다."));
 
         // 찾은 유저 삭제
-        userRepository.delete(user);
+        memberRepository.delete(member);
 
         // SecurityContext 초기화
         SecurityContextHolder.clearContext();
@@ -372,21 +372,21 @@ public class UserService {
      */
     public String getAddress() {
         // 현재 인증된 사용자의 인증 정보 가져오기
-        String email = getAuthenticatedUserEmail();
+        String email = getAuthenticatedMemberEmail();
 
         // 이메일로 유저 찾기
-        User user = userRepository.findByEmail(email)
+        Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new NoSuchElementException("해당 유저를 찾을 수 없습니다."));
 
 
-        return user.getAddress();
+        return member.getAddress();
     }
 
     /**
      * 인증된 유저의 이메일 조회
      * @return 유저의 이메일
      */
-    public static String getAuthenticatedUserEmail() {
+    public static String getAuthenticatedMemberEmail() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         return userDetails.getUsername();
