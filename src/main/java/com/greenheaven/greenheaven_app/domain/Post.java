@@ -1,5 +1,7 @@
 package com.greenheaven.greenheaven_app.domain;
 
+import com.greenheaven.greenheaven_app.dto.PostCreateRequestDto;
+import com.greenheaven.greenheaven_app.dto.PostListResponseDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -40,6 +42,9 @@ public class Post {
     @Column(name = "update_date")
     private LocalDateTime updateDate; // 게시글 수정일
 
+    @Column(name = "views", nullable = false)
+    private Integer views = 0; // 게시글 조회수
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member; // 유저
@@ -68,5 +73,20 @@ public class Post {
     @Override
     public final int hashCode() {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
+    }
+
+    public static PostListResponseDto toDto(Post post) {
+        return PostListResponseDto.builder()
+                .id(post.getId())
+                .title(post.getTitle())
+                .createDate(post.getCreateDate())
+                .memberName(post.getMember().getName())
+                .views(post.getViews())
+                .build();
+    }
+
+    public void edit(PostCreateRequestDto request) {
+        this.title = request.getTitle();
+        this.content = request.getContent();
     }
 }

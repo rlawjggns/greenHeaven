@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ko" class="scroll-smooth" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(title='게시글 상세')}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body class="bg-gray-900 text-white">
+<div class="container mx-auto px-4">
+    <!-- 헤더 -->
+    <div th:replace="~{fragments/header :: header}" class="mb-16"></div>
+
+    <!-- 본문 -->
+    <div class="bg-white text-gray-800 shadow-lg rounded-lg p-6 mt-40">
+
+        <!-- 상단 버튼 영역 -->
+        <div class="flex justify-between items-center mb-6">
+            <!-- 뒤로가기 버튼 -->
+            <a href="/posts" class="text-sm text-green-700 hover:underline font-medium">
+                ← 목록으로
+            </a>
+
+            <!-- 수정/삭제 버튼 -->
+            <div class="space-x-2">
+                <a th:href="@{/posts/{id}/update(id=${post.id})}"
+                   class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600">
+                    수정
+                </a>
+                <form th:action="@{/posts/{id}/delete(id=${post.id})}" method="post" class="inline">
+                    <button type="submit"
+                            class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
+                            onclick="return confirm('정말 삭제하시겠습니까?');">
+                        삭제
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- 게시글 제목 -->
+        <h1 class="text-3xl font-bold mb-4" th:text="${post.title}">게시글 제목</h1>
+
+        <!-- 작성 정보 -->
+        <div class="flex flex-wrap gap-x-8 text-sm text-gray-500 mb-6">
+            <div th:text="|작성자: ${post.memberName}|">작성자</div>
+            <div th:text="|조회수: ${post.views}|">조회수</div>
+            <div th:text="${#temporals.format(post.createdDate, 'yyyy-MM-dd HH:mm')}">작성일</div>
+        </div>
+
+        <!-- 게시글 내용 -->
+        <div class="prose max-w-none" th:utext="${post.content}">
+            게시글 내용
+        </div>
+    </div>
+
+    <!-- 댓글 섹션 -->
+    <div class="bg-gray-100 shadow-md rounded-lg p-6 mt-12 text-black">
+        <h2 class="text-xl font-semibold mb-4">댓글</h2>
+
+        <!-- 댓글 작성 폼 -->
+        <form th:action="@{/posts/{postId}/comments(postId=${post.id})}" method="post" class="mt-6 space-y-4">
+            <textarea name="content" required class="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="댓글을 입력하세요..."></textarea>
+            <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700">댓글 작성</button>
+        </form>
+    </div>
+
+    <!-- 푸터 -->
+    <div class="py-32"></div>
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</div>
+</body>
+</html>
