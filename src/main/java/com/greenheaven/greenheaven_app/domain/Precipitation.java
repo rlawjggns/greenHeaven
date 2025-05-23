@@ -1,4 +1,4 @@
-package com.greenheaven.greenheaven_app.domain.entity;
+package com.greenheaven.greenheaven_app.domain;
 
 import lombok.Getter;
 

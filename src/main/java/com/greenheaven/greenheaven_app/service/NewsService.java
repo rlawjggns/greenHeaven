@@ -1,8 +1,8 @@
 package com.greenheaven.greenheaven_app.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.greenheaven.greenheaven_app.domain.dto.NewsDto;
-import com.greenheaven.greenheaven_app.domain.dto.NewsResponse;
+import com.greenheaven.greenheaven_app.dto.NewsDto;
+import com.greenheaven.greenheaven_app.dto.NewsResponse;
 import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

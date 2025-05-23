@@ -1,9 +1,9 @@
 package com.greenheaven.greenheaven_app.service;
 
-import com.greenheaven.greenheaven_app.domain.dto.MemberProfileDto;
-import com.greenheaven.greenheaven_app.domain.dto.MemberSignUpDto;
-import com.greenheaven.greenheaven_app.domain.entity.Member;
-import com.greenheaven.greenheaven_app.domain.entity.Subscription;
+import com.greenheaven.greenheaven_app.dto.MemberProfileDto;
+import com.greenheaven.greenheaven_app.dto.MemberSignUpDto;
+import com.greenheaven.greenheaven_app.domain.Member;
+import com.greenheaven.greenheaven_app.domain.Subscription;
 import com.greenheaven.greenheaven_app.exception.*;
 import com.greenheaven.greenheaven_app.repository.SubscriptionRepository;
 import com.greenheaven.greenheaven_app.repository.MemberRepository;

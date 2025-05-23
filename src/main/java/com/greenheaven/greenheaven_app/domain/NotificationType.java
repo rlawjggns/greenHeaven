@@ -1,8 +1,4 @@
-package com.greenheaven.greenheaven_app.domain.entity;
-
-import jakarta.persistence.Entity;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+package com.greenheaven.greenheaven_app.domain;
 
 public enum NotificationType {
     GENERAL,        // 일반 알림

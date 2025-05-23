@@ -1,6 +1,6 @@
-package com.greenheaven.greenheaven_app.domain.dto;
+package com.greenheaven.greenheaven_app.dto;
 
-import com.greenheaven.greenheaven_app.domain.entity.Weather;
+import com.greenheaven.greenheaven_app.domain.Weather;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

@@ -1,4 +1,4 @@
-package com.greenheaven.greenheaven_app.domain.entity;
+package com.greenheaven.greenheaven_app.domain;
 
 public enum PayStatus {
     PENDING,      // 결제 대기

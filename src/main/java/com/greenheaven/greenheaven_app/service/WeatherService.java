@@ -1,12 +1,12 @@
 package com.greenheaven.greenheaven_app.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.greenheaven.greenheaven_app.domain.dto.DailyWeather;
-import com.greenheaven.greenheaven_app.domain.dto.WeatherResponse;
-import com.greenheaven.greenheaven_app.domain.entity.Precipitation;
-import com.greenheaven.greenheaven_app.domain.entity.Sky;
-import com.greenheaven.greenheaven_app.domain.entity.Member;
-import com.greenheaven.greenheaven_app.domain.entity.Weather;
+import com.greenheaven.greenheaven_app.dto.DailyWeather;
+import com.greenheaven.greenheaven_app.dto.WeatherResponse;
+import com.greenheaven.greenheaven_app.domain.Precipitation;
+import com.greenheaven.greenheaven_app.domain.Sky;
+import com.greenheaven.greenheaven_app.domain.Member;
+import com.greenheaven.greenheaven_app.domain.Weather;
 import com.greenheaven.greenheaven_app.repository.MemberRepository;
 import com.greenheaven.greenheaven_app.repository.WeatherRepository;
 import jakarta.persistence.EntityManager;

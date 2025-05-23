@@ -1,8 +1,8 @@
 package com.greenheaven.greenheaven_app.controller;
 
-import com.greenheaven.greenheaven_app.domain.dto.MemberFindPwdDto;
-import com.greenheaven.greenheaven_app.domain.dto.MemberProfileDto;
-import com.greenheaven.greenheaven_app.domain.dto.MemberSignUpDto;
+import com.greenheaven.greenheaven_app.dto.MemberFindPwdDto;
+import com.greenheaven.greenheaven_app.dto.MemberProfileDto;
+import com.greenheaven.greenheaven_app.dto.MemberSignUpDto;
 import com.greenheaven.greenheaven_app.exception.*;
 import com.greenheaven.greenheaven_app.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;

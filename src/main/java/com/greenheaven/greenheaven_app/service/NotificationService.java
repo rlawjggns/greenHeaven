@@ -1,7 +1,7 @@
 package com.greenheaven.greenheaven_app.service;
 
-import com.greenheaven.greenheaven_app.domain.entity.Notification;
-import com.greenheaven.greenheaven_app.domain.entity.Member;
+import com.greenheaven.greenheaven_app.domain.Notification;
+import com.greenheaven.greenheaven_app.domain.Member;
 import com.greenheaven.greenheaven_app.repository.NotificationRepository;
 import com.greenheaven.greenheaven_app.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;

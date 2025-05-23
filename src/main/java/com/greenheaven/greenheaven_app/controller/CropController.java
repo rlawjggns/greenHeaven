@@ -1,8 +1,8 @@
 package com.greenheaven.greenheaven_app.controller;
 
-import com.greenheaven.greenheaven_app.domain.dto.CropListResponsetDto;
-import com.greenheaven.greenheaven_app.domain.dto.CropRequestDto;
-import com.greenheaven.greenheaven_app.domain.entity.CropType;
+import com.greenheaven.greenheaven_app.dto.CropListResponsetDto;
+import com.greenheaven.greenheaven_app.dto.CropRequestDto;
+import com.greenheaven.greenheaven_app.domain.CropType;
 import com.greenheaven.greenheaven_app.service.CropService;
 import com.greenheaven.greenheaven_app.service.NotificationService;
 import lombok.RequiredArgsConstructor;

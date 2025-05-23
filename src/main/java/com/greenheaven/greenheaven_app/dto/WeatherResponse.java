@@ -1,4 +1,4 @@
-package com.greenheaven.greenheaven_app.domain.dto;
+package com.greenheaven.greenheaven_app.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

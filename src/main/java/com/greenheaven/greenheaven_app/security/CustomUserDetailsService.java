@@ -1,6 +1,6 @@
 package com.greenheaven.greenheaven_app.security;
 
-import com.greenheaven.greenheaven_app.domain.entity.Member;
+import com.greenheaven.greenheaven_app.domain.Member;
 import com.greenheaven.greenheaven_app.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

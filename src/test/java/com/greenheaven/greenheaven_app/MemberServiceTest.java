@@ -2,7 +2,7 @@ package com.greenheaven.greenheaven_app;
 
 import com.greenheaven.greenheaven_app.domain.dto.MemberProfileDto;
 import com.greenheaven.greenheaven_app.domain.dto.MemberSignUpDto;
-import com.greenheaven.greenheaven_app.domain.entity.Member;
+import com.greenheaven.greenheaven_app.domain.Member;
 import com.greenheaven.greenheaven_app.repository.MemberRepository;
 import com.greenheaven.greenheaven_app.service.MemberService;
 import org.junit.jupiter.api.BeforeEach;

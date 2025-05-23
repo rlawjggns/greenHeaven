@@ -1,6 +1,6 @@
 package com.greenheaven.greenheaven_app.security;
 
-import com.greenheaven.greenheaven_app.domain.entity.Member;
+import com.greenheaven.greenheaven_app.domain.Member;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

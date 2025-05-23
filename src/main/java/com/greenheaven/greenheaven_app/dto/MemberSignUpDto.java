@@ -1,4 +1,4 @@
-package com.greenheaven.greenheaven_app.domain.dto;
+package com.greenheaven.greenheaven_app.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

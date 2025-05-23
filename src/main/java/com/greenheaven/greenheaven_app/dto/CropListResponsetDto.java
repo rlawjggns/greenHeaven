@@ -1,6 +1,5 @@
-package com.greenheaven.greenheaven_app.domain.dto;
+package com.greenheaven.greenheaven_app.dto;
 
-import com.greenheaven.greenheaven_app.domain.entity.CropType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
