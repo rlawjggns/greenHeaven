@@ -36,53 +36,63 @@
         <!-- 오른쪽 대시보드 영역 -->
         <main class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- 작물 현황 카드 -->
-            <section class="relative bg-gray-800 p-6 rounded-xl shadow-lg">
-                <img src="/images/house.jpg" class="absolute inset-0 w-full h-full object-cover opacity-10 rounded-xl" alt="작물 현황">
-                <h2 class="text-xl font-bold mb-3 relative z-10">작물 현황
-                    <a th:href="@{/crops}" class="text-sm text-white absolute top-0 right-2 bg-gray-800 py-1 px-2 rounded hover:bg-gray-700 hover:text-white">상세 >></a>
+            <section
+                    class="relative bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+                <img src="/images/house.jpg"
+                     class="absolute inset-0 w-full h-full object-cover opacity-10 rounded-xl"
+                     alt="작물 현황" />
+                <h2 class="text-xl font-bold mb-3 relative z-10 text-gray-800">
+                    작물 현황
+                    <a th:href="@{/crops}"
+                       class="text-sm text-green-700 absolute top-0 right-2 py-1 px-2 hover:underline">상세 보기 →</a>
                 </h2>
-                <table class="w-full text-left border-collapse relative z-10">
+                <table class="w-full text-left border-collapse relative z-10 text-gray-800">
                     <thead>
                     <tr>
-                        <th class="px-4 py-2 border-b border-gray-600">작물</th>
-                        <th class="px-4 py-2 border-b border-gray-600">파종일</th>
-                        <th class="px-4 py-2 border-b border-gray-600">남은수확일</th>
+                        <th class="px-4 py-2 border-b border-gray-300">작물</th>
+                        <th class="px-4 py-2 border-b border-gray-300">파종일</th>
+                        <th class="px-4 py-2 border-b border-gray-300">남은수확일</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr th:each="crop : ${crops}">
-                        <td class="px-4 py-2 border-b border-gray-600" th:text="${crop.typeName}">작물 이름</td>
-                        <td class="px-4 py-2 border-b border-gray-600" th:text="${crop.plantDate}">파종일</td>
-                        <td class="px-4 py-2 border-b border-gray-600" th:text="${crop.remainDays}">남은수확일</td>
+                        <td class="px-4 py-2 border-b border-gray-300" th:text="${crop.typeName}">작물 이름</td>
+                        <td class="px-4 py-2 border-b border-gray-300" th:text="${crop.plantDate}">파종일</td>
+                        <td class="px-4 py-2 border-b border-gray-300" th:text="${crop.remainDays}">남은수확일</td>
                     </tr>
                     </tbody>
                 </table>
-                <div th:if="${#lists.isEmpty(crops)}" class="text-gray-400 text-center py-4">
+                <div th:if="${#lists.isEmpty(crops)}" class="text-gray-500 text-center py-4">
                     등록된 작물이 없어요 🥔
                 </div>
             </section>
 
             <!-- 알림 카드 -->
-            <section class="relative bg-gray-800 p-6 rounded-xl shadow-lg">
-                <img src="/images/write.jpg" class="absolute inset-0 w-full h-full object-cover opacity-10 rounded-xl" alt="알림">
-                <h2 class="text-xl font-bold mb-3 relative z-10">최근 알림
-                    <a th:href="@{/notifications}" class="text-sm text-white absolute top-0 right-2 bg-gray-700 py-1 px-2 rounded hover:bg-gray-600 hover:text-white">상세 >></a>
+            <section
+                    class="relative bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+                <img src="/images/write.jpg"
+                     class="absolute inset-0 w-full h-full object-cover opacity-10 rounded-xl"
+                     alt="알림" />
+                <h2 class="text-xl font-bold mb-3 relative z-10 text-gray-800">
+                    최근 알림
+                    <a th:href="@{/notifications}"
+                       class="text-sm text-green-700 absolute top-0 right-2 py-1 px-2 hover:underline">상세 보기 →</a>
                 </h2>
-                <table class="w-full text-left border-collapse relative z-10">
+                <table class="w-full text-left border-collapse relative z-10 text-gray-800">
                     <thead>
                     <tr>
-                        <th class="px-4 py-2 border-b border-gray-600">내용</th>
-                        <th class="px-4 py-2 border-b border-gray-600">날짜</th>
+                        <th class="px-4 py-2 border-b border-gray-300">내용</th>
+                        <th class="px-4 py-2 border-b border-gray-300">날짜</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr th:each="notification : ${notifications}">
-                        <td class="px-4 py-2 border-b border-gray-600" th:text="${notification.content}">내용</td>
-                        <td class="px-4 py-2 border-b border-gray-600" th:text="${notification.date}">날짜</td>
+                        <td class="px-4 py-2 border-b border-gray-300" th:text="${notification.content}">내용</td>
+                        <td class="px-4 py-2 border-b border-gray-300" th:text="${notification.date}">날짜</td>
                     </tr>
                     </tbody>
                 </table>
-                <div th:if="${#lists.isEmpty(notifications)}" class="text-gray-400 text-center py-4">
+                <div th:if="${#lists.isEmpty(notifications)}" class="text-gray-500 text-center py-4">
                     최근 알림이 없어요 😳
                 </div>
             </section>
