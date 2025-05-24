@@ -36,9 +36,7 @@ public class PostController {
     }
 
     @GetMapping("/posts/{postId}")
-    public String postPage(@PathVariable String postId,
-                           Model model,
-                           HttpServletRequest request) {
+    public String postPage(@PathVariable String postId, Model model, HttpServletRequest request) {
         String referer = request.getHeader("Referer");
 
         // 같은 게시글 페이지에서 리다이렉트된 경우에만 조회수가 증가하도록 처리

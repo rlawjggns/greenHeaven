@@ -13,6 +13,7 @@ import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -78,6 +79,7 @@ public class PostService {
 
         List<PostCommentResponseDto> postComments = post.getComments().stream()
                 .map(PostComment::toDto)
+                .sorted(Comparator.comparing(PostCommentResponseDto::getCreatedDate).reversed())
                 .toList();
 
         return PostDetailResponseDto.builder()
