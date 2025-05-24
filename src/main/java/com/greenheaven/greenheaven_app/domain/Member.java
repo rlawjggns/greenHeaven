@@ -1,6 +1,7 @@
 package com.greenheaven.greenheaven_app.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,10 +12,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Getter
@@ -111,5 +109,11 @@ public class Member {
 
     public void updatePassword(String password) {
         this.password = password;
+    }
+
+    public void updateAddress(String address, Map<String, Float> coordinates) {
+        this.address = address;
+        this.latitude = coordinates.get("latitude");
+        this.longitude = coordinates.get("longitude");
     }
 }

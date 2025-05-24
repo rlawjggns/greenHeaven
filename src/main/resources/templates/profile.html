@@ -21,20 +21,20 @@
                 <!-- 기존 비밀번호 입력 필드 -->
                 <div class="mb-4">
                     <label for="old_password" class="block text-gray-700 text-sm font-bold mb-2" th:field="*{oldPassword}">
-                        기본 비밀번호 입력
+                        기존 비밀번호
                         <span th:if="${oldPasswordError}" th:text="${oldPasswordError}" class="text-red-500 ml-4 text-sm"></span>
                     </label>
-                    <input id="old_password" type="password" th:field="*{oldPassword}" placeholder="최소 8글자 이상을 입력해주세요"
+                    <input id="old_password" type="password" th:field="*{oldPassword}" placeholder="기존 비밀번호"
                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                 </div>
 
                 <!-- 새로운 비밀번호 입력 필드 -->
                 <div class="mb-4">
                     <label for="new_password" class="block text-gray-700 text-sm font-bold mb-2" th:field="*{newPassword}">
-                        비밀번호를 변경하는 경우 입력하세요
+                        새 비밀번호
                         <span th:if="${newPasswordError}" th:text="${newPasswordError}" class="text-red-500 ml-4 text-sm"></span>
                     </label>
-                    <input id="new_password" type="password" th:field="*{newPassword}" placeholder="최소 8글자 이상을 입력해주세요"
+                    <input id="new_password" type="password" th:field="*{newPassword}" placeholder="새 비밀번호"
                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                 </div>
 
@@ -44,13 +44,13 @@
                         비밀번호 확인
                         <span th:if="${confirmNewPasswordError}" th:text="${confirmNewPasswordError}" class="text-red-500 ml-4 text-sm"></span>
                     </label>
-                    <input id="confirm_new_password" type="password" th:field="*{confirmNewPassword}" placeholder="최소 8글자 이상을 입력해주세요"
+                    <input id="confirm_new_password" type="password" th:field="*{confirmNewPassword}" placeholder="비밀번호 확인"
                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                 </div>
 
                 <!-- 이름 입력 필드 -->
-                <div class="mb-6">
-                    <label for="name" class="block text-gray-700 text-sm font-bold mb-2" th:field="*{name}" th:value="${memberProfileDto.name}">
+                <div class="mb-4">
+                    <label for="name" class="block text-gray-700 text-sm font-bold mb-2" th:field="*{name}">
                         이름
                         <span th:if="${nameError}" th:text="${nameError}" class="text-red-500 ml-4 text-sm"></span>
                     </label>
@@ -58,9 +58,30 @@
                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                 </div>
 
+                <!-- 주소 입력 필드 -->
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="sample4_roadAddress">
+                        주소
+                    </label>
+                    <div style="display: flex; gap: 8px;">
+                        <input
+                                id="sample4_roadAddress"
+                                type="text"
+                                th:field="*{address}"
+                                placeholder="도로명주소"
+                                class="shadow appearance-none border rounded flex-grow py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <input
+                                type="button"
+                                value="주소 찾기"
+                                onclick="sample4_execDaumPostcode()"
+                                class="bg-green-600 hover:bg-green-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline cursor-pointer">
+                    </div>
+                </div>
+
                 <!-- 확인 버튼 -->
                 <div class="flex justify-center">
-                    <button type="submit" class="bg-green-600 hover:bg-green-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    <button type="submit"
+                            class="bg-green-600 hover:bg-green-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
                         확인
                     </button>
                 </div>
@@ -78,5 +99,19 @@
     <div th:replace="~{fragments/footer :: footer}"></div>
 
 </div>
+
+<!-- 다음 주소 API 스크립트 -->
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script>
+    function sample4_execDaumPostcode() {
+        new daum.Postcode({
+            oncomplete: function(data) {
+                var roadAddr = data.roadAddress;
+                document.getElementById("sample4_roadAddress").value = roadAddr;
+            }
+        }).open();
+    }
+</script>
+
 </body>
 </html>
