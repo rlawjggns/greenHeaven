@@ -74,7 +74,7 @@ public class Member {
 
 
     @Builder
-    public Member(String name, String password, String email, Subscription subscription, String address, Float latitude, Float longitude) {
+    public Member(String name, String password, String email, Subscription subscription, String address, Float latitude, Float longitude, UserRole role) {
         this.name = name;
         this.password = password;
         this.email = email;
@@ -82,6 +82,7 @@ public class Member {
         this.address = address;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.role = role;
     }
 
     public void connectSubscription(Subscription subscription) {

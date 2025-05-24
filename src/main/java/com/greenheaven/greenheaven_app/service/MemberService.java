@@ -1,5 +1,6 @@
 package com.greenheaven.greenheaven_app.service;
 
+import com.greenheaven.greenheaven_app.domain.UserRole;
 import com.greenheaven.greenheaven_app.dto.MemberProfileDto;
 import com.greenheaven.greenheaven_app.dto.MemberSignUpDto;
 import com.greenheaven.greenheaven_app.domain.Member;
@@ -101,6 +102,7 @@ public class MemberService {
                 .address(request.getAddress())
                 .latitude(coordinates.get("latitude")) // 위도
                 .longitude(coordinates.get("longitude")) // 경도
+                .role(UserRole.USER) // 유저 역할 -> USER(기본값), ADMIN의 경우는 따로 처리
                 .build();
 
         // 유저 저장
