@@ -4,18 +4,13 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Getter
 @Builder
-public class PostDetailResponseDto {
+public class PostCommentResponseDto {
     private UUID id;
-    private String title;
     private String content;
-    private Integer views;
     private LocalDateTime createdDate;
-    private LocalDateTime updatedDate;
     private String memberName;
-    private List<PostCommentResponseDto> postComments;
 }

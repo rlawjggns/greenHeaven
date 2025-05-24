@@ -2,9 +2,8 @@ package com.greenheaven.greenheaven_app.service;
 
 import com.greenheaven.greenheaven_app.domain.Member;
 import com.greenheaven.greenheaven_app.domain.Post;
-import com.greenheaven.greenheaven_app.dto.PostCreateRequestDto;
-import com.greenheaven.greenheaven_app.dto.PostDetailResponseDto;
-import com.greenheaven.greenheaven_app.dto.PostListResponseDto;
+import com.greenheaven.greenheaven_app.domain.PostComment;
+import com.greenheaven.greenheaven_app.dto.*;
 import com.greenheaven.greenheaven_app.repository.MemberRepository;
 import com.greenheaven.greenheaven_app.repository.PostCommentRepository;
 import com.greenheaven.greenheaven_app.repository.PostRepository;
@@ -72,6 +71,10 @@ public class PostService {
         Post post = postRepository.findById(uuid)
                 .orElseThrow(() -> new NoSuchElementException("해당 게시글을 찾을 수 없습니다."));
 
+        List<PostCommentResponseDto> postComments = post.getComments().stream()
+                .map(PostComment::toDto)
+                .toList();
+
         return PostDetailResponseDto.builder()
                 .id(post.getId())
                 .title(post.getTitle())
@@ -80,6 +83,7 @@ public class PostService {
                 .createdDate(post.getCreateDate())
                 .updatedDate(post.getUpdateDate())
                 .memberName(post.getMember().getName())
+                .postComments(postComments)
                 .build();
     }
 
@@ -103,5 +107,34 @@ public class PostService {
                 .orElseThrow(() -> new NoSuchElementException("해당 게시글을 찾을 수 없습니다."));
 
         post.edit(request);
+    }
+
+    /**
+     * 게시글 댓글 생성
+     * @param postId 소속 게시글의 고유 키
+     * @param request 게시글 댓글 생성에 대한 정보를 담은 DTO
+     */
+    public void createPostComment(String postId, PostCommentRequestDto request) {
+        // 로그인한 사용자의 이메일 조회 및 사용자 객체 조회
+        String memberEmail = MemberService.getAuthenticatedMemberEmail();
+        Member member = memberRepository.findByEmail(memberEmail)
+                .orElseThrow(() -> new NoSuchElementException("해당 유저를 찾을 수 없습니다."));
+
+        UUID uuid = UUID.fromString(postId);
+        Post post = postRepository.findById(uuid)
+                .orElseThrow(() -> new NoSuchElementException("해당 게시글을 찾을 수 없습니다."));
+
+
+        PostComment postComment = PostComment.builder()
+                .content(request.getContent())
+                .member(member)
+                .post(post)
+                .build();
+
+        postCommentRepository.save(postComment);
+    }
+
+    public void deletePostComment(String commentId) {
+        postCommentRepository.deleteById(UUID.fromString(commentId));
     }
 }

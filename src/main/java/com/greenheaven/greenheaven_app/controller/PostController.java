@@ -1,5 +1,6 @@
 package com.greenheaven.greenheaven_app.controller;
 
+import com.greenheaven.greenheaven_app.dto.PostCommentRequestDto;
 import com.greenheaven.greenheaven_app.dto.PostCreateRequestDto;
 import com.greenheaven.greenheaven_app.dto.PostListResponseDto;
 import com.greenheaven.greenheaven_app.service.CropService;
@@ -69,20 +70,19 @@ public class PostController {
         postService.deletePost(postId);
         return "redirect:/posts";
     }
-//
-//    @PostMapping("/posts/comments")
-//    public ResponseEntity<String> createPostComment() {
-//
-//    }
-//
-//    @PostMapping("/posts/comments/{commentId}/update")
-//    public ResponseEntity<String> updatePostComment() {
-//
-//    }
-//
-//    @PostMapping("/posts/comments/{commentId}/delete")
-//    public ResponseEntity<String> deletePostComment() {
-//
-//    }
+
+    @PostMapping("/posts/{postId}/comments")
+    public String createPostComment(@PathVariable String postId,
+                                    @ModelAttribute PostCommentRequestDto request) {
+        postService.createPostComment(postId, request);
+        return "redirect:/posts/" + postId;
+    }
+
+    @PostMapping("/posts/{postId}/comments/{commentId}/delete")
+    public String deletePostComment(@PathVariable String postId,
+                                                    @PathVariable String commentId) {
+        postService.deletePostComment(commentId);
+        return "redirect:/posts/" + postId;
+    }
 
 }

@@ -55,6 +55,31 @@
     <div class="bg-gray-100 shadow-md rounded-lg p-6 mt-12 text-black">
         <h2 class="text-xl font-semibold mb-4">댓글</h2>
 
+        <!-- 댓글 목록 -->
+        <div class="space-y-4" th:if="${post.postComments != null and !post.postComments.isEmpty()}">
+            <div th:each="comment : ${post.postComments}" class="p-4 bg-white rounded-lg shadow">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <div class="text-sm text-gray-700 font-semibold mb-1" th:text="${comment.memberName}">작성자</div>
+                        <div class="text-gray-800 mb-2" th:text="${comment.content}">댓글 내용</div>
+                        <div class="text-xs text-gray-500" th:text="${#temporals.format(comment.createdDate, 'yyyy-MM-dd HH:mm')}">작성일</div>
+                    </div>
+
+                    <!-- 삭제 버튼 -->
+                    <form th:action="@{/posts/{postId}/comments/{commentId}/delete(postId=${post.id}, commentId=${comment.id})}"
+                          method="post" onsubmit="return confirm('이 댓글을 삭제하시겠습니까?');">
+                        <button type="submit"
+                                class="text-sm text-red-600 hover:underline ml-4">
+                            삭제
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div th:if="${post.postComments == null or post.postComments.isEmpty()}" class="text-gray-500">
+            아직 댓글이 없습니다.
+        </div>
+
         <!-- 댓글 작성 폼 -->
         <form th:action="@{/posts/{postId}/comments(postId=${post.id})}" method="post" class="mt-6 space-y-4">
             <textarea name="content" required class="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="댓글을 입력하세요..."></textarea>
