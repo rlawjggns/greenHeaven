@@ -6,10 +6,10 @@ import com.greenheaven.greenheaven_app.dto.PostListResponseDto;
 import com.greenheaven.greenheaven_app.service.CropService;
 import com.greenheaven.greenheaven_app.service.NotificationService;
 import com.greenheaven.greenheaven_app.service.PostService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -23,10 +23,10 @@ public class PostController {
     private final PostService postService;
 
     @GetMapping("/posts")
-    public String getPosts(@RequestParam(required = false, defaultValue = "") String search,
+    public String postsPage(@RequestParam(required = false, defaultValue = "") String search,
                            @RequestParam(defaultValue = "1") int page,
                            Model model) {
-        Page<PostListResponseDto> response = postService.getPosts(search, page);
+        Page<PostListResponseDto> response = postService.postsPage(search, page);
         model.addAttribute("search", search); // 검색어 유지
         model.addAttribute("postListResponseDtos", response);
         model.addAttribute("currentPage", page);  // 현재 페이지 추가
@@ -36,8 +36,18 @@ public class PostController {
     }
 
     @GetMapping("/posts/{postId}")
-    public String getPost(@PathVariable String postId, Model model) {
-        model.addAttribute("post", postService.getPost(postId));
+    public String postPage(@PathVariable String postId,
+                           Model model,
+                           HttpServletRequest request) {
+        String referer = request.getHeader("Referer");
+
+        // 같은 게시글 페이지에서 리다이렉트된 경우에만 조회수가 증가하도록 처리
+        boolean shouldIncreaseView = true;
+        if (referer != null && referer.contains("/posts/" + postId)) {
+            shouldIncreaseView = false;
+        }
+
+        model.addAttribute("post", postService.postPage(postId, shouldIncreaseView));
         return "post";
     }
 
@@ -54,7 +64,7 @@ public class PostController {
 
     @GetMapping("/posts/{postId}/update")
     public String updatePostPage(@PathVariable String postId, Model model) {
-        model.addAttribute("post", postService.getPost(postId));
+        model.addAttribute("post", postService.postPage(postId, false));
         return "updatePost";
     }
 

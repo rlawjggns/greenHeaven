@@ -29,7 +29,7 @@ public class PostService {
     /**
      * 게시글 조회
      */
-    public Page<PostListResponseDto> getPosts(String search, int page) {
+    public Page<PostListResponseDto> postsPage(String search, int page) {
         Pageable pageable = PageRequest.of(page-1, 2,  Sort.by(Sort.Direction.DESC, "createDate"));
         Page<Post> posts;
 
@@ -66,10 +66,15 @@ public class PostService {
      * 게시글 상세 조회
      * @param postId 게시글 고유 키
      */
-    public PostDetailResponseDto getPost(String postId) {
+    public PostDetailResponseDto postPage(String postId, Boolean shouldIncreaseView) {
         UUID uuid = UUID.fromString(postId);
         Post post = postRepository.findById(uuid)
                 .orElseThrow(() -> new NoSuchElementException("해당 게시글을 찾을 수 없습니다."));
+
+        if (shouldIncreaseView) {
+            post.increaseViewCount();
+            postRepository.save(post); // 영속화 필요
+        }
 
         List<PostCommentResponseDto> postComments = post.getComments().stream()
                 .map(PostComment::toDto)

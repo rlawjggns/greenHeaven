@@ -65,4 +65,8 @@ public class Crop {
     public final int hashCode() {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
+
+    public void updateHarvestDate(Integer adjustDays) {
+        this.harvestDate = this.harvestDate.plusDays(adjustDays);
+    }
 }

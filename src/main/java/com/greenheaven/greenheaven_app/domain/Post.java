@@ -89,4 +89,8 @@ public class Post {
         this.title = request.getTitle();
         this.content = request.getContent();
     }
+
+    public void increaseViewCount() {
+        this.views++;
+    }
 }

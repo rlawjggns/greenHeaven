@@ -1,5 +1,7 @@
 package com.greenheaven.greenheaven_app.service;
 
+import com.greenheaven.greenheaven_app.dto.CropGrowthDto;
+import com.greenheaven.greenheaven_app.dto.CropListDto;
 import com.greenheaven.greenheaven_app.dto.CropListResponsetDto;
 import com.greenheaven.greenheaven_app.dto.CropRequestDto;
 import com.greenheaven.greenheaven_app.domain.Crop;
@@ -86,5 +88,34 @@ public class CropService {
      */
     public void deleteCrop(String cropId) {
         cropRepository.deleteById(UUID.fromString(cropId));
+    }
+
+    /**
+     * 등록된 작물 변경사항 반영
+     * @param request 변경사항 정보를 가진 DTO
+     */
+    public void cropGrowth(CropGrowthDto request) {
+        Crop crop = cropRepository.findById(request.getId())
+                .orElseThrow(() -> new NoSuchElementException("해당 작물을 찾을 수 없습니다."));
+
+        crop.updateHarvestDate(request.getAdjustDays());
+    }
+
+    public List<CropListDto> getCrops() {
+        String memberEmail = MemberService.getAuthenticatedMemberEmail();
+        Member member = memberRepository.findByEmail(memberEmail)
+                .orElseThrow(() -> new NoSuchElementException("해당 유저를 찾을 수 없습니다."));
+
+
+        List<Crop> crops = cropRepository.findByMember(member);
+
+        return crops.stream()
+                .map(c -> CropListDto.builder()
+                        .id(c.getId())
+                        .name(c.getName())
+                        .type(c.getType().getKorName())
+                        .build())
+                .toList();
+
     }
 }

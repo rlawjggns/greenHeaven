@@ -1,5 +1,6 @@
 package com.greenheaven.greenheaven_app.controller;
 
+import com.greenheaven.greenheaven_app.dto.CropGrowthDto;
 import com.greenheaven.greenheaven_app.dto.CropListResponsetDto;
 import com.greenheaven.greenheaven_app.dto.CropRequestDto;
 import com.greenheaven.greenheaven_app.domain.CropType;
@@ -7,6 +8,7 @@ import com.greenheaven.greenheaven_app.service.CropService;
 import com.greenheaven.greenheaven_app.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -81,10 +83,19 @@ public class CropController {
      * 생장상태 관리 페이지
      */
     @GetMapping("/crop/growth")
-    public String getHistory(Model model) {
-        CropType selectedCrop = CropType.valueOf("POTATO"); // Enum 값으로 변환
-        model.addAttribute("selectedCrop", selectedCrop);
-        model.addAttribute("cropRequestDto", CropRequestDto.builder().type(selectedCrop).build());
+    public String cropGrowthPage(Model model) {
+
+        model.addAttribute("crops", cropService.getCrops());
+        model.addAttribute("cropGrowthDto", new CropGrowthDto());
         return "crop_growth";
+    }
+
+    /**
+     * 생장상태 반영
+     */
+    @PostMapping("/crop/growth")
+    public String cropGrowth(@ModelAttribute CropGrowthDto request) {
+        cropService.cropGrowth(request);
+        return "redirect:/crop";
     }
 }

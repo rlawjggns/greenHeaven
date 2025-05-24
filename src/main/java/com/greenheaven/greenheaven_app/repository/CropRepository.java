@@ -11,4 +11,6 @@ import java.util.UUID;
 @Repository
 public interface CropRepository extends JpaRepository<Crop, UUID> {
     List<Crop> findTop10ByMember(Member member);
+
+    List<Crop> findByMember(Member member);
 }
