@@ -35,5 +35,26 @@
             </ul>
         </nav>
     </div>
+
+    <script th:if="${#authorization.expression('isAuthenticated()')}">
+        const eventSource = new EventSource('/notification/connect');
+
+        eventSource.onmessage = function(event) {
+            console.log('SSE 알림 수신 : ' + event.data);
+            let data;
+            try {
+                data = JSON.parse(event.data);
+            } catch (e) {
+                // JSON이 아니면 그냥 문자열을 메시지로 처리
+                data = { message: event.data };
+            }
+            alert('🔔 새 알림: ' + data.message);
+        };
+
+        eventSource.onerror = function() {
+            console.error("SSE 연결 오류 발생");
+            eventSource.close();
+        };
+    </script>
 </header>
 </html>

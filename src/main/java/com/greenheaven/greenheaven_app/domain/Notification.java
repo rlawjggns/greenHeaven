@@ -32,17 +32,16 @@ public class Notification {
     
     @CreatedDate
     @Column(name = "date", updatable = false)
-    private LocalDateTime date; // 알림 날짜
-    
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false)
-    private Member member; // 유저
+    private LocalDateTime createdDate; // 알림 날짜
+
+    @Column(name = "n_receiver_email")
+    private String receiverEmail;
 
     @Builder
-    public Notification(String content, NotificationType type, Member member) {
+    public Notification(String content, NotificationType type, String receiverEmail) {
         this.content = content;
         this.type = type;
-        this.member = member;
+        this.receiverEmail = receiverEmail;
     }
 
     @Override

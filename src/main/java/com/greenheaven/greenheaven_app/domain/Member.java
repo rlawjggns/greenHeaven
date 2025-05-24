@@ -66,11 +66,6 @@ public class Member {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Payment> payments = new ArrayList<>(); // 결제들
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-    private List<Notification> notifications = new ArrayList<>(); // 알림들
-
-
-
     @Builder
     public Member(String name, String password, String email, Subscription subscription, String address, Float latitude, Float longitude, UserRole role) {
         this.name = name;
