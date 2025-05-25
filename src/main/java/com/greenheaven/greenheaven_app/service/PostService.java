@@ -1,10 +1,9 @@
 package com.greenheaven.greenheaven_app.service;
 
-import com.greenheaven.greenheaven_app.domain.Member;
-import com.greenheaven.greenheaven_app.domain.Post;
-import com.greenheaven.greenheaven_app.domain.PostComment;
+import com.greenheaven.greenheaven_app.domain.*;
 import com.greenheaven.greenheaven_app.dto.*;
 import com.greenheaven.greenheaven_app.repository.MemberRepository;
+import com.greenheaven.greenheaven_app.repository.NotificationRepository;
 import com.greenheaven.greenheaven_app.repository.PostCommentRepository;
 import com.greenheaven.greenheaven_app.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,9 +22,11 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Slf4j
 public class PostService {
+    private final NotificationRepository notificationRepository;
     private final PostRepository postRepository;
     private final PostCommentRepository postCommentRepository;
     private final MemberRepository memberRepository;
+    private final NotificationService notificationService;
 
     /**
      * 게시글 조회
@@ -137,6 +138,20 @@ public class PostService {
                 .member(member)
                 .post(post)
                 .build();
+
+        // 이 댓글이 달린 게시글의 작성자 조회
+        Member postMember = post.getMember();
+
+        // 알림 객체 만들기
+        Notification notification = Notification.builder()
+                .type(NotificationType.GENERAL)
+                .receiverEmail(postMember.getEmail())
+                .content("내 게시글에 새로운 댓글이 달렸습니다.")
+                .build();
+
+        // 알림 저장 및 보내기
+        notificationRepository.save(notification);
+        notificationService.send(notification);
 
         postCommentRepository.save(postComment);
     }

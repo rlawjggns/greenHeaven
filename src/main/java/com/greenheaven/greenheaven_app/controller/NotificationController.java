@@ -25,4 +25,10 @@ public class NotificationController {
     public ResponseEntity<SseEmitter> connect(@RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId) {
         return ResponseEntity.ok(notificationService.connect(lastEventId));
     }
+
+    @PostMapping("/notification/mark-read")
+    public ResponseEntity<Void> markNotificationsAsRead() {
+        // DB 작업 없음. 단순 OK만 응답
+        return ResponseEntity.ok().build();
+    }
 }

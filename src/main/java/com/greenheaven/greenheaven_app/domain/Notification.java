@@ -34,7 +34,7 @@ public class Notification {
     @Column(name = "date", updatable = false)
     private LocalDateTime createdDate; // 알림 날짜
 
-    @Column(name = "n_receiver_email")
+    @Column(name = "receiver_email")
     private String receiverEmail;
 
     @Builder
