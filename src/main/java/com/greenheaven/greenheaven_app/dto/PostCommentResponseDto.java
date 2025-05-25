@@ -13,4 +13,5 @@ public class PostCommentResponseDto {
     private String content;
     private LocalDateTime createdDate;
     private String memberName;
+    private String memberEmail;
 }

@@ -91,6 +91,7 @@ public class PostService {
                 .createdDate(post.getCreateDate())
                 .updatedDate(post.getUpdateDate())
                 .memberName(post.getMember().getName())
+                .memberEmail(post.getMember().getEmail())
                 .postComments(postComments)
                 .build();
     }

@@ -17,5 +17,6 @@ public class PostDetailResponseDto {
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
     private String memberName;
+    private String memberEmail;
     private List<PostCommentResponseDto> postComments;
 }

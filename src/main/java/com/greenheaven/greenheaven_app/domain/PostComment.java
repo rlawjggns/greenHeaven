@@ -73,6 +73,7 @@ public class PostComment {
                 .createdDate(this.getCreateDate())
                 .memberName(this.getMember().getName())
                 .id(this.getId())
+                .memberEmail(this.getMember().getEmail())
                 .build();
     }
 }

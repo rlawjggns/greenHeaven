@@ -19,8 +19,8 @@
                 ← 목록으로
             </a>
 
-            <!-- 수정/삭제 버튼 -->
-            <div class="space-x-2">
+            <!-- 수정/삭제 버튼: 게시글 작성자 본인만 보이도록 -->
+            <div class="space-x-2" th:if="${#authentication.name == post.memberEmail}">
                 <a th:href="@{/posts/{id}/update(id=${post.id})}"
                    class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600">
                     수정
@@ -65,9 +65,10 @@
                         <div class="text-xs text-gray-500" th:text="${#temporals.format(comment.createdDate, 'yyyy-MM-dd HH:mm')}">작성일</div>
                     </div>
 
-                    <!-- 삭제 버튼 -->
+                    <!-- 삭제 버튼: 댓글 작성자 본인만 보이도록 -->
                     <form th:action="@{/posts/{postId}/comments/{commentId}/delete(postId=${post.id}, commentId=${comment.id})}"
-                          method="post" onsubmit="return confirm('이 댓글을 삭제하시겠습니까?');">
+                          method="post" onsubmit="return confirm('이 댓글을 삭제하시겠습니까?');"
+                          th:if="${#authentication.name == comment.memberEmail}">
                         <button type="submit"
                                 class="text-sm text-red-600 hover:underline ml-4">
                             삭제
