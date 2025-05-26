@@ -1,6 +1,8 @@
 package com.greenheaven.greenheaven_app.controller;
 
+import com.greenheaven.greenheaven_app.dto.CropListResponsetDto;
 import com.greenheaven.greenheaven_app.dto.CropRequestDto;
+import com.greenheaven.greenheaven_app.dto.NotificationListResponseDto;
 import com.greenheaven.greenheaven_app.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +13,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -30,5 +34,15 @@ public class NotificationController {
     public ResponseEntity<Void> markNotificationsAsRead() {
         // DB 작업 없음. 단순 OK만 응답
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 작물 목록 페이지
+     */
+    @GetMapping("/notifications")
+    public String getCropOverview(Model model) {
+        List<NotificationListResponseDto> notifications = notificationService.getNotificationListTen(); // 현재 사용자 기준 작물 리스트 가져오기
+        model.addAttribute("notifications", notifications);
+        return "notifications"; // Thymeleaf 파일
     }
 }

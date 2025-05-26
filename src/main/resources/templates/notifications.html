@@ -37,7 +37,7 @@
                     <tr th:each="notification : ${notifications}" class="hover:bg-gray-50">
                         <td class="px-4 py-2 whitespace-nowrap" th:text="${notification.content}"></td>
                         <td class="px-4 py-2 whitespace-nowrap" th:text="${notification.type}"></td>
-                        <td class="px-4 py-2 whitespace-nowrap" th:text="${notification.date}"></td>
+                        <td class="px-4 py-2 whitespace-nowrap" th:text="${notification.createdDate}"></td>
                         <td class="px-4 py-2 whitespace-nowrap text-center">
                             <a th:href="@{/notification/delete/{id}(id=${notification.id})}"
                                class="inline-block bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition"
