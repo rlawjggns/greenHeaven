@@ -35,6 +35,13 @@ public class NotificationService {
         String receiverEmail = MemberService.getAuthenticatedMemberEmail();
         String eventId = receiverEmail + "_" + System.currentTimeMillis();
 
+        // ✅ 기존 연결이 있으면 먼저 종료
+        emitterRepository.findAllEmitterStartWithEmail(receiverEmail)
+                .forEach((key, emitter) -> {
+                    emitter.complete(); // 기존 연결 종료
+                    emitterRepository.deleteById(key); // 정리
+                });
+
         // SseEmitter 인스턴스 생성 후 Map에 저장
         // 연결된 클라이언트 1명에 대한 SSE 스트림 객체
         // 이 emitter를 통해 메시지를 계속 밀어넣는다.
