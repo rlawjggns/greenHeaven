@@ -41,9 +41,6 @@
                 <li th:if="${#authorization.expression('isAuthenticated()')}">
                     <a th:href="@{/member/logout}" class="text-gray-300 hover:text-gray-400 transition duration-500">로그아웃</a>
                 </li>
-
-                <!-- 추가 메뉴 항목 -->
-                <li><a th:href="@{/subscription}" class="text-gray-300 hover:text-gray-400 transition duration-500">멤버쉽결제</a></li>
             </ul>
         </nav>
     </div>

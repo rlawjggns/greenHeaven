@@ -4,9 +4,7 @@ import com.greenheaven.greenheaven_app.domain.UserRole;
 import com.greenheaven.greenheaven_app.dto.MemberProfileDto;
 import com.greenheaven.greenheaven_app.dto.MemberSignUpDto;
 import com.greenheaven.greenheaven_app.domain.Member;
-import com.greenheaven.greenheaven_app.domain.Subscription;
 import com.greenheaven.greenheaven_app.exception.*;
-import com.greenheaven.greenheaven_app.repository.SubscriptionRepository;
 import com.greenheaven.greenheaven_app.repository.MemberRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -45,7 +43,6 @@ import java.util.*;
 @Slf4j
 public class MemberService {
     private final MemberRepository memberRepository;
-    private final SubscriptionRepository subscriptionRepository;
     private final PasswordEncoder passwordEncoder;
     private final JavaMailSender mailSender;
 
@@ -87,18 +84,11 @@ public class MemberService {
         Map<String, Float> coordinates = getCoordinates(request.getAddress());
 
 
-        // 유저의 구독 개체 생성
-        Subscription subscription = new Subscription(
-                LocalDateTime.of(9999,9,9,23,59)
-        );
-        subscriptionRepository.save(subscription);
-
         // 유저 생성
         Member member = Member.builder()
                 .name(request.getName())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .email(request.getEmail())
-                .subscription(subscription)
                 .address(request.getAddress())
                 .latitude(coordinates.get("latitude")) // 위도
                 .longitude(coordinates.get("longitude")) // 경도

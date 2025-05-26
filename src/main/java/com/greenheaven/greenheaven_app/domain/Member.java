@@ -59,27 +59,15 @@ public class Member {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Crop> crops = new ArrayList<>(); // 작물들
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "subscription_id")
-    private Subscription subscription; // 구독
-
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-    private List<Payment> payments = new ArrayList<>(); // 결제들
-
     @Builder
-    public Member(String name, String password, String email, Subscription subscription, String address, Float latitude, Float longitude, UserRole role) {
+    public Member(String name, String password, String email, String address, Float latitude, Float longitude, UserRole role) {
         this.name = name;
         this.password = password;
         this.email = email;
-        this.subscription = subscription;
         this.address = address;
         this.latitude = latitude;
         this.longitude = longitude;
         this.role = role;
-    }
-
-    public void connectSubscription(Subscription subscription) {
-        this.subscription = subscription;
     }
 
     @Override
