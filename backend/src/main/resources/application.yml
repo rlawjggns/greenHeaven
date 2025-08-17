@@ -1,0 +1,41 @@
+spring:
+  application:
+    name: greenheaven-app
+  datasource:
+    url: jdbc:mysql://localhost:3000/greenheaven_db
+    username: root
+    password: rlarock12@
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        use_sql_comments: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: rlawjggns12@gmail.com
+    password: yyaqrkktohtnmeij
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+server:
+  port: 1271
+
+logging:
+  level:
+    org:
+      springframework:
+        security: debug
+
+naver:
+  id : maG4EXzt6yj1yWL2BNGV
+  secret : 6CYEyGEocG
+weather:
+  serviceKey: FpU9cz%2BRwYKDLZ0%2Bt%2Br5LtO7bNl9awszAvRsgUpFNsvCLi9%2FdIKuR2nxPi%2BiiK3OJn6aIkrb8Y5UN%2FdyQ6kLXg%3D%3D
+
+kakao:
+  key: a1bdab9e49d8edb47e770443ced71250

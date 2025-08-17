@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko" class="scroll-smooth" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(title='작물등록')}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>작물 등록</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-900">
+<div class="container mx-auto px-4 py-12">
+    <!-- 헤더 포함 -->
+    <div th:replace="~{fragments/header :: header}" class="mb-16"></div> <!-- 상단 여백 추가 -->
+
+    <!-- 메인 컨텐츠 -->
+    <div class="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-8 mt-60">
+        <h2 class="text-2xl font-semibold text-green-600 mb-6">농작물 등록</h2>
+        <form th:action="@{/crop}" method="POST" th:object="${cropRequestDto}">
+            <!-- 농작물 이름 -->
+            <div class="mb-6">
+                <label for="crop-name" class="block text-gray-700">농작물 이름</label>
+                <input th:field="*{name}" type="text" id="crop-name" name="cropName" class="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="농작물 이름을 입력하세요" required>
+            </div>
+
+            <!-- 농작물 종류 -->
+            <div class="mb-6">
+                <label for="crop-type" class="block text-gray-700">농작물 종류</label>
+                <select th:field="*{type}" id="crop-type" name="cropType" class="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" >
+                    <option value="LETTUCE" >상추</option>
+                    <option value="RADISH">무</option>
+                    <option value="POTATO">감자</option>
+                    <option value="SWEETPOTATO">고구마</option>
+                </select>
+            </div>
+
+            <!-- 파종일 -->
+            <div class="mb-6">
+                <label for="plant-date" class="block text-gray-700">파종일</label>
+                <input th:field="*{plantDate}" type="date" id="plant-date" name="plantDate" class="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required>
+            </div>
+
+            <!-- 수량 -->
+            <div class="mb-6">
+                <label for="crop-quantity" class="block text-gray-700">농작물 수량(kg)</label>
+                <input th:field="*{quantity}" type="text" id="crop-quantity" name="quantity" class="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="농작물 수량을 입력하세요" required>
+            </div>
+
+            <!-- 제출 버튼 -->
+            <div class="mb-6 text-right">
+                <button type="submit" class="bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">등록하기</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- 푸터 포함 -->
+    <div class="py-32"></div> <!-- 푸터와의 간격 조정 -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</div>
+</body>
+</html>

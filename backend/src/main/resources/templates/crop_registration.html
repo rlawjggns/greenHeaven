@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ko" class="scroll-smooth" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(title='작물등록')}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body class="bg-gray-900 text-white">
+    <!-- 전체 컨테이너 -->
+    <div class="container mx-auto px-4">
+        <!-- 헤더 포함 -->
+        <div th:replace="~{fragments/header :: header}" class="mb-16"></div> <!-- 상단 여백 추가 -->
+
+        <!-- 메인 컨텐츠 -->
+        <main class="flex flex-col items-center justify-center text-center p-10 mt-60 text-white">
+            <h2 class="text-5xl font-extrabold text-gray-100 drop-shadow-lg">등록할 작물 선택</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mt-12">
+                <!-- 카드 1: 상추 -->
+                <a th:href="@{/crop/registration/lettuce}" class="relative w-64 h-96 rounded-2xl overflow-hidden shadow-2xl hover:shadow-green-400/50 transition-transform transform hover:scale-105">
+                    <img src="/frontend/src/assets/images/lettuce.jpg" alt="상추" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                    <div class="absolute bottom-4 left-4 text-left">
+                        <h3 class="text-2xl font-semibold text-gray-100 drop-shadow-md">상추</h3>
+                        <p class="text-white text-sm drop-shadow-md">
+                            상추는 신선하고 아삭한 잎이 특징인 채소로, 서늘한 기후와 꾸준한 수분 공급이 우수한 품질을 보장해줍니다. 이에 따른 빠른 성장 주기와 관리 용이성이 장점입니다.
+                        </p>
+                    </div>
+                </a>
+
+                <!-- 카드 2: 무 -->
+                <a th:href="@{/crop/registration/radish}" class="relative w-64 h-96 rounded-2xl overflow-hidden shadow-2xl hover:shadow-green-400/50 transition-transform transform hover:scale-105">
+                    <img src="/frontend/src/assets/images/radish.jpg" alt="무" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                    <div class="absolute bottom-4 left-4 text-left">
+                        <h3 class="text-2xl font-semibold text-gray-100 drop-shadow-md">무</h3>
+                        <p class="text-white text-sm drop-shadow-md">
+                            무는 아삭한 식감과 은은한 단맛이 어우러진 채소로, 서늘한 날씨와 적절한 물 관리를 통해 우수한 뿌리를 생산합니다. 김치 및 다양한 반찬의 주재료로 활용됩니다.
+                        </p>
+                    </div>
+                </a>
+
+                <!-- 카드 3: 감자 -->
+                <a th:href="@{/crop/registration/potato}" class="relative w-64 h-96 rounded-2xl overflow-hidden shadow-2xl hover:shadow-green-400/50 transition-transform transform hover:scale-105">
+                    <img src="/frontend/src/assets/images/potato.jpg" alt="감자" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                    <div class="absolute bottom-4 left-4 text-left">
+                        <h3 class="text-2xl font-semibold text-gray-100 drop-shadow-md">감자</h3>
+                        <p class="text-white text-sm drop-shadow-md">
+                            감자는 영양가가 높고 다양한 요리에 활용되는 구근 작물입니다. 서늘하고 통풍이 잘 되는 토양에서 우수한 수확량을 기대할 수 있으며, 지속적인 병충해 관리가 필수입니다.
+                        </p>
+                    </div>
+                </a>
+
+                <!-- 카드 4: 고구마 -->
+                <a th:href="@{/crop/registration/sweetpotato}" class="relative w-64 h-96 rounded-2xl overflow-hidden shadow-2xl hover:shadow-green-400/50 transition-transform transform hover:scale-105">
+                    <img src="/frontend/src/assets/images/sweetpotato.jpg" alt="고구마" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                    <div class="absolute bottom-4 left-4 text-left">
+                        <h3 class="text-2xl font-semibold text-gray-100 drop-shadow-md">고구마</h3>
+                        <p class="text-white text-sm drop-shadow-md">
+                            고구마는 달콤하고 고소한 맛이 매력인 뿌리 작물로, 따뜻한 기후와 배수가 좋은 토양에서 최상의 품질을 발휘합니다. 충분한 일조와 적절한 수분 공급이 건강한 뿌리 발달의 핵심입니다.
+                        </p>
+                    </div>
+                </a>
+
+            </div>
+        </main>
+
+        <!-- 푸터 포함 -->
+        <div class="py-32"></div> <!-- 푸터와의 간격 조정 -->
+        <div th:replace="~{fragments/footer :: footer}"></div>
+    </div>
+</body>
+</html>
