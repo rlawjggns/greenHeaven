@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko" class="scroll-smooth" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(title='작물관리')}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body class="bg-gray-900 text-white">
+<!-- 전체 컨테이너 -->
+<div class="container mx-auto px-4">
+    <!-- 헤더 포함 -->
+    <div th:replace="~{fragments/header :: header}" class="mb-16"></div> <!-- 상단 여백 추가 -->
+
+    <!-- 메인 컨텐츠 -->
+    <div class="py-8 flex min-h-screen gap-6 mt-60">
+        <!-- 왼쪽 사이드바: 3개 카드 높이 맞추기 -->
+        <aside class="w-1/4 flex flex-col space-y-6">
+            <!-- 1. 새로운 작물 등록 카드 -->
+            <a th:href="@{/crop/registration}" class="relative group p-6 rounded shadow-lg h-48 border-2 border-gray-500 overflow-hidden transform transition duration-500 ease-in-out hover:scale-105 hover:shadow-2xl">
+                <img src="/frontend/src/assets/images/hands.jpg" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-110" alt="작물 등록">
+                <h2 class="absolute bottom-4 right-4 z-10 font-bold text-3xl text-white">새로운 작물 등록</h2>
+            </a>
+
+            <!-- 2. 생장상태 관리 카드 -->
+            <a th:href="@{/crop/growth}" class="relative group p-6 rounded shadow-lg h-48 border-2 border-gray-500 overflow-hidden transform transition duration-500 ease-in-out hover:scale-105 hover:shadow-2xl">
+                <img src="/frontend/src/assets/images/field.jpg" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-110" alt="수확 이력">
+                <h2 class="absolute bottom-4 right-4 z-10 font-bold text-3xl text-white">생장상태 관리</h2>
+            </a>
+
+            <!-- 3. 기상 정보 카드 -->
+            <a th:href="@{/weather}" class="relative group p-6 rounded shadow-lg h-48 border-2 border-gray-500 overflow-hidden transform transition duration-500 ease-in-out hover:scale-105 hover:shadow-2xl">
+                <img src="/frontend/src/assets/images/farm.jpg" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-110" alt="기상 정보">
+                <h2 class="absolute bottom-4 right-4 z-10 font-bold text-3xl text-white">기상 정보</h2>
+            </a>
+        </aside>
+
+        <!-- 오른쪽 대시보드 영역 -->
+        <main class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- 작물 현황 카드 -->
+            <section
+                    class="relative bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+                <img src="/frontend/src/assets/images/house.jpg"
+                     class="absolute inset-0 w-full h-full object-cover opacity-10 rounded-xl"
+                     alt="작물 현황" />
+                <h2 class="text-xl font-bold mb-3 relative z-10 text-gray-800">
+                    작물 현황
+                    <a th:href="@{/crops}"
+                       class="text-sm text-green-700 absolute top-0 right-2 py-1 px-2 hover:underline">상세 보기 →</a>
+                </h2>
+                <table class="w-full text-left border-collapse relative z-10 text-gray-800">
+                    <thead>
+                    <tr>
+                        <th class="px-4 py-2 border-b border-gray-300">작물</th>
+                        <th class="px-4 py-2 border-b border-gray-300">파종일</th>
+                        <th class="px-4 py-2 border-b border-gray-300">남은수확일</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="crop : ${crops}">
+                        <td class="px-4 py-2 border-b border-gray-300" th:text="${crop.typeName}">작물 이름</td>
+                        <td class="px-4 py-2 border-b border-gray-300" th:text="${crop.plantDate}">파종일</td>
+                        <td class="px-4 py-2 border-b border-gray-300" th:text="${crop.remainDays}">남은수확일</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div th:if="${#lists.isEmpty(crops)}" class="text-gray-500 text-center py-4">
+                    등록된 작물이 없어요 🥔
+                </div>
+            </section>
+
+            <!-- 알림 카드 -->
+            <section
+                    class="relative bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+                <img src="/frontend/src/assets/images/write.jpg"
+                     class="absolute inset-0 w-full h-full object-cover opacity-10 rounded-xl"
+                     alt="알림" />
+                <h2 class="text-xl font-bold mb-3 relative z-10 text-gray-800">
+                    최근 알림
+                    <a th:href="@{/notifications}"
+                       class="text-sm text-green-700 absolute top-0 right-2 py-1 px-2 hover:underline">상세 보기 →</a>
+                </h2>
+                <table class="w-full text-left border-collapse relative z-10 text-gray-800">
+                    <thead>
+                    <tr>
+                        <th class="px-4 py-2 border-b border-gray-300">내용</th>
+                        <th class="px-4 py-2 border-b border-gray-300">날짜</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="notification : ${notifications}">
+                        <td class="px-4 py-2 border-b border-gray-300" th:text="${notification.content}">내용</td>
+                        <td class="px-4 py-2 border-b border-gray-300" th:text="${#temporals.format(notification.createdDate, 'yyyy-MM-dd HH:mm')}">날짜</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div th:if="${#lists.isEmpty(notifications)}" class="text-gray-500 text-center py-4">
+                    최근 알림이 없어요 😳
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- 푸터 포함 -->
+    <div class="py-32"></div> <!-- 푸터와의 간격 조정 -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</div>
+</body>
+</html>

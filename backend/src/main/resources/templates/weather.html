@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko" class="scroll-smooth" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(title='기상정보')}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body class="bg-white text-gray-900">
+<!-- 전체 컨테이너 -->
+<div class="container mx-auto px-4">
+    <!-- 헤더 포함 -->
+    <div th:replace="~{fragments/header :: header}" class="mb-16"></div>
+
+    <!-- 메인 컨텐츠 -->
+    <main class="relative flex flex-col items-center justify-center min-h-screen mt-40">
+        <!-- 주소 (배경 추가 + 흰색 텍스트로 강조) -->
+        <h2 class="text-5xl font-extrabold text-white px-10 py-6 rounded-2xl shadow-lg mb-20 mt-40 text-center"
+            th:text="${address}">서울특별시 강남구</h2>
+
+        <!-- 3일치 요약 날씨 카드 -->
+        <div class="relative z-10 w-full max-w-6xl grid grid-cols-1 md:grid-cols-3 gap-10 p-8">
+            <div th:each="weather : ${threeDaysWeather}"
+                 class="bg-gray-50 p-6 rounded-2xl ring-1 ring-gray-200 shadow-md hover:shadow-lg transition-transform hover:scale-[1.01] duration-200">
+                <!-- 날짜 -->
+                <h2 class="text-2xl font-bold mb-4 text-center text-gray-700"
+                    th:text="${#temporals.format(weather.date, 'E, MMM dd')}">월, Mar 20</h2>
+
+                <!-- 대표 기온과 하늘 상태 -->
+                <div class="flex flex-col items-center">
+                    <div class="text-6xl font-extrabold text-green-700"
+                         th:text="${weather.representative.temperature} + '°C'">18°C</div>
+                    <div class="text-xl text-gray-700 mt-2"
+                         th:text="${weather.representative.sky.getDisplayName()}">맑음</div>
+                </div>
+
+                <!-- 최저/최고 기온 -->
+                <div class="flex justify-center mt-4 space-x-4">
+                    <span class="text-sm text-gray-600" th:text="'최저 ' + ${weather.minTemp} + '°C'">최저 12°C</span>
+                    <span class="text-sm text-gray-600" th:text="'최고 ' + ${weather.maxTemp} + '°C'">최고 21°C</span>
+                </div>
+
+                <!-- 시간별 기상 정보 -->
+                <div class="mt-6">
+                    <h3 class="text-lg font-semibold text-green-700 mb-3">시간별 기상 정보</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div th:each="weatherByHour : ${weather.measurements}"
+                             class="bg-gray-100 ring-1 ring-gray-200 p-4 rounded-lg shadow-sm flex flex-col items-center">
+                            <span class="text-sm font-medium text-green-900"
+                                  th:text="${#temporals.format(weatherByHour.time, 'HH:mm')}">12:00</span>
+                            <span class="text-lg font-bold text-green-700"
+                                  th:text="${weatherByHour.temperature} + '°C'">18°C</span>
+                            <span class="text-xs text-gray-700"
+                                  th:text="'강수확률: ' + ${weatherByHour.probability} + '%'">강수확률: 20%</span>
+                            <span class="text-xs text-gray-700"
+                                  th:text="'강수: ' + ${weatherByHour.precipitation.getDisplayName()}">강수: 없음</span>
+                            <span class="text-xs text-gray-700"
+                                  th:text="'습도: ' + ${weatherByHour.humidity} + '%'">습도: 55%</span>
+                            <span class="text-xs text-gray-700"
+                                  th:text="'풍속: ' + ${weatherByHour.winding} + ' m/s'">풍속: 3.5 m/s</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 푸터 간격 -->
+    <div class="py-32"></div>
+    <!-- 푸터 포함 -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</div>
+</body>
+</html>

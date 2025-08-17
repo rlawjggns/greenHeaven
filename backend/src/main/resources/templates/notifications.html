@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(title='최근 알림')}">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>최근 알림</title>
+    <!-- Tailwind CSS (버전 2) -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+</head>
+<body class="bg-gray-50 text-gray-900">
+<div class="container mx-auto px-4 py-12">
+    <!-- 헤더 포함 -->
+    <div th:replace="~{fragments/header :: header}" class="mb-12"></div>
+
+    <!-- 메인 컨텐츠 -->
+    <div class="relative max-w-5xl mx-auto bg-white shadow-md rounded-lg overflow-hidden mt-60 mb-40 border border-gray-200">
+
+        <!-- 뒤로가기 버튼: 컨테이너의 왼쪽 상단에 작게 배치 -->
+        <a href="javascript:history.back()"
+           class="text-sm text-gray-700 absolute top-4 left-4 bg-gray-100 py-1 px-2 rounded hover:bg-gray-200 hover:text-gray-900 transition">
+            ← 뒤로가기
+        </a>
+
+        <div class="p-6">
+            <h2 class="text-3xl font-bold text-gray-900 mb-6 text-center">최근 알림</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-100">
+                    <tr>
+                        <th class="px-4 py-2 text-left text-sm font-semibold uppercase tracking-wider text-gray-700">내용</th>
+                        <th class="px-4 py-2 text-left text-sm font-semibold uppercase tracking-wider text-gray-700">유형</th>
+                        <th class="px-4 py-2 text-left text-sm font-semibold uppercase tracking-wider text-gray-700">날짜</th>
+                        <th class="px-4 py-2 text-center text-sm font-semibold uppercase tracking-wider text-gray-700">삭제하기</th>
+                    </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                    <tr th:each="notification : ${notifications}" class="hover:bg-gray-50">
+                        <td class="px-4 py-2 whitespace-nowrap" th:text="${notification.content}"></td>
+                        <td class="px-4 py-2 whitespace-nowrap" th:text="${notification.type}"></td>
+                        <td class="px-4 py-2 whitespace-nowrap" th:text="${notification.createdDate}"></td>
+                        <td class="px-4 py-2 whitespace-nowrap text-center">
+                            <a th:href="@{/notification/delete/{id}(id=${notification.id})}"
+                               class="inline-block bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition"
+                               onclick="return confirm('정말 삭제하시겠습니까?');">
+                                삭제하기
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div><!-- overflow-x-auto 끝 -->
+        </div><!-- p-6 끝 -->
+    </div><!-- max-w-5xl 끝 -->
+
+    <!-- 푸터 -->
+    <div th:replace="~{fragments/footer :: footer}" class="mt-12"></div>
+</div>
+</body>
+</html>

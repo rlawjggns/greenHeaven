@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko" class="scroll-smooth" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(title='회원가입')}"></head>
+<body>
+<!-- 헤더 포함 -->
+<div th:replace="~{fragments/header :: header}"></div>
+
+<!-- 회원가입 화면 시작 -->
+<div class="flex items-center justify-center min-h-screen my-60">
+    <div class="bg-white p-8 rounded shadow-lg max-w-md w-full">
+        <form method="post" th:action="@{/member/signup}" th:object="${memberSignUpDto}">
+            <h2 class="text-2xl font-bold text-center mb-6 text-gray-900">회원가입</h2>
+
+            <!-- 이메일 입력 -->
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="email">
+                    이메일
+                    <span th:if="${emailError}" th:text="${emailError}" class="text-red-500 ml-4 text-sm"></span>
+                </label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="email" type="email" th:field="*{email}" placeholder="이메일">
+            </div>
+
+            <!-- 비밀번호 입력 -->
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
+                    비밀번호
+                    <span th:if="${passwordError}" th:text="${passwordError}" class="text-red-500 ml-4 text-sm"></span>
+                </label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="password" type="password" th:field="*{password}" placeholder="최소 8글자 이상을 입력해주세요">
+            </div>
+
+            <!-- 비밀번호 확인 -->
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="confirm_password">
+                    비밀번호 확인
+                    <span th:if="${confirmPasswordError}" th:text="${confirmPasswordError}" class="text-red-500 ml-4 text-sm"></span>
+                </label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="confirm_password" type="password" th:field="*{confirmPassword}" placeholder="비밀번호 확인">
+            </div>
+
+            <!-- 이름 입력 -->
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="name">
+                    이름
+                    <span th:if="${nameError}" th:text="${nameError}" class="text-red-500 ml-4 text-sm"></span>
+                </label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="name" type="text" th:field="*{name}" placeholder="이름">
+            </div>
+
+            <!-- 도로명주소 입력 -->
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="name">
+                    주소
+                    <span th:if="${nameError}" th:text="${nameError}" class="text-red-500 ml-4 text-sm"></span>
+                </label>
+                <div style="display: flex; gap: 8px;"> <!-- Flexbox를 사용 -->
+                    <input
+                            class="shadow appearance-none border rounded flex-grow py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            id="sample4_roadAddress" type="text" th:field="*{address}" placeholder="도로명주소">
+                    <input
+                            class="bg-green-600 hover:bg-green-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline cursor-pointer"
+                            type="button" onclick="sample4_execDaumPostcode()" value="주소 찾기">
+                </div>
+            </div>
+
+
+            <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+            <script>
+                function sample4_execDaumPostcode() {
+                    new daum.Postcode({
+                        oncomplete: function(data) {
+                            // 도로명 주소 변수 가져오기
+                            var roadAddr = data.roadAddress;
+
+                            // 도로명 주소 입력란에 값 설정
+                            document.getElementById("sample4_roadAddress").value = roadAddr;
+                        }
+                    }).open();
+                }
+            </script>
+
+            <!-- 가입 버튼 -->
+            <div class="flex justify-center">
+                <button class="bg-green-600 hover:bg-green-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+                    가입하기
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- 회원가입 화면 끝 -->
+
+<!-- 푸터 포함 -->
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

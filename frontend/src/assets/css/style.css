@@ -1,0 +1,15 @@
+@font-face {
+    font-family: 'GmarketSansMedium';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.fade-in {
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.fade-in.show {
+    opacity: 1;
+}

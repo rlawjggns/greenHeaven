@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko" class="scroll-smooth" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(title='비밀번호찾기')}"></head>
+<body>
+<!-- 헤더 포함 -->
+<div th:replace="~{fragments/header :: header}"></div>
+
+<!-- 비밀번호 찾기 화면 시작 -->
+<div class="flex items-center justify-center min-h-screen my-60">
+    <div class="bg-white p-8 rounded shadow-lg max-w-md w-full">
+        <form method="post" th:action="@{/member/password/reset}" th:object="${memberFindPwdDto}">
+            <h2 class="text-2xl font-bold text-gray-900 text-center mb-6">비밀번호 찾기</h2>
+
+            <!-- 이메일 입력 -->
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="email">
+                    가입한 이메일을 입력하세요
+                    <span th:if="${emailError}" th:text="${emailError}" class="text-red-500 ml-4 text-sm"></span>
+                    <span th:if="${checkEmailError}" th:text="${checkEmailError}" class="text-red-500 ml-4 text-sm"></span>
+                </label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                       id="email" type="email" th:field="*{email}" placeholder="가입한 이메일" required>
+            </div>
+
+            <!-- 비밀번호 찾기 버튼 -->
+            <div class="flex justify-center">
+                <button class="bg-green-600 hover:bg-green-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+                    비밀번호 찾기
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- 비밀번호 찾기 화면 끝 -->
+
+<!-- 푸터 포함 -->
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>
