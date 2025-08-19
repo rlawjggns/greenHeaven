@@ -3,6 +3,7 @@ package com.greenheaven.backend.config;
 import com.greenheaven.backend.security.CustomUserDetailsService;
 import com.greenheaven.backend.security.JwtAuthenticationFilter;
 import com.greenheaven.backend.security.JwtTokenProvider;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,12 +34,27 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable) // CSRF 보호 비활성화(개발 중)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth // HTTP 요청에 대한 접근 제어 설정
-                        .requestMatchers("/api/member/signup","/api/member/signin", "/api/member/check-auth", "/api/member/password/reset").permitAll() // 괄호 안의 URL 패턴(홈, 로그인, 회원가입, 에러 페이지, 정적 리소스 경로 등)은 인증 없이 접근 가능하게 허용
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers(
+                                "/api/member/signup",
+                                "/api/member/signin",
+                                "/api/member/check-auth",
+                                "/api/member/password/reset")
+                        .permitAll() // 괄호 안의 URL 패턴은 인증 없이 접근 가능하게 허용
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN") // ADMIN 관리자
                         .anyRequest().authenticated() // 위의 패턴에 해당하지 않는 모든 요청은 인증을 받아야 접근 할 수 있도록 설정
                 )
                 .headers(headers -> headers.frameOptions(frameoptions -> frameoptions.sameOrigin()))
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(ex -> ex
+                .authenticationEntryPoint((request, response, authException) -> {
+                    // 인증 안 됨 → 401
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                })
+                .accessDeniedHandler((request, response, accessDeniedException) -> {
+                    // 인증은 됐는데 권한 없음 → 403
+                    response.sendError(HttpServletResponse.SC_FORBIDDEN, "Forbidden");
+                })
+            );
         return http.build(); // 위의 설정을 기반으로 SecurityFilterChian 객체를 빌드하여 리턴
     }
 

@@ -18,11 +18,13 @@ import PostUpdate from "./pages/PostUpdate.jsx";
 import Post from "./pages/Post.jsx";
 import Profile from "./pages/Profile.jsx";
 import { AuthProvider } from "./context/AuthContext";
+import ScrollToTop from "./components/ScrollToTop";
 
 function App() {
     return (
         <AuthProvider>
             <BrowserRouter>
+                <ScrollToTop />
                 <Routes>
                     <Route path="/" element={<Home />} />s
                     <Route path="/signin" element={<SignIn />} />

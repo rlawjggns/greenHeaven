@@ -14,6 +14,16 @@ const Header = () => {
         navigate("/");  // 홈으로 이동
     };
 
+    // 공통 클릭 핸들러 (로그인 여부 검사)
+    const handleProtectedNav = (e, path) => {
+        e.preventDefault();
+        if (!isAuthenticated) {
+            navigate("/signin"); // 로그인 안했으면 로그인 페이지로
+        } else {
+            navigate(path); // 로그인 했으면 원래 경로로
+        }
+    };
+
     return (
         <header className="flex justify-between items-center pt-4 z-50 fixed top-0 left-0 w-full bg-transparent">
             {/* 로고 */}
@@ -27,42 +37,68 @@ const Header = () => {
             <nav className="flex items-center justify-between w-full mr-10">
                 <ul className="flex space-x-5 ml-auto">
                     <li>
-                        <Link to="/about" className="text-gray-300 hover:text-gray-400 transition duration-500">
+                        <a
+                            href="/about"
+                            onClick={(e) => handleProtectedNav(e, "/about")}
+                            className="text-gray-300 hover:text-gray-400 transition duration-500"
+                        >
                             기능소개
-                        </Link>
+                        </a>
                     </li>
                     <li>
-                        <Link to="/crop" className="text-gray-300 hover:text-gray-400 transition duration-500">
+                        <a
+                            href="/crop"
+                            onClick={(e) => handleProtectedNav(e, "/crop")}
+                            className="text-gray-300 hover:text-gray-400 transition duration-500"
+                        >
                             작물관리
-                        </Link>
+                        </a>
                     </li>
                     <li>
-                        <Link to="/weather" className="text-gray-300 hover:text-gray-400 transition duration-500">
+                        <a
+                            href="/weather"
+                            onClick={(e) => handleProtectedNav(e, "/weather")}
+                            className="text-gray-300 hover:text-gray-400 transition duration-500"
+                        >
                             기상정보
-                        </Link>
+                        </a>
                     </li>
                     <li>
-                        <Link to="/news" className="text-gray-300 hover:text-gray-400 transition duration-500">
+                        <a
+                            href="/news"
+                            onClick={(e) => handleProtectedNav(e, "/news")}
+                            className="text-gray-300 hover:text-gray-400 transition duration-500"
+                        >
                             농업소식
-                        </Link>
+                        </a>
                     </li>
                     <li>
-                        <Link to="/board" className="text-gray-300 hover:text-gray-400 transition duration-500">
+                        <a
+                            href="/board"
+                            onClick={(e) => handleProtectedNav(e, "/board")}
+                            className="text-gray-300 hover:text-gray-400 transition duration-500"
+                        >
                             소통마당
-                        </Link>
+                        </a>
                     </li>
 
                     {/* 로그인 상태에 따라 표시 */}
                     {!isAuthenticated ? (
                         <li>
-                            <Link to="/signin" className="text-gray-300 hover:text-gray-400 transition duration-500">
+                            <Link
+                                to="/signin"
+                                className="text-gray-300 hover:text-gray-400 transition duration-500"
+                            >
                                 로그인
                             </Link>
                         </li>
                     ) : (
                         <>
                             <li>
-                                <Link to="/profile" className="text-gray-300 hover:text-gray-400 transition duration-500">
+                                <Link
+                                    to="/profile"
+                                    className="text-gray-300 hover:text-gray-400 transition duration-500"
+                                >
                                     프로필
                                 </Link>
                             </li>

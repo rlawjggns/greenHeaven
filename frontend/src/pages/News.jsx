@@ -4,9 +4,15 @@ import axios from "axios";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import serverApi from "../utils/serverApi";
+import newImg1 from "../assets/images/news_1.jpg";
+import newImg2 from "../assets/images/news_2.jpg";
+import newImg3 from "../assets/images/news_3.jpg";
+import newImg4 from "../assets/images/news_4.jpg";
 
 export default function News() {
     const [newsList, setNewsList] = useState([]);
+    const newsImages = [newImg1, newImg2, newImg3, newImg4];
+
 
     useEffect(() => {
         serverApi
@@ -39,7 +45,7 @@ export default function News() {
                         >
                             {/* 임시 이미지 (데이터에 이미지가 없다면 index 기반으로 순환) */}
                             <img
-                                src={`/images/news_${(index % 4) + 1}.jpg`}
+                                src={newsImages[index % newsImages.length]} // index 기반 순환
                                 alt="뉴스 이미지"
                                 className="w-full h-72 object-cover"
                                 loading="lazy"
