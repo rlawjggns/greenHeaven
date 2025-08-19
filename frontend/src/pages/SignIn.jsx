@@ -5,6 +5,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import serverApi from "../utils/serverApi";
 import { AuthContext } from "../context/AuthContext";
+import FindPasswordModal from "../components/modal/FindPasswordModal";
 
 export default function SignInPage() {
     const [email, setEmail] = useState("");
@@ -14,6 +15,10 @@ export default function SignInPage() {
     const location = useLocation();
     const [signupSuccess, setSignupSuccess] = useState(false);
     const { login } = useContext(AuthContext);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const openModal = () => setIsModalOpen(true);
+    const closeModal = () => setIsModalOpen(false);
 
     useEffect(() => {
         const params = new URLSearchParams(location.search);
@@ -45,10 +50,6 @@ export default function SignInPage() {
     };
 
     const goToSignup = () => {
-        navigate("/signup"); // 원하는 경로로 이동
-    };
-
-    const goToFindPassword  = () => {
         navigate("/signup"); // 원하는 경로로 이동
     };
 
@@ -129,11 +130,18 @@ export default function SignInPage() {
                             </button>
                         </div>
                         <div className="text-center mt-4">
-                            <button onClick={goToSignup} className="inline-block font-bold text-sm text-lime-600 hover:text-lime-700 mx-2">
+                            <button
+                                type="button"
+                                onClick={goToSignup}
+                                className="inline-block font-bold text-sm text-lime-600 hover:text-lime-700 mx-2">
                                 회원가입
                             </button>
                             <span className="mx-2 text-gray-600">|</span>
-                            <button onClick={goToFindPassword} className="inline-block font-bold text-sm text-lime-600 hover:text-lime-700 mx-2">
+                            <button
+                                type="button"  // 여기서 반드시 submit이 아니라 button
+                                onClick={openModal}
+                                className="inline-block font-bold text-sm text-lime-600 hover:text-lime-700 mx-2"
+                            >
                                 비밀번호 찾기
                             </button>
                         </div>
@@ -141,6 +149,7 @@ export default function SignInPage() {
                 </div>
             </main>
             <Footer />
+            <FindPasswordModal isOpen={isModalOpen} onClose={closeModal} />
         </div>
     );
 }
