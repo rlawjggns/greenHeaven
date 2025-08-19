@@ -6,6 +6,22 @@ import Footer from "../components/Footer";
 import noteImg from "../assets/images/write.jpg";
 
 function Home() {
+    // 리스트 항목 애니메이션
+    const listItemVariants = {
+        hidden: { opacity: 0, y: 20 },
+        visible: { opacity: 1, y: 0 },
+    };
+
+    // 부모 container stagger
+    const containerVariants = {
+        hidden: {},
+        visible: {
+            transition: {
+                staggerChildren: 0.3,
+            },
+        },
+    };
+
     const patchNotes = [
         { text: "2025-08-19: UI를 개선하고 및 일부 버그를 수정했어요. 😎", image: noteImg  },
         { text: "2025-08-15: 농작물 기록 기능이 업데이트 되었어요. 확인해보세요! 🗒️", image: noteImg  },
@@ -17,7 +33,7 @@ function Home() {
     useEffect(() => {
         const interval = setInterval(() => {
             setCurrent((prev) => (prev + 1) % patchNotes.length);
-        }, 3000); // 3초마다 다음 슬라이드
+        }, 5000); // 5초마다 다음 슬라이드
         return () => clearInterval(interval);
     }, []);
 
@@ -27,26 +43,37 @@ function Home() {
 
             <motion.main className="flex flex-col items-start justify-center min-h-screen relative z-10 pl-14 text-white">
                 {/* 기존 주요 내용 */}
-                <div className="mb-10">
-                    <ul className="text-left space-y-2">
-                        <li>
+                <motion.div className="mb-10">
+                    <motion.ul
+                        className="text-left space-y-2"
+                        initial="hidden"
+                        animate="visible"
+                        variants={containerVariants}
+                    >
+                        <motion.li variants={listItemVariants}>
                             <strong className="text-lime-600 text-2xl">작</strong>
                             물 관리: 농작물을 기록하고 수확일을 관리합니다.
-                        </li>
-                        <li>
+                        </motion.li>
+                        <motion.li variants={listItemVariants}>
                             <strong className="text-lime-600 text-2xl">생</strong>
                             장 상태: 특이 사항을 반영하고 현 상태에 최적화합니다.
-                        </li>
-                        <li>
+                        </motion.li>
+                        <motion.li variants={listItemVariants}>
                             <strong className="text-lime-600 text-2xl">기</strong>
                             상 정보: 실시간 기상 정보를 제공하여 작물을 보호합니다.
-                        </li>
-                    </ul>
-                </div>
+                        </motion.li>
+                    </motion.ul>
+                </motion.div>
 
-                <p className="text-xl">
+                <motion.p
+                    className="text-xl"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 1, delay: 1 }}
+                >
                     "효율적이고 스마트한 농업 관리를 통해 최고의 생산성을 제공합니다."
-                </p>
+                </motion.p>
+
 
                 {/* 패치노트 카드 */}
                 <div className="absolute top-3/5 right-6 transform -translate-y-1/2 w-96 h-96 bg-white text-gray-900 p-4 rounded-2xl shadow-xl border border-gray-200 overflow-hidden flex flex-col">
