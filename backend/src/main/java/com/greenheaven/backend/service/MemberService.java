@@ -1,6 +1,6 @@
 package com.greenheaven.backend.service;
 
-import com.greenheaven.backend.domain.UserRole;
+import com.greenheaven.backend.domain.MemberRole;
 import com.greenheaven.backend.dto.MemberProfileDto;
 import com.greenheaven.backend.dto.MemberSignUpDto;
 import com.greenheaven.backend.domain.Member;
@@ -68,7 +68,7 @@ public class MemberService {
      * @param request 회원가입에 필요한 정보를 담은 DTO
      */
 
-    public void SignUp(MemberSignUpDto request) {
+    public String signUp(MemberSignUpDto request) {
         // 이미 가입된 이메일인 경우 예외 처리
         if (checkEmail(request.getEmail()).isPresent()) {
             throw new EmailExistException("이미 가입된 이메일입니다.");
@@ -91,11 +91,13 @@ public class MemberService {
                 .address(request.getAddress())
                 .latitude(coordinates.get("latitude")) // 위도
                 .longitude(coordinates.get("longitude")) // 경도
-                .role(UserRole.USER) // 유저 역할 -> USER(기본값), ADMIN의 경우는 따로 처리
+                .role(MemberRole.REGULAR) // 유저 역할 -> REGULAR
                 .build();
 
         // 유저 저장
         memberRepository.save(member);
+
+        return "성공적으로 회원가입이 완료되었습니다.";
     }
 
     /**

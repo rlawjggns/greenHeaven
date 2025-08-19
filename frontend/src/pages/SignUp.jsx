@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import serverapi from "../utils/serverapi.js";
 
 export default function Signup() {
     const [form, setForm] = useState({
@@ -46,22 +47,29 @@ export default function Signup() {
         }));
     };
 
-    const handleSubmit = e => {
+    const handleSubmit = async e => {
         e.preventDefault();
 
-        // 기본 유효성 검사 예시
+        // 기존 클라이언트 유효성 검사
         const newErrors = {};
-        if (!form.email) newErrors.emailError = "이메일을 입력해주세요.";
-        if (!form.password || form.password.length < 8) newErrors.passwordError = "비밀번호는 최소 8글자 이상이어야 합니다.";
-        if (form.password !== form.confirmPassword) newErrors.confirmPasswordError = "비밀번호가 일치하지 않습니다.";
-        if (!form.name) newErrors.nameError = "이름을 입력해주세요.";
-        if (!form.address) newErrors.addressError = "주소를 입력해주세요.";
+        if (!form.email) newErrors.email = "이메일을 입력해주세요.";
+        if (!form.password || form.password.length < 8) newErrors.password = "비밀번호는 최소 8글자 이상이어야 합니다.";
+        if (form.password !== form.confirmPassword) newErrors.confirmPassword = "비밀번호가 일치하지 않습니다.";
+        if (!form.name) newErrors.name = "이름을 입력해주세요.";
+        if (!form.address) newErrors.address = "주소를 입력해주세요.";
         setErrors(newErrors);
 
         if (Object.keys(newErrors).length > 0) return;
 
-        // 서버로 form 전송 추가 필요
-        // 예: fetch("/member/signup", { method: "POST", body: JSON.stringify(form) ... })
+        // 서버 호출
+        try {
+            const response = await serverapi.post("/member/signup", form);
+
+            window.location.href = "/signin?signup=true"; // 로그인 페이지로 이동
+        } catch (err) {
+            console.error(err);
+            alert("서버 오류가 발생했습니다.");
+        }
     };
 
     return (
@@ -75,8 +83,8 @@ export default function Signup() {
                         <div className="mb-4">
                             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
                                 이메일
-                                {errors.emailError && (
-                                    <span className="text-red-500 ml-4 text-sm">{errors.emailError}</span>
+                                {errors.email && (
+                                    <span className="text-red-500 ml-4 text-sm">{errors.email}</span>
                                 )}
                             </label>
                             <input
@@ -94,8 +102,8 @@ export default function Signup() {
                         <div className="mb-4">
                             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
                                 비밀번호
-                                {errors.passwordError && (
-                                    <span className="text-red-500 ml-4 text-sm">{errors.passwordError}</span>
+                                {errors.password && (
+                                    <span className="text-red-500 ml-4 text-sm">{errors.password}</span>
                                 )}
                             </label>
                             <input
@@ -113,8 +121,8 @@ export default function Signup() {
                         <div className="mb-4">
                             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="confirmPassword">
                                 비밀번호 확인
-                                {errors.confirmPasswordError && (
-                                    <span className="text-red-500 ml-4 text-sm">{errors.confirmPasswordError}</span>
+                                {errors.confirmPassword && (
+                                    <span className="text-red-500 ml-4 text-sm">{errors.confirmPassword}</span>
                                 )}
                             </label>
                             <input
@@ -132,8 +140,8 @@ export default function Signup() {
                         <div className="mb-4">
                             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
                                 이름
-                                {errors.nameError && (
-                                    <span className="text-red-500 ml-4 text-sm">{errors.nameError}</span>
+                                {errors.name && (
+                                    <span className="text-red-500 ml-4 text-sm">{errors.name}</span>
                                 )}
                             </label>
                             <input
@@ -151,8 +159,8 @@ export default function Signup() {
                         <div className="mb-4">
                             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="address">
                                 주소
-                                {errors.addressError && (
-                                    <span className="text-red-500 ml-4 text-sm">{errors.addressError}</span>
+                                {errors.address && (
+                                    <span className="text-red-500 ml-4 text-sm">{errors.address}</span>
                                 )}
                             </label>
                             <div className="flex gap-2">

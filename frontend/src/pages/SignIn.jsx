@@ -1,33 +1,55 @@
 // src/pages/Login.jsx
-import React, { useState } from "react";
-import { useLocation, Link } from "react-router-dom";
+import React, { useState,useEffect, useContext  } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import serverApi from "../utils/serverApi";
+import { AuthContext } from "../context/AuthContext";
 
-function useSearchParam(key) {
-    const { search } = useLocation();
-    const params = new URLSearchParams(search);
-    return params.get(key);
-}
+export default function SignInPage() {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+    const navigate = useNavigate();
+    const location = useLocation();
+    const [signupSuccess, setSignupSuccess] = useState(false);
+    const { login } = useContext(AuthContext);
 
-export default function Login() {
-    const logout = useSearchParam("logout");
-    const signup = useSearchParam("signup");
-    const findpwd = useSearchParam("findpwd");
-    const error = useSearchParam("error");
-    const [form, setForm] = useState({ username: "", password: "", remember: false });
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        if (params.get("signup") === "true") {
+            setSignupSuccess(true);
+        }
+    }, [location.search]);
 
-    const handleChange = e => {
-        const { name, value, type, checked } = e.target;
-        setForm(prev => ({
-            ...prev,
-            [name]: type === "checkbox" ? checked : value
-        }));
+    const handleLogin = async (e) => {
+        e.preventDefault();
+        try {
+            const params = new URLSearchParams();
+            params.append("username", email);
+            params.append("password", password);
+
+            const response = await serverApi.post(`/member/signin`, params, {
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                }
+            });
+
+            const { accessToken, refreshToken, email: userEmail } = response.data;
+
+            login(accessToken); // JWT 저장 및 상태 갱신
+            navigate("/");
+        } catch {
+            setError("이메일 또는 비밀번호가 잘못되었습니다.");
+        }
     };
 
-    const handleSubmit = e => {
-        e.preventDefault();
-        // 로그인 API 호출
+    const goToSignup = () => {
+        navigate("/signup"); // 원하는 경로로 이동
+    };
+
+    const goToFindPassword  = () => {
+        navigate("/signup"); // 원하는 경로로 이동
     };
 
     return (
@@ -37,33 +59,32 @@ export default function Login() {
                 <div className="bg-white p-8 rounded shadow-lg max-w-md w-full">
                     <h2 className="text-2xl font-bold mb-6 text-gray-900">로그인</h2>
                     <div className="mb-4">
-                        {logout && (
-                            <div className="p-3 text-green-700 font-bold bg-green-100 border-green-700 border rounded">
-                                로그아웃이 완료되었습니다.
-                            </div>
-                        )}
-                        {signup && (
-                            <div className="p-3 text-green-700 font-bold bg-green-100 border-green-700 border rounded">
+                        {/*{logout && (*/}
+                        {/*    <div className="p-3 text-green-700 font-bold bg-green-100 border-green-700 border rounded">*/}
+                        {/*        로그아웃이 완료되었습니다.*/}
+                        {/*    </div>*/}
+                        {/*)}*/}
+                        {signupSuccess && (
+                            <div className="text-green-600 font-semibold text-left mb-2">
                                 회원가입이 완료되었습니다.
                             </div>
                         )}
-                        {findpwd && (
-                            <div className="p-3 text-green-700 font-bold bg-green-100 border-green-700 border rounded">
-                                임시 비밀번호를 이메일로 전송했습니다.
-                            </div>
-                        )}
+                        {/*{findpwd && (*/}
+                        {/*    <div className="p-3 text-green-700 font-bold bg-green-100 border-green-700 border rounded">*/}
+                        {/*        임시 비밀번호를 이메일로 전송했습니다.*/}
+                        {/*    </div>*/}
+                        {/*)}*/}
                     </div>
-                    <form onSubmit={handleSubmit}>
+                    <form onSubmit={handleLogin}>
                         <div className="mb-4">
                             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">아이디</label>
                             <input
                                 className="shadow appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                 id="email"
                                 type="text"
-                                name="username"
                                 placeholder="이메일"
-                                value={form.username}
-                                onChange={handleChange}
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
                                 required
                                 autoComplete="username"
                             />
@@ -74,10 +95,9 @@ export default function Login() {
                                 className="shadow appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
                                 id="password"
                                 type="password"
-                                name="password"
                                 placeholder="비밀번호"
-                                value={form.password}
-                                onChange={handleChange}
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
                                 required
                                 autoComplete="current-password"
                             />
@@ -88,8 +108,8 @@ export default function Login() {
                                     type="checkbox"
                                     className="form-checkbox text-gray-600"
                                     name="remember"
-                                    checked={form.remember}
-                                    onChange={handleChange}
+                                    // checked={form.remember}
+                                    // onChange={handleChange}
                                 />
                                 <span className="ml-2 text-gray-700">로그인 상태 유지</span>
                             </label>
@@ -98,6 +118,7 @@ export default function Login() {
                             <div className="text-red-500 font-bold my-4">
                                 이메일 또는 비밀번호가 올바르지 않습니다.
                             </div>
+                            
                         )}
                         <div className="flex items-center justify-between">
                             <button
@@ -108,19 +129,13 @@ export default function Login() {
                             </button>
                         </div>
                         <div className="text-center mt-4">
-                            <Link
-                                className="inline-block align-baseline font-bold text-sm text-lime-600 hover:text-lime-700"
-                                to="/signup"
-                            >
+                            <button onClick={goToSignup} className="inline-block font-bold text-sm text-lime-600 hover:text-lime-700 mx-2">
                                 회원가입
-                            </Link>
+                            </button>
                             <span className="mx-2 text-gray-600">|</span>
-                            <Link
-                                className="inline-block align-baseline font-bold text-sm text-lime-600 hover:text-lime-700"
-                                to="/login/password/find"
-                            >
+                            <button onClick={goToFindPassword} className="inline-block font-bold text-sm text-lime-600 hover:text-lime-700 mx-2">
                                 비밀번호 찾기
-                            </Link>
+                            </button>
                         </div>
                     </form>
                 </div>

@@ -3,83 +3,73 @@ package com.greenheaven.backend.controller;
 import com.greenheaven.backend.dto.MemberFindPwdDto;
 import com.greenheaven.backend.dto.MemberProfileDto;
 import com.greenheaven.backend.dto.MemberSignUpDto;
+import com.greenheaven.backend.dto.TokenDto;
 import com.greenheaven.backend.exception.*;
+import com.greenheaven.backend.repository.MemberRepository;
+import com.greenheaven.backend.security.JwtTokenProvider;
 import com.greenheaven.backend.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.parser.ParseException;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-@Controller
-@RequestMapping("/member")
+@RestController
+@RequestMapping("/api/member")
 @RequiredArgsConstructor
 @Slf4j
 public class MemberController {
     private final MemberService memberService;
     private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final MemberRepository memberRepository;
 
-    /**
-     * 유저 로그인 GET
-     * @return 로그인 페이지
-     */
-    @GetMapping("/login")
-    public String getLogin() {
-        // 로그인 페이지로 이동
-        return "login";
+    @PostMapping("/signin")
+    public ResponseEntity<TokenDto> signin(@RequestParam("username") String email,
+                                           @RequestParam("password") String password) {
+        return memberRepository.findByEmail(email)
+                .filter(member -> passwordEncoder.matches(password, member.getPassword()))
+                .map(member -> {
+                    String accessToken = jwtTokenProvider.createTokenFromMember(member);
+                    String refreshToken = jwtTokenProvider.createRefreshTokenFromMember(member);
+
+                    TokenDto tokenDto = TokenDto.builder()
+                            .accessToken(accessToken)
+                            .refreshToken(refreshToken)
+                            .email(member.getEmail())
+                            .build();
+
+                    return ResponseEntity.ok(tokenDto);
+                })
+                .orElseThrow(() -> new BadCredentialsException("잘못된 이메일 또는 비밀번호입니다."));
+    }
+
+    @GetMapping("/check-auth")
+    public ResponseEntity<?> checkAuth() {
+        return ResponseEntity.ok().body(true);
+    }
+
+    @GetMapping("/logout")
+    public ResponseEntity<?> logout() {
+        return ResponseEntity.ok().body("로그아웃 성공");
     }
 
     /**
-     * 유저 회원가입 GET
-     * @param model 뷰에 데이터를 전달하가 위한 개체
-     * @return 회원가입 페이지
-     */
-    @GetMapping("/signup")
-    public String getSignUp(Model model) {
-        // 모델에 회원가입 폼을 담을 DTO를 추가한 뒤, 회원가입 페이지로 이동
-        model.addAttribute("memberSignUpDto", MemberSignUpDto.builder().build());
-        return "signup";
-    }
-
-
-    /**
-     * 유저 회원가입 POST
+     * 유저 회원가입
      * @param request 폼의 submit 결과를 담은 dto
-     * @param bindingResult 사용자 입력을 검증
-     * @param model 뷰에 데이터를 전달하가 위한 개체
-     * @return 로그인 페이지로 리다이렉트
+     * @return 회원가입 성공 구문
      */
     @PostMapping("/signup")
-    public String postSignUp(@ModelAttribute("memberSignUpDto") @Validated MemberSignUpDto request,
-                             BindingResult bindingResult, Model model) throws ParseException {
-        // 사용자 입력 검증 중 오류 발생 시, 각 필드에 해당하는 에러 메시지를 모델에 추가 한 뒤 기존 페이지로 돌아간다
-        if (bindingResult.hasErrors()) {
-            bindingResult.getFieldErrors().forEach(error -> { 
-                model.addAttribute(error.getField() + "Error", error.getDefaultMessage());
-            });
-            return "signup";
-        }
-
-        // 회원가입 로직 수행, 각 필드에 대한 추가 검증 중 예외 발생 시 메시지를 모델에 추가 한 뒤 기존 페이지로 돌아간다
-        try {
-            memberService.SignUp(request);
-        } catch (EmailExistException ex) {
-            model.addAttribute("emailError", ex.getMessage());
-            return "signup";
-        } catch (OldPasswordMismatchException ex) {
-            model.addAttribute("confirmPasswordError", ex.getMessage());
-            return "signup";
-        }
-
-        // 로직 성공을 알리는 쿼리 파라미터와 함께 로그인 페이지로 리다이렉트
-        return "redirect:/member/login?signup=true";
+    public ResponseEntity<String> postSignUp(@RequestBody MemberSignUpDto request) {
+        return ResponseEntity.ok(memberService.signUp(request));
     }
 
     /**

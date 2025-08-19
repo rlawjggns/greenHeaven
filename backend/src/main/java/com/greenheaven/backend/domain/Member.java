@@ -32,7 +32,6 @@ public class Member {
     @Column(name = "email", nullable = false)
     private String email; // 사용자 이메일
 
-
     @Column(name = "address", nullable = false)
     private String address; // 도로명 주소
 
@@ -50,16 +49,15 @@ public class Member {
     @Column(name = "latitude")
     private Float latitude; // 위도 y
 
-
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
-    private UserRole role = UserRole.USER; // 사용자 권한
+    private MemberRole role; // 사용자 권한
     
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Crop> crops = new ArrayList<>(); // 작물들
 
     @Builder
-    public Member(String name, String password, String email, String address, Float latitude, Float longitude, UserRole role) {
+    public Member(String name, String password, String email, String address, Float latitude, Float longitude, MemberRole role) {
         this.name = name;
         this.password = password;
         this.email = email;

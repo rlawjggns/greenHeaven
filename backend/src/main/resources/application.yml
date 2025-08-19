@@ -39,3 +39,10 @@ weather:
 
 kakao:
   key: a1bdab9e49d8edb47e770443ced71250
+
+jwt:
+  issuer: http://localhost:1271
+  secret-key: WH2sO1CzRkpU7UFkKiNF2pz1GW4Mf3jXXA4osdhZrMo
+  duration: 1
+  refresh-duration: 60
+  refresh-key: K3nHG2b+S5pgoYXoeW2soVy/hCJCqQbgd4TjugqoIVk
