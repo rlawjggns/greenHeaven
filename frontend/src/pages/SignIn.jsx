@@ -1,5 +1,5 @@
 // src/pages/Login.jsx
-import React, { useState,useEffect, useContext  } from "react";
+import React, { useState, useEffect, useContext  } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
@@ -29,6 +29,7 @@ export default function SignInPage() {
 
     const handleLogin = async (e) => {
         e.preventDefault();
+        setError("");
         try {
             const params = new URLSearchParams();
             params.append("username", email);

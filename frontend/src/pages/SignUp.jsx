@@ -35,25 +35,74 @@ export default function Signup() {
                     ...f,
                     address: data.roadAddress
                 }));
+                // 주소가 입력되면 오류 제거
+                setErrors(prev => ({ ...prev, address: undefined }));
             }
         }).open();
     };
 
     const handleChange = e => {
         const { name, value } = e.target;
+
         setForm(prev => ({
             ...prev,
             [name]: value
         }));
+
+        // 실시간 유효성 검사
+        setErrors(prev => {
+            const newErrors = { ...prev };
+
+            switch(name) {
+                case "email":
+                    if (!value) newErrors.email = "이메일을 입력해주세요.";
+                    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) newErrors.email = "올바른 이메일 형식이 아닙니다.";
+                    else delete newErrors.email;
+                    break;
+
+                case "password":
+                    if (!value) newErrors.password = "비밀번호를 입력해주세요.";
+                    else if (value.length < 8) newErrors.password = "비밀번호는 최소 8글자 이상이어야 합니다.";
+                    else if (value.length > 20) newErrors.password = "비밀번호는 20글자를 넘을 수 없습니다.";
+                    else delete newErrors.password;
+
+                    // 비밀번호 확인도 같이 체크
+                    if (form.confirmPassword && value !== form.confirmPassword) newErrors.confirmPassword = "비밀번호가 일치하지 않습니다.";
+                    else delete newErrors.confirmPassword;
+                    break;
+
+                case "confirmPassword":
+                    if (value !== form.password) newErrors.confirmPassword = "비밀번호가 일치하지 않습니다.";
+                    else delete newErrors.confirmPassword;
+                    break;
+
+                case "name":
+                    if (!value) newErrors.name = "이름을 입력해주세요.";
+                    else delete newErrors.name;
+                    break;
+
+                case "address":
+                    if (!value) newErrors.address = "주소를 입력해주세요.";
+                    else delete newErrors.address;
+                    break;
+
+                default:
+                    break;
+            }
+
+            return newErrors;
+        });
     };
 
     const handleSubmit = async e => {
         e.preventDefault();
 
-        // 기존 클라이언트 유효성 검사
+        // 최종 제출 시 유효성 검사
         const newErrors = {};
         if (!form.email) newErrors.email = "이메일을 입력해주세요.";
-        if (!form.password || form.password.length < 8) newErrors.password = "비밀번호는 최소 8글자 이상이어야 합니다.";
+        if (!form.password) newErrors.password = "비밀번호를 입력해주세요.";
+        else if (form.password.length < 8) newErrors.password = "비밀번호는 최소 8글자 이상이어야 합니다.";
+        else if (form.password.length > 20) newErrors.password = "비밀번호는 20글자를 넘을 수 없습니다.";
         if (form.password !== form.confirmPassword) newErrors.confirmPassword = "비밀번호가 일치하지 않습니다.";
         if (!form.name) newErrors.name = "이름을 입력해주세요.";
         if (!form.address) newErrors.address = "주소를 입력해주세요.";
@@ -61,10 +110,8 @@ export default function Signup() {
 
         if (Object.keys(newErrors).length > 0) return;
 
-        // 서버 호출
         try {
-            const response = await serverapi.post("/member/signup", form);
-
+            await serverapi.post("/member/signup", form);
             window.location.href = "/signin?signup=true"; // 로그인 페이지로 이동
         } catch (err) {
             console.error(err);
@@ -79,13 +126,12 @@ export default function Signup() {
                 <div className="bg-white p-8 rounded shadow-lg max-w-md w-full">
                     <form onSubmit={handleSubmit}>
                         <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">회원가입</h2>
+
                         {/* 이메일 */}
                         <div className="mb-4">
                             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
                                 이메일
-                                {errors.email && (
-                                    <span className="text-red-500 ml-4 text-sm">{errors.email}</span>
-                                )}
+                                {errors.email && <span className="text-red-500 ml-4 text-sm">{errors.email}</span>}
                             </label>
                             <input
                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -98,13 +144,12 @@ export default function Signup() {
                                 autoComplete="email"
                             />
                         </div>
+
                         {/* 비밀번호 */}
                         <div className="mb-4">
                             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
                                 비밀번호
-                                {errors.password && (
-                                    <span className="text-red-500 ml-4 text-sm">{errors.password}</span>
-                                )}
+                                {errors.password && <span className="text-red-500 ml-4 text-sm">{errors.password}</span>}
                             </label>
                             <input
                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -113,17 +158,16 @@ export default function Signup() {
                                 name="password"
                                 value={form.password}
                                 onChange={handleChange}
-                                placeholder="최소 8글자 이상을 입력해주세요"
+                                placeholder="8~20글자 입력"
                                 autoComplete="new-password"
                             />
                         </div>
+
                         {/* 비밀번호 확인 */}
                         <div className="mb-4">
                             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="confirmPassword">
                                 비밀번호 확인
-                                {errors.confirmPassword && (
-                                    <span className="text-red-500 ml-4 text-sm">{errors.confirmPassword}</span>
-                                )}
+                                {errors.confirmPassword && <span className="text-red-500 ml-4 text-sm">{errors.confirmPassword}</span>}
                             </label>
                             <input
                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -136,13 +180,12 @@ export default function Signup() {
                                 autoComplete="new-password"
                             />
                         </div>
+
                         {/* 이름 */}
                         <div className="mb-4">
                             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
                                 이름
-                                {errors.name && (
-                                    <span className="text-red-500 ml-4 text-sm">{errors.name}</span>
-                                )}
+                                {errors.name && <span className="text-red-500 ml-4 text-sm">{errors.name}</span>}
                             </label>
                             <input
                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -155,13 +198,12 @@ export default function Signup() {
                                 autoComplete="name"
                             />
                         </div>
+
                         {/* 도로명주소 */}
                         <div className="mb-4">
                             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="address">
                                 주소
-                                {errors.address && (
-                                    <span className="text-red-500 ml-4 text-sm">{errors.address}</span>
-                                )}
+                                {errors.address && <span className="text-red-500 ml-4 text-sm">{errors.address}</span>}
                             </label>
                             <div className="flex gap-2">
                                 <input
@@ -184,6 +226,7 @@ export default function Signup() {
                                 </button>
                             </div>
                         </div>
+
                         <div className="flex justify-center">
                             <button
                                 className="bg-lime-600 hover:bg-lime-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"

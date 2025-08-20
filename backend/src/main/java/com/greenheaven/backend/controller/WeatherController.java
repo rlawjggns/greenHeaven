@@ -24,7 +24,7 @@ public class WeatherController {
     @GetMapping("/weather")
     public String showWeather(Model model) throws IOException {
         model.addAttribute("threeDaysWeather", weatherService.getThreeDaysWeather());
-        model.addAttribute("address", memberService.getAddress());
+        model.addAttribute("address", memberService.getAuthenticatedMemberAddress());
         return "weather";
     }
 }

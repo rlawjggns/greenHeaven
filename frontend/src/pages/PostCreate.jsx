@@ -1,6 +1,7 @@
 // src/pages/PostCreate.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import serverApi from "../utils/serverApi.js";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 
@@ -13,22 +14,25 @@ export default function PostCreate() {
         setForm(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = e => {
+    const handleSubmit = async e => {
         e.preventDefault();
-        // 실제 저장 처리는 API로 대체!
-        // fetch("/posts/create", { method: "POST", body: JSON.stringify(form) }) 등
-        alert("글이 저장되었습니다!");
-        navigate("/posts");
+        try {
+            await serverApi.post("/posts", form); // 백엔드 POST 요청
+            alert("글이 저장되었습니다!");
+            navigate("/posts");
+        } catch (error) {
+            console.error(error);
+            alert("글 저장 중 오류가 발생했습니다.");
+        }
     };
 
     return (
-        <div className="bg-gray-900 text-white min-h-screen">
+        <div className="text-white min-h-screen">
             <div className="container mx-auto px-4">
                 <Header />
                 <div className="bg-white shadow-lg rounded-lg p-6 mt-40">
-                    {/* ← 돌아가기 */}
                     <a
-                        href="/board"
+                        href="/posts"
                         className="text-sm text-lime-700 hover:underline font-medium mb-4 inline-block"
                     >
                         ← 목록으로

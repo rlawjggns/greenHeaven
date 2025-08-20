@@ -1,54 +1,51 @@
 // src/pages/Posts.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-
-// 임시 게시글 데이터 (실제 데이터와 API 연동 시 대체)
-const initialPosts = [
-    {
-        id: 1,
-        memberName: "홍길동",
-        title: "첫 수확 후기",
-        views: 42,
-        createDate: "2023-08-01"
-    },
-    {
-        id: 2,
-        memberName: "김영희",
-        title: "오이 수확 완전 성공기!",
-        views: 21,
-        createDate: "2023-07-30"
-    }
-    // ...더 추가
-];
+import serverApi from "../utils/serverApi.js";
 
 export default function Posts() {
     // 검색 및 페이징 상태
     const [search, setSearch] = useState("");
-    const [posts, setPosts] = useState(initialPosts); // 실제로는 API로 받아와야 함
+    const [posts, setPosts] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
+    const [totalPosts, setTotalPosts] = useState(0);
     const postsPerPage = 2;
-    const totalPosts = 14; // 실제 데이터 총 개수와 동기화 필요(예: API totalElements)
-    const totalPages = Math.max(1, Math.ceil(totalPosts / postsPerPage));
 
     // 페이지 번호 구성 (5개씩)
+    const totalPages = Math.max(1, Math.ceil(totalPosts / postsPerPage));
     let startPage = Math.max(1, Math.min(currentPage - 2, totalPages - 4));
     let endPage = Math.min(totalPages, startPage + 4);
     if (endPage - startPage < 4) {
         startPage = Math.max(1, endPage - 4);
     }
-
-    // 페이징 버튼 배열
     const pageNumbers = [];
-    for (let i = startPage; i <= endPage; i++) {
-        pageNumbers.push(i);
-    }
+    for (let i = startPage; i <= endPage; i++) pageNumbers.push(i);
+
+    // API 호출
+    const fetchPosts = async () => {
+        try {
+            const res = await serverApi.get("/posts", {
+                params: { search, page: currentPage }
+            });
+            setPosts(res.data.content || []); // Page 객체 content
+            setTotalPosts(res.data.totalElements || 0);
+            console.log(res.data);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    // 페이지나 검색어 변경 시 API 호출
+    useEffect(() => {
+        fetchPosts();
+    }, [currentPage, search]);
 
     // 검색 이벤트 핸들러
     const handleSearch = e => {
         e.preventDefault();
-        // 서버에서 검색 처리 후 결과 리스트 setPosts로 갱신!
         setCurrentPage(1);
+        fetchPosts();
     };
 
     // 글쓰기 버튼
@@ -57,7 +54,7 @@ export default function Posts() {
     };
 
     // 페이지 이동
-    const goPage = (p) => setCurrentPage(p);
+    const goPage = p => setCurrentPage(p);
 
     return (
         <div className="text-white min-h-screen">
@@ -120,7 +117,7 @@ export default function Posts() {
                                     </a>
                                 </td>
                                 <td className="py-3 px-6">{post.views}</td>
-                                <td className="py-3 px-6">{post.createDate}</td>
+                                <td className="py-3 px-6">{new Date(post.createDate).toLocaleDateString()}</td>
                             </tr>
                         ))}
                         </tbody>
@@ -128,7 +125,6 @@ export default function Posts() {
 
                     {/* 페이징 처리 */}
                     <div className="mt-6 flex justify-center">
-                        {/* 이전 */}
                         {currentPage > 1 && (
                             <button
                                 className="bg-lime-600 text-white px-4 py-2 rounded-lg hover:bg-lime-700 focus:outline-none focus:ring-2 focus:ring-lime-500 mr-2"
@@ -137,21 +133,16 @@ export default function Posts() {
                                 이전
                             </button>
                         )}
-
-                        {/* 페이지 번호들 */}
                         {pageNumbers.map(i => (
                             <button
                                 key={i}
                                 className={`px-4 py-2 mx-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-500 transition
-                                ${i === currentPage ? "bg-lime-600 text-white" : "bg-gray-100 text-black hover:bg-lime-600 hover:text-white"}
-                                `}
+                                ${i === currentPage ? "bg-lime-600 text-white" : "bg-gray-100 text-black hover:bg-lime-600 hover:text-white"}`}
                                 onClick={() => goPage(i)}
                             >
                                 {i}
                             </button>
                         ))}
-
-                        {/* 다음 */}
                         {currentPage < totalPages && (
                             <button
                                 className="bg-lime-600 text-white px-4 py-2 rounded-lg hover:bg-lime-700 focus:outline-none focus:ring-2 focus:ring-lime-500 ml-2"

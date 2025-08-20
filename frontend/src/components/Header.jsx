@@ -74,8 +74,8 @@ const Header = () => {
                     </li>
                     <li>
                         <a
-                            href="/board"
-                            onClick={(e) => handleProtectedNav(e, "/board")}
+                            href="/posts"
+                            onClick={(e) => handleProtectedNav(e, "/posts")}
                             className="text-gray-300 hover:text-gray-400 transition duration-500"
                         >
                             소통마당

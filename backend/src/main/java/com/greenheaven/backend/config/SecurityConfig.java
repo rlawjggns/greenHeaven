@@ -38,7 +38,8 @@ public class SecurityConfig {
                                 "/api/member/signup",
                                 "/api/member/signin",
                                 "/api/member/check-auth",
-                                "/api/member/password/reset")
+                                "/api/member/password-reset/**",
+                                "/api/member/email/**")
                         .permitAll() // 괄호 안의 URL 패턴은 인증 없이 접근 가능하게 허용
                         .requestMatchers("/api/admin/**").hasRole("ADMIN") // ADMIN 관리자
                         .anyRequest().authenticated() // 위의 패턴에 해당하지 않는 모든 요청은 인증을 받아야 접근 할 수 있도록 설정

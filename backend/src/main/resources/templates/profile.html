@@ -15,7 +15,7 @@
     <!-- 회원가입 화면 시작 -->
     <main class="flex items-center justify-center min-h-screen my-60">
         <section class="bg-white p-8 rounded shadow-lg max-w-md w-full">
-            <form method="post" th:action="@{/member/profile}" th:object="${memberProfileDto}">
+            <form method="post" th:action="@{/member/profile}" th:object="${memberProfileRequestDto}">
                 <h2 class="flex justify-center text-2xl font-bold mb-6 text-gray-900">정보 수정</h2>
 
                 <!-- 기존 비밀번호 입력 필드 -->

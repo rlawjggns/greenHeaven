@@ -3,10 +3,13 @@ package com.greenheaven.backend.dto;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
-@Builder
-public class MemberProfileDto {
+@Setter
+@NoArgsConstructor
+public class MemberProfileRequestDto {
     @NotBlank(message = "기본 비밀번호를 입력하세요.")
     private String oldPassword;
 

@@ -1,7 +1,30 @@
-// src/components/QuitModal.jsx
-import React from "react";
+import React, { useContext } from "react";
+import serverApi from "../../utils/serverApi.js";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext"; // JWT Context
 
-export default function QuitModal({ open, onClose, onQuit }) {
+export default function QuitModal({ open, onClose }) {
+    const navigate = useNavigate();
+    const { isAuthenticated, logout } = useContext(AuthContext);
+
+    const handleQuit = async () => {
+        try {
+            // 1. 서버에 회원 탈퇴 요청
+            await serverApi.post("/member/quit");
+
+            // 2. 프론트에서 JWT 제거
+            localStorage.removeItem("jwtToken");
+
+            // 3. 메인 페이지로 이동
+            logout();
+            navigate("/");
+
+        } catch (error) {
+            console.error("회원 탈퇴 실패:", error);
+            alert("회원 탈퇴 중 오류가 발생했습니다.");
+        }
+    };
+
     if (!open) return null;
 
     return (
@@ -29,7 +52,7 @@ export default function QuitModal({ open, onClose, onQuit }) {
                     <button
                         className="bg-red-600 hover:bg-red-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                         type="button"
-                        onClick={onQuit}
+                        onClick={handleQuit}
                     >
                         탈퇴하기
                     </button>

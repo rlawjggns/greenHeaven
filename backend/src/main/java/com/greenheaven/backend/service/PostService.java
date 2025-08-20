@@ -31,7 +31,7 @@ public class PostService {
     /**
      * 게시글 조회
      */
-    public Page<PostListResponseDto> postsPage(String search, int page) {
+    public Page<PostListResponseDto> getPosts(String search, int page) {
         Pageable pageable = PageRequest.of(page-1, 2,  Sort.by(Sort.Direction.DESC, "createDate"));
         Page<Post> posts;
 
@@ -68,15 +68,13 @@ public class PostService {
      * 게시글 상세 조회
      * @param postId 게시글 고유 키
      */
-    public PostDetailResponseDto postPage(String postId, Boolean shouldIncreaseView) {
+    public PostDetailResponseDto getPost(String postId) {
         UUID uuid = UUID.fromString(postId);
         Post post = postRepository.findById(uuid)
                 .orElseThrow(() -> new NoSuchElementException("해당 게시글을 찾을 수 없습니다."));
 
-        if (shouldIncreaseView) {
-            post.increaseViewCount();
-            postRepository.save(post); // 영속화 필요
-        }
+        post.increaseViewCount();
+        postRepository.save(post);
 
         List<PostCommentResponseDto> postComments = post.getComments().stream()
                 .map(PostComment::toDto)
@@ -121,7 +119,6 @@ public class PostService {
     /**
      * 게시글 댓글 생성
      * @param postId 소속 게시글의 고유 키
-     * @param request 게시글 댓글 생성에 대한 정보를 담은 DTO
      */
     public void createPostComment(String postId, PostCommentRequestDto request) {
         // 로그인한 사용자의 이메일 조회 및 사용자 객체 조회

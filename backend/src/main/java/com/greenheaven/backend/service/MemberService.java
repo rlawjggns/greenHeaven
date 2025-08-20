@@ -1,16 +1,16 @@
 package com.greenheaven.backend.service;
 
 import com.greenheaven.backend.domain.MemberRole;
-import com.greenheaven.backend.dto.MemberProfileDto;
+import com.greenheaven.backend.dto.MemberProfileRequestDto;
+import com.greenheaven.backend.dto.MemberProfileResponseDto;
 import com.greenheaven.backend.dto.MemberSignUpDto;
 import com.greenheaven.backend.domain.Member;
+import com.greenheaven.backend.dto.TokenDto;
 import com.greenheaven.backend.exception.*;
 import com.greenheaven.backend.repository.MemberRepository;
+import com.greenheaven.backend.security.JwtTokenProvider;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
@@ -18,13 +18,14 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,12 +45,35 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final JavaMailSender mailSender;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Value("${kakao.key}")
     private String kakaoKey;
 
     /**
-     * 이메일 중복 확인 서비스 로직
+     * 로그인
+     */
+    public TokenDto signIn(String email, String password) {
+        return memberRepository.findByEmail(email)
+                .filter(member -> passwordEncoder.matches(password, member.getPassword()))
+                .map(member -> {
+                    String accessToken = jwtTokenProvider.createTokenFromMember(member);
+                    String refreshToken = jwtTokenProvider.createRefreshTokenFromMember(member);
+
+                    TokenDto tokenDto = TokenDto.builder()
+                            .accessToken(accessToken)
+                            .refreshToken(refreshToken)
+                            .email(member.getEmail())
+                            .build();
+
+                    return ResponseEntity.ok(tokenDto);
+                })
+                .orElseThrow(() -> new BadCredentialsException("잘못된 이메일 또는 비밀번호입니다.")).getBody();
+    }
+
+
+    /**
+     * 이메일 중복 확인
      * 특정 이메일의 중복 여부 확인
      *
      * @param email 중복 여부를 확인할 이메일
@@ -62,7 +86,7 @@ public class MemberService {
     }
 
     /**
-     * 회원가입 서비스 로직
+     * 회원가입
      * 새로운 유저를 생성하고 저장
      *
      * @param request 회원가입에 필요한 정보를 담은 DTO
@@ -72,11 +96,6 @@ public class MemberService {
         // 이미 가입된 이메일인 경우 예외 처리
         if (checkEmail(request.getEmail()).isPresent()) {
             throw new EmailExistException("이미 가입된 이메일입니다.");
-        }
-
-        // 비밀번호 확인과 비밀번호에 입력된 값이 다를 시 예외 처리
-        if (!request.getConfirmPassword().equals(request.getPassword())) {
-            throw new OldPasswordMismatchException("비밀번호가 일치하지 않습니다.");
         }
 
         // 주소를 통해 x, y 값 얻어오기
@@ -101,7 +120,7 @@ public class MemberService {
     }
 
     /**
-     * 비밀번호 검색 서비스 로직
+     * 비밀번호 검색
      * @param email 비밀번호를 찾을 유저의 이메일
      * @return 이메일을 통해 찾은 유저의 비밀번호 반환
      * @throws NoSuchElementException 이메일로 유저를 찾지 못할 경우 예외 발생
@@ -115,12 +134,19 @@ public class MemberService {
         return member.getPassword();
     }
 
+    public void findMemberByEmail(String email) {
+        // 이메일로 유저 찾기
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new NoSuchElementException("해당 유저를 찾을 수 없습니다."));
+    }
+
     /**
-     * 임시 비밀번호 전송 서비스 로직
+     * 임시 비밀번호 전송
      * @param email 임시 비밀번호를 보낼 유저의 이메일
      * @throws NoSuchElementException 이메일로 유저를 찾지 못할 경우 예외 발생
      */
-    public void sendPasswordByEmail(String email) {
+    public String sendPasswordByEmail(String email) {
+        log.info("email = {}", email);
         // 이메일로 유저 찾기
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new NoSuchElementException("해당 유저를 찾을 수 없습니다."));
@@ -160,19 +186,19 @@ public class MemberService {
 
             // 이메일 전송
             mailSender.send(message);
+            return "임시 비밀번호가 이메일로 전송되었습니다.";
         } catch (MessagingException e) {
-
             // 이메일 전송 실패 시 예외 처리
-            throw new RuntimeException("이메일 전송 실패", e);
+            throw new RuntimeException("비밀번호 재설정 이메일 전송이 실패했습니다.", e);
         }
     }
 
     /**
-     * 프로필 조회 서비스 로직
+     * 프로필 조회
      * @return 이메일을 통해 찾은 유저의 프로필 정보를 DTO에 담아 반환
      * @throws NoSuchElementException 이메일로 유저를 찾지 못할 경우 예외 발생
      */
-    public MemberProfileDto getProfile() {
+    public MemberProfileResponseDto getProfile() {
         // 현재 인증된 사용자의 인증 정보 가져오기
         String email = getAuthenticatedMemberEmail();
 
@@ -181,23 +207,27 @@ public class MemberService {
                 .orElseThrow(() -> new NoSuchElementException("해당 유저를 찾을 수 없습니다."));
 
         // DTO 반환
-        return MemberProfileDto.builder()
+        return MemberProfileResponseDto.builder()
                 .name(member.getName())
+                .oldPassword(member.getPassword())
                 .address(member.getAddress())
                 .build();
     }
 
     /**
-     * 프로필 수정 서비스 로직
-     * @param request 유저의 프로필 정보를 담은 DTO
-     * @throws NoSuchElementException 이메일로 유저를 찾지 못할 경우 예외 발생
+     * 프로필 수정
      */
-    public void updateProfile(MemberProfileDto request) {
+    public void updateProfile(MemberProfileRequestDto request) throws OldPasswordMismatchException {
         // 현재 인증된 사용자의 인증 정보 가져오기
         String email = getAuthenticatedMemberEmail();
 
-        // 프로필 수정필드 검증 메서드
-        validateProfileUpdate(request, email);
+        // 이메일로 유저의 비밀번호 찾기
+        String storedPassword = findPassword(email);
+
+        // 비밀번호와 일치하지 않을 시 예외 처리
+        if(!passwordEncoder.matches(request.getOldPassword(), storedPassword)) {
+            throw new OldPasswordMismatchException("기본 비밀번호가 일치하지 않습니다.");
+        }
 
         // 이메일로 유저 조회
         Member member = memberRepository.findByEmail(email)
@@ -290,66 +320,7 @@ public class MemberService {
     }
 
     /**
-     * 프로필 수정필드 검증 메서드
-     * @param request 유저의 프로필 정보를 담은 DTO
-     * @param email 프로필을 수정할 유저의 이메일
-     * @throws  IllegalArgumentException 필드 검증 중 오류 발생시 예외 발생
-     */
-    private void validateProfileUpdate(MemberProfileDto request, String email) {
-        // 이메일로 유저의 비밀번호 찾기
-        String storedPassword = findPassword(email);
-
-        // 비밀번호와 일치하지 않을 시 예외 처리
-        if(!passwordEncoder.matches(request.getOldPassword(), storedPassword)) {
-            throw new OldPasswordMismatchException("기본 비밀번호가 일치하지 않습니다.");
-        }
-
-        // 새로운 비밀번호는 입력되었지만, 최소 최대 자리수를 만족하지 않을 시 예외 처리
-        if (!request.getNewPassword().isBlank() &&
-                (request.getNewPassword().length() < 8 || request.getNewPassword().length() > 20)) {
-            throw new NewPasswordLengthException("최소 8글자 이상, 최대 20자 이하");
-        }
-
-        // 새로운 비밀번호는 입력되었지만, 새로운 비밀번호 확인이 비어있을 시 예외 처리
-        if(!request.getNewPassword().isBlank() && request.getConfirmNewPassword().isBlank()) {
-            throw new NewPasswordBlankException("비밀번호를 한번 더 입력하세요.");
-        }
-
-        // 새로운 비밀번호는 입력되었지만, 새로운 비밀번호 확인과 일치하지 않을 시 예외 처리
-        if (!request.getNewPassword().isBlank() && !request.getNewPassword().equals(request.getConfirmNewPassword())) {
-            throw new NewPasswordMismatchException("비밀번호가 일치하지 않습니다.");
-        }
-    }
-
-    /**
-     * 회원탈퇴 서비스 로직
-     * @throws NoSuchElementException 이메일로 유저를 찾지 못할 경우 예외 발생
-     */
-    public void quit(HttpServletRequest request, HttpServletResponse response) {
-        // 현재 인증된 사용자의 인증 정보 가져오기
-        String email = getAuthenticatedMemberEmail();
-
-        // 이메일로 유저 찾기
-        Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new NoSuchElementException("해당 유저를 찾을 수 없습니다."));
-
-        // 찾은 유저 삭제
-        memberRepository.delete(member);
-
-        // 세션 무효화 및 로그아웃 처리
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        new SecurityContextLogoutHandler().logout(request, response, authentication);
-
-        // JSESSIONID 쿠키 삭제
-        Cookie cookie = new Cookie("JSESSIONID", null);
-        cookie.setMaxAge(0); // 즉시 만료
-        cookie.setPath("/"); // 애플리케이션 전체에 적용된 쿠키 삭제
-        response.addCookie(cookie);
-    }
-
-    /**
-     * 회원탈퇴 서비스 로직
-     * (테스트용으로 사용할 오버로딩 메서드)
+     * 회원 탈퇴
      * @throws NoSuchElementException 이메일로 유저를 찾지 못할 경우 예외 발생
      */
     public void quit() {
@@ -362,24 +333,19 @@ public class MemberService {
 
         // 찾은 유저 삭제
         memberRepository.delete(member);
-
-        // SecurityContext 초기화
-        SecurityContextHolder.clearContext();
     }
-    
+
     /**
      * 인증된 유저의 주소 조회
      * @return 유저의 주소
      */
-    public String getAddress() {
-        // 현재 인증된 사용자의 인증 정보 가져오기
+    public String getAuthenticatedMemberAddress() {
+        // 현재 인증된 사용자의 이메일 가져오기
         String email = getAuthenticatedMemberEmail();
 
         // 이메일로 유저 찾기
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new NoSuchElementException("해당 유저를 찾을 수 없습니다."));
-
-
         return member.getAddress();
     }
 

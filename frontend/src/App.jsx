@@ -4,7 +4,7 @@ import Home from "./pages/Home";
 import SignIn from "./pages/SignIn";
 import Signup from "./pages/Signup";
 import News from "./pages/News.jsx";
-import Board from "./pages/Board.jsx";
+import Posts from "./pages/Posts.jsx";
 import About from "./pages/About.jsx";
 import Weather from "./pages/Weather.jsx";
 import Crop from "./pages/Crop.jsx";
@@ -26,11 +26,11 @@ function App() {
             <BrowserRouter>
                 <ScrollToTop />
                 <Routes>
-                    <Route path="/" element={<Home />} />s
+                    <Route path="/" element={<Home />} />
                     <Route path="/signin" element={<SignIn />} />
                     <Route path="/signup" element={<Signup />} />
                     <Route path="/news" element={<News />} />
-                    <Route path="/board" element={<Board />} />
+                    <Route path="/posts" element={<Posts />} />
                     <Route path="/about" element={<About />} />
                     <Route path="/weather" element={<Weather />} />
                     <Route path="/crop" element={<Crop />} />
