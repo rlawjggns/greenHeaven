@@ -47,8 +47,8 @@ const Header = () => {
                     </li>
                     <li>
                         <a
-                            href="/crop"
-                            onClick={(e) => handleProtectedNav(e, "/crop")}
+                            href="/dashboard"
+                            onClick={(e) => handleProtectedNav(e, "/dashboard")}
                             className="text-gray-300 hover:text-gray-400 transition duration-500"
                         >
                             작물관리

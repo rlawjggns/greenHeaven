@@ -1,46 +1,49 @@
-// src/pages/CropStatus.jsx
-import React from "react";
+import React, { useEffect, useState } from "react";
+import serverApi from "../utils/serverApi.js";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 
-// 예시 데이터 (실제로는 API 또는 props로 받아서 setState 활용)
-const exampleCrops = [
-    {
-        id: "8fb98a44-b11f-11ee-a625-325096b39f47",
-        name: "토마토",
-        typeName: "과채류",
-        plantDate: "2024-04-25",
-        harvestDate: "2024-08-25",
-        remainDays: 10,
-        quantity: 21.2
-    },
-    {
-        id: "a7d78811-9b36-4e5e-bbca-990481045a36",
-        name: "양상추",
-        typeName: "엽채류",
-        plantDate: "2024-06-01",
-        harvestDate: "2024-08-30",
-        remainDays: 15,
-        quantity: 12.0
-    }
-];
+export default function CropStatus() {
+    const [crops, setCrops] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-export default function CropStatus({ crops = exampleCrops }) {
-    // 수확 이벤트 핸들러
+    // 데이터 가져오기
+    useEffect(() => {
+        serverApi.get("/crops")
+            .then(res => {
+                setCrops(res.data); // DTO 구조와 동일하게 응답 데이터 사용
+            })
+            .catch(err => {
+                console.error("작물 데이터를 가져오는 중 오류 발생:", err);
+            })
+            .finally(() => setLoading(false));
+    }, []);
+
     const handleHarvest = (id) => {
         if (window.confirm("정말 수확하시겠습니까?")) {
-            // fetch(`/crop/harvest/${id}`, {method: "POST"}) 등 실제 API 호출
-        }
-    };
-    // 삭제 이벤트 핸들러
-    const handleDelete = (id) => {
-        if (window.confirm("정말 삭제하시겠습니까?")) {
-            // fetch(`/crop/delete/${id}`, {method: "DELETE"}) 등 실제 API 호출
+            serverApi.delete(`/crops/${id}`)
+                .then(() => {
+                    setCrops(prev => prev.filter(c => c.id !== id));
+                    alert("작물이 성공적으로 수확되었습니다.");
+                })
+                .catch(err => console.error(err));
         }
     };
 
-    // 뒤로가기
+    const handleDelete = (id) => {
+        if (window.confirm("정말 삭제하시겠습니까?")) {
+            serverApi.delete(`/crops/${id}`)
+                .then(() => {
+                    setCrops(prev => prev.filter(c => c.id !== id));
+                    alert("작물이 성공적으로 삭제되었습니다.");
+                })
+                .catch(err => console.error(err));
+        }
+    };
+
     const goBack = () => window.history.back();
+
+    if (loading) return <div className="text-center py-20">로딩중...</div>;
 
     return (
         <div className="text-gray-900 min-h-screen">
@@ -48,7 +51,6 @@ export default function CropStatus({ crops = exampleCrops }) {
                 <Header />
                 <div className="mb-12"></div>
                 <div className="relative max-w-5xl mx-auto bg-white shadow-md rounded-lg overflow-hidden mt-60 mb-40 border border-gray-200">
-                    {/* 뒤로가기 버튼 */}
                     <button
                         onClick={goBack}
                         className="text-sm text-gray-700 absolute top-4 left-4 bg-gray-100 py-1 px-2 rounded hover:bg-gray-200 hover:text-gray-900 transition"
@@ -85,7 +87,7 @@ export default function CropStatus({ crops = exampleCrops }) {
                                                 className="inline-block bg-lime-600 text-white px-3 py-1 rounded hover:bg-lime-700 transition"
                                                 onClick={() => handleHarvest(crop.id)}
                                             >
-                                                수확하기
+                                                수확
                                             </button>
                                         </td>
                                         <td className="px-4 py-2 whitespace-nowrap text-center">
@@ -93,7 +95,7 @@ export default function CropStatus({ crops = exampleCrops }) {
                                                 className="inline-block bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition"
                                                 onClick={() => handleDelete(crop.id)}
                                             >
-                                                삭제하기
+                                                삭제
                                             </button>
                                         </td>
                                     </tr>

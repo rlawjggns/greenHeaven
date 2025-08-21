@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import serverAPi from "../../utils/serverApi.js";
 
 export default function CropRegisterModal({ open, onClose, defaultType }) {
+    const navigate = useNavigate();
     const [form, setForm] = useState({
         name: "",
-        type: defaultType,
+        type: defaultType || "",
         plantDate: "",
         quantity: "",
     });
 
     useEffect(() => {
-        setForm((prev) => ({ ...prev, type: defaultType }));
+        setForm((prev) => ({ ...prev, type: defaultType || "" }));
     }, [defaultType]);
 
     const handleChange = (e) => {
@@ -20,10 +23,25 @@ export default function CropRegisterModal({ open, onClose, defaultType }) {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        alert(`${form.type} 작물(이름:${form.name})이 등록되었습니다!`);
-        onClose();
+
+        try {
+            // Spring 백엔드 API 호출
+            await serverAPi.post("/crops", {
+                name: form.name,
+                type: form.type,
+                plantDate: form.plantDate,
+                quantity: parseFloat(form.quantity),
+            });
+
+            alert("농작물이 등록되었습니다!");
+            navigate("/dashboard");
+            onClose();
+        } catch (error) {
+            console.error("작물 등록 실패:", error);
+            alert("작물 등록에 실패했습니다. 다시 시도해주세요.");
+        }
     };
 
     if (!open) return null;
@@ -32,8 +50,8 @@ export default function CropRegisterModal({ open, onClose, defaultType }) {
         <div
             className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-[9999]"
             tabIndex={-1}
-        >x
-        <div className="bg-white text-gray-900 shadow-lg rounded-lg w-full max-w-xl p-8 relative animate-fade-in">
+        >
+            <div className="bg-white text-gray-900 shadow-lg rounded-lg w-full max-w-xl p-8 relative animate-fade-in">
                 <button
                     type="button"
                     className="absolute top-4 right-6 text-2xl font-bold text-gray-500 hover:text-gray-900 z-[10000]"
@@ -43,7 +61,9 @@ export default function CropRegisterModal({ open, onClose, defaultType }) {
                 >
                     ×
                 </button>
-                <h2 className="text-2xl font-semibold text-lime-600 mb-6 text-center">농작물 등록</h2>
+                <h2 className="text-2xl font-semibold text-lime-600 mb-6 text-center">
+                    농작물 등록
+                </h2>
                 <form onSubmit={handleSubmit}>
                     <div className="mb-6">
                         <label htmlFor="crop-name" className="block text-gray-700">

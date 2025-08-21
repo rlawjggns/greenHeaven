@@ -1,15 +1,9 @@
 // src/pages/CropGrowthManage.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import serverApi from "../utils/serverApi.js";
+import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-
-// 예시 데이터 (props, API 등으로 교체 가능)
-const crops = [
-    { id: "1", name: "감자", type: "감자" },
-    { id: "2", name: "상추", type: "상추" },
-    { id: "3", name: "무", type: "무" },
-    { id: "4", name: "고구마", type: "고구마" }
-];
 
 const optionsMap = {
     "감자": [
@@ -42,11 +36,32 @@ const optionsMap = {
 };
 
 export default function CropGrowthManage() {
+    const [crops, setCrops] = useState([]);
     const [selectedCropId, setSelectedCropId] = useState("");
     const [selectedType, setSelectedType] = useState("");
     const [adjustDays, setAdjustDays] = useState("");
+    const navigate = useNavigate();
 
-    // 작물 선택 시 type값도 추출
+    // 서버에서 작물 목록 가져오기
+    useEffect(() => {
+        const fetchCrops = async () => {
+            try {
+                const res = await serverApi.get("/crops");
+                // name과 typeName만 사용
+                const data = res.data.map(c => ({
+                    id: c.id,
+                    name: c.name,
+                    type: c.typeName
+                }));
+                setCrops(data);
+            } catch (error) {
+                console.error(error);
+                alert("작물 목록을 불러오는 데 실패했습니다.");
+            }
+        };
+        fetchCrops();
+    }, []);
+
     const handleCropChange = e => {
         const id = e.target.value;
         setSelectedCropId(id);
@@ -55,15 +70,37 @@ export default function CropGrowthManage() {
         setAdjustDays(""); // 옵션 초기화
     };
 
-    // 폼 제출
-    const handleSubmit = e => {
+    const handleSubmit = async e => {
         e.preventDefault();
-        if (!selectedCropId || !adjustDays) return;
-        // 실제 전송은 fetch 등 처리
-        alert("변동사항이 정상 반영되었습니다.");
+        if (!selectedCropId || !adjustDays) {
+            alert("작물과 변동사항을 모두 선택해주세요.");
+            return;
+        }
+
+        const requestBody = {
+            reason: optionsMap[selectedType].find(opt => opt.v === Number(adjustDays))?.t || "",
+            adjustDays: Number(adjustDays)
+        };
+
+        try {
+            await serverApi.patch(`/crops/${selectedCropId}`, requestBody, {
+                headers: { "Content-Type": "application/json" }
+            });
+            alert("변동사항이 정상 반영되었습니다.");
+            setSelectedCropId("");
+            setSelectedType("");
+            setAdjustDays("");
+            navigate("/dashboard")
+        } catch (error) {
+            console.error(error);
+            alert("변동사항 반영에 실패했습니다.");
+        }
     };
 
-    // 변동사항 옵션 목록
+    const handleBack = () => {
+        navigate(-1); // 뒤로가기
+    };
+
     const options = selectedType ? optionsMap[selectedType] || [] : [];
 
     return (
@@ -87,10 +124,7 @@ export default function CropGrowthManage() {
                             >
                                 <option value="">선택하세요</option>
                                 {crops.map(crop => (
-                                    <option
-                                        key={crop.id}
-                                        value={crop.id}
-                                    >
+                                    <option key={crop.id} value={crop.id}>
                                         {crop.name} ({crop.type})
                                     </option>
                                 ))}
@@ -115,7 +149,14 @@ export default function CropGrowthManage() {
                                 ))}
                             </select>
                         </div>
-                        <div className="text-right">
+                        <div className="flex justify-between">
+                            <button
+                                type="button"
+                                onClick={handleBack}
+                                className="bg-gray-300 text-gray-700 px-6 py-3 rounded-lg shadow hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                            >
+                                뒤로가기
+                            </button>
                             <button
                                 type="submit"
                                 className="bg-lime-600 text-white px-6 py-3 rounded-lg shadow-lg hover:bg-lime-700 focus:outline-none focus:ring-2 focus:ring-lime-500"

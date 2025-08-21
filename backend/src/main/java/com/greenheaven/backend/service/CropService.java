@@ -1,6 +1,6 @@
 package com.greenheaven.backend.service;
 
-import com.greenheaven.backend.dto.CropGrowthDto;
+import com.greenheaven.backend.dto.CropGrowthRequestDto;
 import com.greenheaven.backend.dto.CropListDto;
 import com.greenheaven.backend.dto.CropListResponsetDto;
 import com.greenheaven.backend.dto.CropRequestDto;
@@ -53,11 +53,39 @@ public class CropService {
     }
 
     /**
+     * 작물 목록 조회
+     */
+    public List<CropListResponsetDto> getCrops() {
+        // 현재 인증된 사용자의 인증 정보 가져오기
+        String email = MemberService.getAuthenticatedMemberEmail();
+
+        // 이메일로 유저 찾기
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new NoSuchElementException("해당 유저를 찾을 수 없습니다."));
+
+        // 작물들 조회
+        List<Crop> crops = cropRepository.findByMember(member);
+
+        // 작물 객체 -> response 객체로 스트림 이용해 변환후 반환
+        return crops.stream()
+                .map((crop) -> CropListResponsetDto.builder()
+                        .id(crop.getId())
+                        .name(crop.getName())
+                        .typeName(crop.getType().getKorName())
+                        .quantity(crop.getQuantity())
+                        .plantDate(crop.getPlantDate())
+                        .harvestDate(crop.getHarvestDate())
+                        .remainDays(ChronoUnit.DAYS.between(LocalDate.now(), crop.getHarvestDate()))
+                        .build()
+                ).collect(Collectors.toList());
+    }
+
+    /**
      * 등록된 작물 목록 10개 조회
      * @return 작물 객체 10개
      * @throws NoSuchElementException 이메일로 유저를 찾지 못할 경우 예외 발생
      */
-    public List<CropListResponsetDto> getCropListTen() {
+    public List<CropListResponsetDto> getCropsTen() {
         // 현재 인증된 사용자의 인증 정보 가져오기
         String email = MemberService.getAuthenticatedMemberEmail();
 
@@ -94,28 +122,10 @@ public class CropService {
      * 등록된 작물 변경사항 반영
      * @param request 변경사항 정보를 가진 DTO
      */
-    public void cropGrowth(CropGrowthDto request) {
-        Crop crop = cropRepository.findById(request.getId())
+    public void updateCrop(String cropId, CropGrowthRequestDto request) {
+        Crop crop = cropRepository.findById(UUID.fromString(cropId))
                 .orElseThrow(() -> new NoSuchElementException("해당 작물을 찾을 수 없습니다."));
 
         crop.updateHarvestDate(request.getAdjustDays());
-    }
-
-    public List<CropListDto> getCrops() {
-        String memberEmail = MemberService.getAuthenticatedMemberEmail();
-        Member member = memberRepository.findByEmail(memberEmail)
-                .orElseThrow(() -> new NoSuchElementException("해당 유저를 찾을 수 없습니다."));
-
-
-        List<Crop> crops = cropRepository.findByMember(member);
-
-        return crops.stream()
-                .map(c -> CropListDto.builder()
-                        .id(c.getId())
-                        .name(c.getName())
-                        .type(c.getType().getKorName())
-                        .build())
-                .toList();
-
     }
 }

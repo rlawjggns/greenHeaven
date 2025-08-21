@@ -63,7 +63,7 @@ export default function CropRegisterSelect() {
                             <button
                                 key={card.type}
                                 type="button"
-                                className="relative w-64 h-96 rounded-2xl overflow-hidden shadow-2xl hover:shadow-lime-400/50 transition-transform transform hover:scale-105 focus:outline-none"
+                                className="relative w-64 h-96 rounded-2xl overflow-hidden shadow-2xl transition-transform transform hover:scale-105 focus:outline-none"
                                 onClick={() => handleCardClick(card.type)}
                             >
                                 <img
@@ -77,7 +77,7 @@ export default function CropRegisterSelect() {
                                     <h3 className="text-2xl font-semibold text-gray-100 drop-shadow-md">
                                         {card.title}
                                     </h3>
-                                    <p className="text-white text-sm drop-shadow-md">{card.desc}</p>
+                                    <p className="text-white text-sm drop-shadow-md mt-2">{card.desc}</p>
                                 </div>
                             </button>
                         ))}

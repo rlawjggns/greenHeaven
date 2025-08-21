@@ -7,6 +7,7 @@ import com.greenheaven.backend.domain.Precipitation;
 import com.greenheaven.backend.domain.Sky;
 import com.greenheaven.backend.domain.Member;
 import com.greenheaven.backend.domain.Weather;
+import com.greenheaven.backend.dto.WeatherResponseDto;
 import com.greenheaven.backend.repository.MemberRepository;
 import com.greenheaven.backend.repository.WeatherRepository;
 import jakarta.persistence.EntityManager;
@@ -39,6 +40,7 @@ public class WeatherService {
     private final WeatherRepository weatherRepository;
     private final MemberRepository memberRepository;
     private final EntityManager em;
+    private final MemberService memberService;
 
     public static int TO_GRID = 0;
     public static int TO_GPS = 1;
@@ -51,7 +53,7 @@ public class WeatherService {
      * @return DailyForecast 객체 리스트 (3일치 기상 데이터)
      * @throws IOException 외부 API 호출 또는 데이터 처리 중 오류 발생 시 예외를 던집니다.
      */
-    public List<DailyWeather> getThreeDaysWeather() throws IOException {
+    public WeatherResponseDto getThreeDaysWeather() throws IOException {
         // 인증된 사용자의 이메일 가져오기
         String email = MemberService.getAuthenticatedMemberEmail();
 
@@ -89,7 +91,7 @@ public class WeatherService {
 
         // 날짜별로 대표 측정값과 최저/최고 기온을 계산하여 DailyForecast 객체 생성
         // Map은 Iteratable을 구현하지 않아 스트림 순회 불가능 -> entrySet으로 변환 -> Map의 모든 키-값 쌍(Entry)의 집합 -> <LocalDate, List<Weather>> 총 3개의 집합
-        return groupedByDay.entrySet().stream() // entrySet을 스트림으로 순회하여 DailyWeather라는 값으로 변환하고, 정렬하여 총 3개의 List<Dayweather>로 가져온다
+        List<DailyWeather> dailyWeathers = groupedByDay.entrySet().stream() // entrySet을 스트림으로 순회하여 DailyWeather라는 값으로 변환하고, 정렬하여 총 3개의 List<Dayweather>로 가져온다
                 .map(entry -> { // 중간 연산 -> 각 entry를 DailyWeather로 변환
                     LocalDate date = entry.getKey(); // entry에서 키 꺼내기(날짜) -> date
                     List<Weather> measurements = entry.getValue().stream() // entry의 값을 스트림으로 순회하여 정렬한다. 값은 24개의 List<Weather>이므로 순회가능
@@ -116,6 +118,13 @@ public class WeatherService {
                 .sorted(Comparator.comparing(DailyWeather::getDate)) // 중간 연산 -> 날짜 순으로 정렬
                 .limit(3) // 중간 연산 -> 3개까지
                 .collect(Collectors.toList()); // 최종 연산 -> 리스트로 반환 -> List<DailyWeather>
+
+        String address = memberService.getAuthenticatedMemberAddress();
+
+        return WeatherResponseDto.builder()
+                .address(address)
+                .weathers(dailyWeathers)
+                .build();
     }
 
     /**

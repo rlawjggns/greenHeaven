@@ -14,6 +14,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -21,8 +22,49 @@ import java.util.Map;
 @Slf4j
 public class NotificationService {
     private final EmitterRepository emitterRepository;
-    private final MemberRepository memberRepository;
     private final NotificationRepository notificationRepository;
+
+    public List<NotificationListResponseDto> getNotifications() {
+        // 현재 인증된 사용자의 인증 정보 가져오기
+        String email = MemberService.getAuthenticatedMemberEmail();
+
+        // 알림들 조회
+        List<Notification> notifications = notificationRepository.findByReceiverEmail((email));
+
+        //알림물 객체 -> response 객체로 스트림 이용해 변환 후 반환
+        return notifications.stream()
+                .map(n -> NotificationListResponseDto.builder()
+                        .id(n.getId())
+                        .content(n.getContent())
+                        .type(n.getType().getKorName())
+                        .createdDate(n.getCreatedDate())
+                        .build()
+                )
+                .toList();
+    }
+
+    public List<NotificationListResponseDto> getNotificationsTen() {
+        // 현재 인증된 사용자의 인증 정보 가져오기
+        String email = MemberService.getAuthenticatedMemberEmail();
+
+        // 알림들 10개 조회
+        List<Notification> notifications = notificationRepository.findTop10ByReceiverEmailOrderByCreatedDateDesc(email);
+
+        //알림물 객체 -> response 객체로 스트림 이용해 변환 후 반환
+        return notifications.stream()
+                .map(n -> NotificationListResponseDto.builder()
+                        .id(n.getId())
+                        .content(n.getContent())
+                        .type(n.getType().getKorName())
+                        .createdDate(n.getCreatedDate())
+                        .build()
+                )
+                .toList();
+    }
+
+    public void deleteNotification(String notificationId) {
+        notificationRepository.deleteById(UUID.fromString(notificationId));
+    }
 
     // 연결 지속 시간 -> 1시간  -> 1시간 동안 아무 이벤트도 보내지 않으면 타임아웃
     // 중간에 알람이라도 하나 보내면 타임아웃이 갱신된다
@@ -124,28 +166,5 @@ public class NotificationService {
             emitterRepository.deleteById(eventId); // 예외 발생 시, 해당 emitter를 삭제하여 더 이상 이벤트를 보내지 않도록 한다
             throw new RuntimeException("알림 서버 연결 오류");
         }
-    }
-
-    /**
-     * 로그인한 유저에게 온 최신 알림 10개를 제공하는 메서드
-     * @return 알림 정보를 가진 DTO 10개 반환
-     */
-    public List<NotificationListResponseDto> getNotificationListTen() {
-        // 현재 인증된 사용자의 인증 정보 가져오기
-        String email = MemberService.getAuthenticatedMemberEmail();
-
-        // 알림들 10개 조회
-        List<Notification> notifications = notificationRepository.findTop10ByReceiverEmailOrderByCreatedDateDesc(email);
-
-        //알림물 객체 -> response 객체로 스트림 이용해 변환 후 반환
-        return notifications.stream()
-                .map(n -> NotificationListResponseDto.builder()
-                        .id(n.getId())
-                        .content(n.getContent())
-                        .type(n.getType().getKorName())
-                        .createdDate(n.getCreatedDate())
-                        .build()
-                )
-                .toList();
     }
 }

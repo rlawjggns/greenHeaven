@@ -7,7 +7,7 @@ import News from "./pages/News.jsx";
 import Posts from "./pages/Posts.jsx";
 import About from "./pages/About.jsx";
 import Weather from "./pages/Weather.jsx";
-import Crop from "./pages/Crop.jsx";
+import DashBoard from "./pages/DashBoard.jsx";
 import Crops from "./pages/Crops.jsx";
 import Cropregistration from "./pages/CropRegistration.jsx";
 import Growth from "./pages/Growth.jsx";
@@ -33,12 +33,12 @@ function App() {
                     <Route path="/posts" element={<Posts />} />
                     <Route path="/about" element={<About />} />
                     <Route path="/weather" element={<Weather />} />
-                    <Route path="/crop" element={<Crop />} />
-                    <Route path="/crops" element={<Crops />} />
-                    <Route path="/notifications" element={<Notifications />} />
-                    <Route path="/crop/registration" element={<Cropregistration />} />
+                    <Route path="/dashboard" element={<DashBoard />} />
+                    <Route path="/dashboard/crops" element={<Crops />} />
+                    <Route path="/dashboard/notifications" element={<Notifications />} />
+                    <Route path="/dashboard/crop-regist" element={<Cropregistration />} />
                     <Route path="/login/password/find" element={<FindPwd />} />
-                    <Route path="/crop/growth" element={<Growth />} />
+                    <Route path="/dashboard/growth" element={<Growth />} />
                     <Route path="/posts/create" element={<PostCreate />} />
                     <Route path="/posts/:id" element={<Post />} />
                     <Route path="/posts/:id/update" element={<PostUpdate />} />

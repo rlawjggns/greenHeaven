@@ -8,10 +8,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 @Getter
-@Setter
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class CropListResponsetDto {
     @NotNull
     private UUID id;

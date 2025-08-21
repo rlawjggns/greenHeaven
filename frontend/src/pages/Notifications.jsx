@@ -1,35 +1,33 @@
-// src/pages/Notifications.jsx
-import React from "react";
+import React, { useEffect, useState } from "react";
+import serverApi from "../utils/serverApi.js";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 
-// 예시용 notifications 데이터 (실제 데이터는 props, useState 등으로 관리하도록 교체 가능)
-const exampleNotifications = [
-    {
-        id: "e4a1d2ac-1234-5678-9abc-000000000001",
-        content: "오늘 강수 예보가 있습니다.",
-        type: "WEATHER",
-        createdDate: "2024-08-17 07:30"
-    },
-    {
-        id: "e4a1d2ac-1234-5678-9abc-000000000002",
-        content: "토마토 수확일이 내일입니다.",
-        type: "CROP",
-        createdDate: "2024-08-16 14:12"
-    }
-];
+export default function Notifications() {
+    const [notifications, setNotifications] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-export default function Notifications({ notifications = exampleNotifications }) {
-    // 삭제 이벤트
-    const handleDelete = id => {
+    useEffect(() => {
+        serverApi.get("/notifications")
+            .then(res => setNotifications(res.data))
+            .catch(err => console.error("알림 데이터를 가져오는 중 오류 발생:", err))
+            .finally(() => setLoading(false));
+    }, []);
+
+    const handleDelete = (id) => {
         if (window.confirm("정말 삭제하시겠습니까?")) {
-            // 실제로는 API 호출 등 삭제 로직 작성 필요
-            // 예시: fetch(`/notification/delete/${id}`, { method: "DELETE" })
+            serverApi.delete(`/notifications/${id}`)
+                .then(() => {
+                    setNotifications(prev => prev.filter(n => n.id !== id));
+                    alert("알람이 성공적으로 삭제되었습니다.");
+                })
+                .catch(err => console.error(err));
         }
     };
 
-    // 뒤로가기
     const goBack = () => window.history.back();
+
+    if (loading) return <div className="text-center py-20">로딩중...</div>;
 
     return (
         <div className="text-gray-900 min-h-screen">
@@ -37,7 +35,6 @@ export default function Notifications({ notifications = exampleNotifications }) 
                 <Header />
                 <div className="mb-12" />
                 <div className="relative max-w-5xl mx-auto bg-white shadow-md rounded-lg overflow-hidden mt-60 mb-40 border border-gray-200">
-                    {/* 뒤로가기 버튼 */}
                     <button
                         onClick={goBack}
                         className="text-sm text-gray-700 absolute top-4 left-4 bg-gray-100 py-1 px-2 rounded hover:bg-gray-200 hover:text-gray-900 transition"
@@ -68,7 +65,7 @@ export default function Notifications({ notifications = exampleNotifications }) 
                                                     className="inline-block bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition"
                                                     onClick={() => handleDelete(n.id)}
                                                 >
-                                                    삭제하기
+                                                    삭제
                                                 </button>
                                             </td>
                                         </tr>
