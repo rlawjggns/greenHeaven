@@ -1,8 +1,6 @@
 // src/pages/Login.jsx
 import React, { useState, useEffect, useContext  } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
 import serverApi from "../utils/serverApi";
 import { AuthContext } from "../context/AuthContext";
 import FindPasswordModal from "../components/modal/FindPasswordModal";
@@ -56,7 +54,6 @@ export default function SignInPage() {
 
     return (
         <div className="container mx-auto px-4 min-h-screen flex flex-col">
-            <Header />
             <main className="flex flex-1 items-center justify-center my-56">
                 <div className="bg-white p-8 rounded shadow-lg max-w-md w-full">
                     <h2 className="text-2xl font-bold mb-6 text-gray-900">로그인</h2>
@@ -149,7 +146,6 @@ export default function SignInPage() {
                     </form>
                 </div>
             </main>
-            <Footer />
             <FindPasswordModal isOpen={isModalOpen} onClose={closeModal} />
         </div>
     );

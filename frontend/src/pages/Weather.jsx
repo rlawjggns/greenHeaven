@@ -1,8 +1,6 @@
 // src/pages/Weather.jsx
 import React, { useEffect, useState } from "react";
 import serverApi from "../utils/serverApi.js";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
 
 export default function Weather() {
     const [weatherResponse, setWeatherResponse] = useState(null);
@@ -61,7 +59,6 @@ export default function Weather() {
     return (
         <div className="text-gray-900 min-h-screen">
             <div className="container mx-auto px-4">
-                <Header />
                 <main className="relative flex flex-col items-center justify-center min-h-screen mt-40">
                     {/* 주소 영역 */}
                     <h2 className="text-5xl font-extrabold text-white px-10 py-6 rounded-2xl shadow-lg mb-20 mt-40 text-center bg-gradient-to-r from-lime-600 to-green-700">
@@ -138,7 +135,6 @@ export default function Weather() {
                     </div>
                 </main>
                 <div className="py-32"></div>
-                <Footer />
             </div>
         </div>
     );

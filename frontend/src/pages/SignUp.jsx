@@ -1,7 +1,5 @@
 // src/pages/Signup.jsx
 import React, { useState } from "react";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
 import serverapi from "../utils/serverapi.js";
 
 export default function Signup() {
@@ -121,7 +119,6 @@ export default function Signup() {
 
     return (
         <div className="container mx-auto px-4 min-h-screen flex flex-col">
-            <Header />
             <main className="flex flex-1 items-center justify-center my-32">
                 <div className="bg-white p-8 rounded shadow-lg max-w-md w-full">
                     <form onSubmit={handleSubmit}>
@@ -238,7 +235,6 @@ export default function Signup() {
                     </form>
                 </div>
             </main>
-            <Footer />
         </div>
     );
 }

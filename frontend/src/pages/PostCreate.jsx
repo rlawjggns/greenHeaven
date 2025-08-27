@@ -2,8 +2,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import serverApi from "../utils/serverApi.js";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
 
 export default function PostCreate() {
     const [form, setForm] = useState({ title: "", content: "" });
@@ -29,7 +27,6 @@ export default function PostCreate() {
     return (
         <div className="text-white min-h-screen">
             <div className="container mx-auto px-4">
-                <Header />
                 <div className="bg-white shadow-lg rounded-lg p-6 mt-40">
                     <a
                         href="/posts"
@@ -73,7 +70,6 @@ export default function PostCreate() {
                     </form>
                 </div>
                 <div className="py-32"></div>
-                <Footer />
             </div>
         </div>
     );

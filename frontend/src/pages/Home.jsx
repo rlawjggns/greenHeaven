@@ -1,8 +1,7 @@
 // frontend/src/pages/Home.jsx
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
+
 import noteImg from "../assets/images/write.jpg";
 
 function Home() {
@@ -39,8 +38,6 @@ function Home() {
 
     return (
         <div className="container mx-auto px-4">
-            <Header />
-
             <motion.main className="flex flex-col items-start justify-center min-h-screen relative z-10 pl-14 text-white">
                 {/* 기존 주요 내용 */}
                 <motion.div className="mb-10">
@@ -114,8 +111,6 @@ function Home() {
                 </div>
 
             </motion.main>
-
-            <Footer />
         </div>
     );
 }

@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import serverApi from "../utils/serverApi.js";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
 
 export default function CropStatus() {
     const [crops, setCrops] = useState([]);
@@ -48,7 +46,6 @@ export default function CropStatus() {
     return (
         <div className="text-gray-900 min-h-screen">
             <div className="container mx-auto px-4 py-12">
-                <Header />
                 <div className="mb-12"></div>
                 <div className="relative max-w-5xl mx-auto bg-white shadow-md rounded-lg overflow-hidden mt-60 mb-40 border border-gray-200">
                     <button
@@ -105,7 +102,6 @@ export default function CropStatus() {
                         </div>
                     </div>
                 </div>
-                <Footer />
             </div>
         </div>
     );

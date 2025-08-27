@@ -1,8 +1,5 @@
 // src/pages/News.jsx
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
 import serverApi from "../utils/serverApi";
 import newImg1 from "../assets/images/news_1.jpg";
 import newImg2 from "../assets/images/news_2.jpg";
@@ -29,7 +26,6 @@ export default function News() {
     return (
         <div className="text-white min-h-screen">
             <div className="container mx-auto px-4">
-                <Header />
                 <div className="mb-16"></div>
 
                 <h2 className="text-2xl font-semibold text-white mb-20 mt-40 text-center">
@@ -72,7 +68,6 @@ export default function News() {
                 </div>
 
                 <div className="py-32"></div>
-                <Footer />
             </div>
         </div>
     );

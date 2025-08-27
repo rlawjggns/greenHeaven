@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import serverApi from "../utils/serverApi.js"; // axios 인스턴스
-import Header from "../components/Header";
-import Footer from "../components/Footer";
 
 // JWT에서 이메일 추출
 const getEmailFromToken = () => {
@@ -85,7 +83,6 @@ export default function Post() {
 
     return (
         <div className="mt-40 min-h-screen flex flex-col text-white">
-            <Header />
             <main className="flex-grow container mx-auto px-4 mt-24">
                 {/* 게시글 영역 */}
                 <div className="bg-white text-gray-900 rounded-lg shadow-lg p-6">
@@ -177,7 +174,6 @@ export default function Post() {
                 </div>
             </main>
             <div className="py-32"></div>
-            <Footer />
         </div>
     );
 }

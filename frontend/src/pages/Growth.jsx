@@ -2,8 +2,6 @@
 import React, { useState, useEffect } from "react";
 import serverApi from "../utils/serverApi.js";
 import { useNavigate } from "react-router-dom";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
 
 const optionsMap = {
     "감자": [
@@ -106,7 +104,6 @@ export default function CropGrowthManage() {
     return (
         <div className="text-gray-900 min-h-screen">
             <div className="container mx-auto px-4 py-12">
-                <Header />
                 <div className="mb-16" />
                 <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-8 mt-60">
                     <h2 className="text-2xl font-semibold text-lime-600 mb-6">생장상태 관리</h2>
@@ -167,7 +164,6 @@ export default function CropGrowthManage() {
                     </form>
                 </div>
                 <div className="py-32"></div>
-                <Footer />
             </div>
         </div>
     );

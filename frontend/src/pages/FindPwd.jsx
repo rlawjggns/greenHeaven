@@ -1,7 +1,5 @@
 // src/pages/FindPassword.jsx
 import React, { useState } from "react";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
 
 export default function FindPassword() {
     // 단계 상태: 'input' | 'confirm'
@@ -53,7 +51,6 @@ export default function FindPassword() {
     return (
         <div className="min-h-screen">
             <div className="container mx-auto px-4">
-                <Header />
                 <div className="flex items-center justify-center min-h-screen my-40">
                     <div className="bg-white p-8 rounded shadow-lg max-w-md w-full">
                         {step === 'input' ? (
@@ -117,7 +114,6 @@ export default function FindPassword() {
                         )}
                     </div>
                 </div>
-                <Footer />
             </div>
         </div>
     );

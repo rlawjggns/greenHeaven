@@ -1,6 +1,4 @@
 import React from "react";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
 
 // 이미지 import (src/assets 하위에 있을 때)
 import cropImg from "../assets/images/crop.jpg";
@@ -39,7 +37,6 @@ export default function Intro() {
     return (
         <div className="min-h-screen">
             <div className="container mx-auto px-4">
-                <Header />
                 <main className="flex flex-col items-center justify-center text-center p-10 mt-52 text-white">
                     <h2 className="text-5xl font-extrabold text-gray-100 drop-shadow-lg">스마트 농업 관리 솔루션</h2>
                     <p className="text-lg text-gray-300 mt-6 italic">
@@ -70,7 +67,6 @@ export default function Intro() {
                     </div>
                 </main>
                 <div className="py-32"></div>
-                <Footer />
             </div>
         </div>
     );

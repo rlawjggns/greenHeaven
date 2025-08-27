@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import serverApi from "../utils/serverApi.js";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
 
 import handsImg from "../assets/images/hands.jpg";
 import fieldImg from "../assets/images/field.jpg";
@@ -34,7 +32,6 @@ export default function DashBoard() {
     return (
         <div className="text-white min-h-screen">
             <div className="container mx-auto px-4">
-                <Header />
                 <div className="mb-16" />
                 <div className="py-8 flex min-h-screen gap-6 mt-60">
                     {/* 좌측 사이드바 */}
@@ -117,7 +114,6 @@ export default function DashBoard() {
                     </main>
                 </div>
                 <div className="py-32"></div>
-                <Footer />
             </div>
         </div>
     );

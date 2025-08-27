@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
 import CropRegisterationModal from "../components/modal/CropRegistrationModal.jsx";
 
 import lettuceImg from "../assets/images/lettuce.jpg";
@@ -55,7 +53,6 @@ export default function CropRegisterSelect() {
             <CropRegisterationModal open={modalOpen} onClose={handleCloseModal} defaultType={selectedType} />
 
             <div className="container mx-auto px-4">
-                <Header />
                 <main className="flex flex-col items-center justify-center text-center p-10 mt-60 text-white">
                     <h2 className="text-5xl font-extrabold text-gray-100 drop-shadow-lg">등록할 작물 선택</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mt-12">
@@ -84,7 +81,6 @@ export default function CropRegisterSelect() {
                     </div>
                 </main>
                 <div className="py-32"></div>
-                <Footer />
             </div>
         </div>
     );

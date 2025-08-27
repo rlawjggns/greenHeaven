@@ -1,7 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import serverApi from "../utils/serverApi.js";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
 import QuitModal from "../components/modal/QuitModal.jsx";
 import { useNavigate } from "react-router-dom";
 
@@ -123,7 +121,6 @@ export default function Profile() {
         <div className="min-h-screen text-gray-900">
             <QuitModal open={quitOpen} onClose={() => setQuitOpen(false)} onQuit={handleQuit} />
             <div className="container mx-auto px-4">
-                <Header />
                 <main className="flex items-center justify-center min-h-screen my-48">
                     <section className="bg-white p-8 rounded shadow-lg max-w-md w-full">
                         <form onSubmit={handleSubmit}>
@@ -187,7 +184,6 @@ export default function Profile() {
                         </form>
                     </section>
                 </main>
-                <Footer />
             </div>
         </div>
     );

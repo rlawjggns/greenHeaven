@@ -2,8 +2,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import serverApi from "../utils/serverApi.js"; // axios 기반 API
-import Header from "../components/Header";
-import Footer from "../components/Footer";
 
 export default function PostUpdate() {
     const navigate = useNavigate();
@@ -48,8 +46,6 @@ export default function PostUpdate() {
 
     return (
         <div className="text-white min-h-screen flex flex-col">
-            <Header />
-
             <main className="container mx-auto px-4 flex-grow mt-40">
                 <div className="bg-white shadow-lg rounded-lg p-6">
                     <div className="mb-4">
@@ -95,7 +91,6 @@ export default function PostUpdate() {
                 </div>
             </main>
             <div className="py-32"></div>
-            <Footer />
         </div>
     );
 }

@@ -19,12 +19,14 @@ import Post from "./pages/Post.jsx";
 import Profile from "./pages/Profile.jsx";
 import { AuthProvider } from "./context/AuthContext";
 import ScrollToTop from "./components/ScrollToTop";
-
+import Header from "./components/Header";
+import Footer from "./components/Footer";
 function App() {
     return (
         <AuthProvider>
             <BrowserRouter>
                 <ScrollToTop />
+                <Header />
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/signin" element={<SignIn />} />
@@ -44,6 +46,7 @@ function App() {
                     <Route path="/posts/:id/update" element={<PostUpdate />} />
                     <Route path="/profile" element={<Profile />} />
                 </Routes>
+                <Footer />
             </BrowserRouter>
         </AuthProvider>
     );
