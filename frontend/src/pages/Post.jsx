@@ -66,7 +66,6 @@ export default function Post() {
             .then((res) => {
                 setComments(res.data.postComments || []);
                 setCommentInput("");
-                alert("댓글이 작성되었습니다.");
             })
             .catch(() => alert("댓글 작성 실패"));
     };
