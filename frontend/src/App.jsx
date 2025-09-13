@@ -1,8 +1,8 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
-import SignIn from "./pages/SignIn";
-import Signup from "./pages/Signup";
+import Home from "./pages/Home.jsx";
+import SignIn from "./pages/SignIn.jsx";
+import SignUp from "./pages/SignUp.jsx";
 import News from "./pages/News.jsx";
 import Posts from "./pages/Posts.jsx";
 import About from "./pages/About.jsx";
@@ -30,7 +30,7 @@ function App() {
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/signin" element={<SignIn />} />
-                    <Route path="/signup" element={<Signup />} />
+                    <Route path="/signup" element={<SignUp />} />
                     <Route path="/news" element={<News />} />
                     <Route path="/posts" element={<Posts />} />
                     <Route path="/about" element={<About />} />
