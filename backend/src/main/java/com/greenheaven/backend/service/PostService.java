@@ -29,7 +29,7 @@ public class PostService {
     private final NotificationService notificationService;
 
     /**
-     * 게시글 조회
+     * 게시글 조회 ㅁ
      */
     public Page<PostListResponseDto> getPosts(String search, int page) {
         Pageable pageable = PageRequest.of(page-1, 2,  Sort.by(Sort.Direction.DESC, "createDate"));
