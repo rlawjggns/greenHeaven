@@ -13,6 +13,10 @@ on:
 jobs:
   backend-ci:
     runs-on: ubuntu-latest
+    if: |
+      contains(github.event.head_commit.modified, 'backend') ||
+      contains(github.event.head_commit.added, 'backend') ||
+      contains(github.event.head_commit.removed, 'backend')
     defaults:
       run:
         working-directory: ./backend
@@ -49,6 +53,10 @@ jobs:
 
   frontend-ci:
     runs-on: ubuntu-latest
+    if: |
+      contains(github.event.head_commit.modified, 'frontend') ||
+      contains(github.event.head_commit.added, 'frontend') ||
+      contains(github.event.head_commit.removed, 'frontend')
     defaults:
       run:
         working-directory: ./frontend
