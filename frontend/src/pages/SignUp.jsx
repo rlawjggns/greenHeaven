@@ -1,6 +1,6 @@
 // src/pages/Signup.jsx
 import React, { useState } from "react";
-import serverapi from "../utils/serverapi.js";
+import serverapi from "../utils/serverApi";
 
 export default function Signup() {
     const [form, setForm] = useState({
