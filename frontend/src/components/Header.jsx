@@ -9,37 +9,37 @@ const Header = () => {
     const navigate = useNavigate();
     const [hasNewNotification, setHasNewNotification] = useState(false);
 
-    useEffect(() => {
-        let eventSource;
-        if (isAuthenticated) {
-            const token = localStorage.getItem("jwtToken");
-            if (token) {
-                const sseUrl = `${import.meta.env.VITE_API_URL}${import.meta.env.VITE_API_DEFAULT_PREFIX}/notifications/connect`;
-                eventSource = new EventSourcePolyfill(sseUrl, {
-                    headers: { 'Authorization': `Bearer ${token}` },
-                    heartbeatTimeout: 60 * 60 * 1000,
-                });
-
-                eventSource.addEventListener('notification', (event) => {
-                    console.log("새 알림 수신:", event.data);
-                    setHasNewNotification(true);
-                });
-
-                eventSource.addEventListener('dummy', (event) => {
-                    console.log("SSE 연결 성공:", event.data);
-                });
-
-                eventSource.onerror = (error) => {
-                    console.error("SSE 연결 오류:", error);
-                };
-            }
-        }
-        return () => {
-            if (eventSource) {
-                eventSource.close();
-            }
-        };
-    }, [isAuthenticated]);
+    // useEffect(() => {
+    //     let eventSource;
+    //     if (isAuthenticated) {
+    //         const token = localStorage.getItem("jwtToken");
+    //         if (token) {
+    //             const sseUrl = `${import.meta.env.VITE_API_URL}${import.meta.env.VITE_API_DEFAULT_PREFIX}/notifications/connect`;
+    //             eventSource = new EventSourcePolyfill(sseUrl, {
+    //                 headers: { 'Authorization': `Bearer ${token}` },
+    //                 heartbeatTimeout: 60 * 60 * 1000,
+    //             });
+    //
+    //             eventSource.addEventListener('notification', (event) => {
+    //                 console.log("새 알림 수신:", event.data);
+    //                 setHasNewNotification(true);
+    //             });
+    //
+    //             eventSource.addEventListener('dummy', (event) => {
+    //                 console.log("SSE 연결 성공:", event.data);
+    //             });
+    //
+    //             eventSource.onerror = (error) => {
+    //                 console.error("SSE 연결 오류:", error);
+    //             };
+    //         }
+    //     }
+    //     return () => {
+    //         if (eventSource) {
+    //             eventSource.close();
+    //         }
+    //     };
+    // }, [isAuthenticated]);
 
     const handleLogout = (e) => {
         e.preventDefault();
