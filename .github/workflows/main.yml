@@ -4,19 +4,31 @@ on:
   push:
     branches:
       - main
-    paths: # 특정 경로의 파일이 변경되었을 때만 실행
+    paths: # 백엔드 또는 프론트엔드 변경 시 워크플로우 실행
       - 'backend/**'
       - 'frontend/**'
 
-# 백엔드 CI 워크플로우에 Docker 이미지 빌드 및 푸시 추가 예시
-
 jobs:
-  backend-ci:
+  path_changes:
     runs-on: ubuntu-latest
-    if: |
-      contains(github.event.head_commit.modified, 'backend') ||
-      contains(github.event.head_commit.added, 'backend') ||
-      contains(github.event.head_commit.removed, 'backend')
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            frontend:
+              - 'frontend/**'
+            backend:
+              - 'backend/**'
+
+  backend-ci:
+    needs: path_changes
+    if: needs.path_changes.outputs.backend == 'true'
+    runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ./backend
@@ -49,14 +61,12 @@ jobs:
           file: ./backend/Dockerfile
           platforms: linux/amd64
           push: true
-          tags: rlawjggns/greenheaven-backend:latest # Docker Hub ID와 이미지 이름으로 변경
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/greenheaven-backend:latest
 
   frontend-ci:
+    needs: path_changes
+    if: needs.path_changes.outputs.frontend == 'true'
     runs-on: ubuntu-latest
-    if: |
-      contains(github.event.head_commit.modified, 'frontend') ||
-      contains(github.event.head_commit.added, 'frontend') ||
-      contains(github.event.head_commit.removed, 'frontend')
     defaults:
       run:
         working-directory: ./frontend
@@ -80,5 +90,4 @@ jobs:
           file: ./frontend/Dockerfile
           platforms: linux/amd64
           push: true
-          tags: rlawjggns/greenheaven-frontend:latest
-
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/greenheaven-frontend:latest
