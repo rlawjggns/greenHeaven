@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.UUID;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 @Slf4j
 public class NotificationService {
@@ -31,6 +30,7 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final CropRepository cropRepository;
 
+    @Transactional(readOnly = true)
     public List<NotificationListResponseDto> getNotifications() {
         // 현재 인증된 사용자의 인증 정보 가져오기
         String email = MemberService.getAuthenticatedMemberEmail();
@@ -50,6 +50,7 @@ public class NotificationService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public List<NotificationListResponseDto> getNotificationsTen() {
         // 현재 인증된 사용자의 인증 정보 가져오기
         String email = MemberService.getAuthenticatedMemberEmail();
@@ -69,6 +70,7 @@ public class NotificationService {
                 .toList();
     }
 
+    @Transactional
     public void deleteNotification(String notificationId) {
         notificationRepository.deleteById(UUID.fromString(notificationId));
     }
@@ -176,6 +178,7 @@ public class NotificationService {
     }
 
     @Scheduled(cron = "0 0 0 * * *") // 매일 자정에 실행
+    @Transactional
     public void checkHarvestDates() {
         LocalDate today = LocalDate.now();
         List<Crop> overdueCrops = cropRepository.findByHarvestDateBefore(today);
