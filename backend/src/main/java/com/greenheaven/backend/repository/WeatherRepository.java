@@ -4,6 +4,7 @@ import com.greenheaven.backend.domain.Weather;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -15,4 +16,6 @@ public interface WeatherRepository extends JpaRepository<Weather, UUID> {
     List<Weather> findByLocationXAndLocationY(Integer locationX, Integer locationY);
 
     void deleteByLocationXAndLocationY(Integer locationX, Integer locationY);
+
+    List<Weather> findByLocationXAndLocationYAndDate(Integer locationX, Integer locationY, LocalDate date);
 }

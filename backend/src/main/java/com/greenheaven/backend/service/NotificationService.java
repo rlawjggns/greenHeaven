@@ -1,17 +1,23 @@
 package com.greenheaven.backend.service;
 
+import com.greenheaven.backend.domain.Crop;
 import com.greenheaven.backend.domain.Notification;
+import com.greenheaven.backend.domain.NotificationType;
 import com.greenheaven.backend.dto.NotificationListResponseDto;
+import com.greenheaven.backend.repository.CropRepository;
 import com.greenheaven.backend.repository.EmitterRepository;
-import com.greenheaven.backend.repository.MemberRepository;
 import com.greenheaven.backend.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -23,6 +29,7 @@ import java.util.UUID;
 public class NotificationService {
     private final EmitterRepository emitterRepository;
     private final NotificationRepository notificationRepository;
+    private final CropRepository cropRepository;
 
     public List<NotificationListResponseDto> getNotifications() {
         // 현재 인증된 사용자의 인증 정보 가져오기
@@ -165,6 +172,31 @@ public class NotificationService {
         } catch (IOException e) {
             emitterRepository.deleteById(eventId); // 예외 발생 시, 해당 emitter를 삭제하여 더 이상 이벤트를 보내지 않도록 한다
             throw new RuntimeException("알림 서버 연결 오류");
+        }
+    }
+
+    @Scheduled(cron = "0 0 0 * * *") // 매일 자정에 실행
+    public void checkHarvestDates() {
+        LocalDate today = LocalDate.now();
+        List<Crop> overdueCrops = cropRepository.findByHarvestDateBefore(today);
+
+        for (Crop crop : overdueCrops) {
+            String userEmail = crop.getMember().getEmail();
+            LocalDateTime startOfDay = today.atStartOfDay();
+            LocalDateTime endOfDay = today.atTime(LocalTime.MAX);
+
+            boolean alreadyNotified = notificationRepository.existsByReceiverEmailAndTypeAndCreatedDateBetween(
+                    userEmail, NotificationType.ALERT, startOfDay, endOfDay);
+
+            if (!alreadyNotified) {
+                Notification notification = Notification.builder()
+                        .content("수확일이 지난 작물이 있습니다: " + crop.getName())
+                        .type(NotificationType.ALERT) // 임시로 ALERT 타입 사용
+                        .receiverEmail(userEmail)
+                        .build();
+                notificationRepository.save(notification);
+                send(notification);
+            }
         }
     }
 }

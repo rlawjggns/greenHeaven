@@ -54,7 +54,7 @@ export default function DashBoard() {
                     <main className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* 작물 현황 카드 */}
                         <section className="relative bg-white p-6 rounded-xl shadow-lg border border-gray-200">
-                            <img src={houseImg} className="absolute inset-0 w-full h-full object-cover opacity-10 rounded-xl" alt="작물 현황"/>
+                            <img src={houseImg} className="absolute inset-0 w-full h-full object-cover opacity-20 rounded-xl" alt="작물 현황"/>
                             <h2 className="text-xl font-bold mb-3 relative z-10 text-gray-800">
                                 작물 현황
                                 <a href="/dashboard/crops" className="text-sm text-lime-700 absolute top-0 right-2 py-1 px-2 hover:underline">상세 보기 →</a>
@@ -85,7 +85,7 @@ export default function DashBoard() {
 
                         {/* 알림 카드 */}
                         <section className="relative bg-white p-6 rounded-xl shadow-lg border border-gray-200">
-                            <img src={writeImg} className="absolute inset-0 w-full h-full object-cover opacity-10 rounded-xl" alt="알림"/>
+                            <img src={writeImg} className="absolute inset-0 w-full h-full object-cover opacity-20 rounded-xl" alt="알림"/>
                             <h2 className="text-xl font-bold mb-3 relative z-10 text-gray-800">
                                 최근 알림
                                 <a href="/dashboard/notifications" className="text-sm text-lime-700 absolute top-0 right-2 py-1 px-2 hover:underline">상세 보기 →</a>

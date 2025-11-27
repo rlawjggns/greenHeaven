@@ -136,7 +136,7 @@ public class WeatherService {
      * @param longitude 변환하려는 경도 (또는 격자 좌표 Y 값, mode에 따라 다름)
      * @return 변환된 좌표 또는 위경도 값을 포함한 LatXLngY 객체
      */
-    private LatXLngY convertGRID_GPS(int mode, double latitude, double longitude) {
+    public LatXLngY convertGRID_GPS(int mode, double latitude, double longitude) {
         // 지구 및 격자 기본 설정 값 정의
         double RE = 6371.00877; // 지구 반경(km)
         double GRID = 5.0; // 격자 간격(km)
@@ -350,7 +350,7 @@ public class WeatherService {
     }
 
     @Getter
-    static class LatXLngY {
+    public static class LatXLngY {
         public double lat; // 위도
         public double lng; // 경도
 
